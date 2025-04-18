@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import { ArrowLeft, Github, ArrowUpRight } from "lucide-react"
+// import { Link } from "react-router-dom"
+import {  Github, ArrowUpRight } from "lucide-react"
 import BackHome from "@/utils/BackHome"
 
 interface Project {
