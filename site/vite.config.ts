@@ -9,5 +9,21 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    sourcemap: false,
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Abaikan warning tertentu
+        if (
+          warning.code === 'MODULE_LEVEL_DIRECTIVE' ||
+          warning.code === 'UNUSED_EXTERNAL_IMPORT' ||
+          warning.code === 'THIS_IS_UNDEFINED'
+        ) return;
+
+        // Tampilkan warning lain seperti biasa
+        warn(warning);
+      },
+    },
+  },
 })
 
