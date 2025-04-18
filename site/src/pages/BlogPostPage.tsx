@@ -3,6 +3,7 @@
 import { useParams, Link } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import NotFoundPage from "./ErrorPage"
+import { posts } from "@/post"
 
 // This would typically come from a database or CMS
 const blogPosts = {
@@ -64,11 +65,12 @@ const blogPosts = {
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
-  const post = slug ? blogPosts[slug] : null
+  const post = posts.find((p) => p.slug === slug);
 
   if (!post) {
     return <NotFoundPage status={404}/>
   }
+  const Component = post.component;
 
   return (
     <div className="min-h-screen bg-[#0a0a18] text-white relative overflow-hidden">
@@ -107,7 +109,7 @@ export default function BlogPostPage() {
         </div>
 
         <div className="prose prose-invert max-w-none">
-          {post.content.map((section, index) => (
+          {/* {post.content.map((section, index) => (
             <div key={index} className="mb-12">
               <h2 className="text-2xl md:text-3xl font-bold mb-6">{section.heading}</h2>
               {section.paragraphs.map((paragraph, pIndex) => (
@@ -116,7 +118,8 @@ export default function BlogPostPage() {
                 </p>
               ))}
             </div>
-          ))}
+          ))} */}
+          <Component/>
         </div>
       </div>
     </div>

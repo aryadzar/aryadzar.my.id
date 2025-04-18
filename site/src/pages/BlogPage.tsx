@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import BackHome from "@/utils/BackHome"
+import { posts } from "@/post"
 
 interface BlogPost {
   id: number
@@ -80,7 +81,7 @@ export default function BlogPage() {
         <h1 className="text-4xl md:text-5xl font-bold mb-16">Blog</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
+          {posts.map((post) => (
             <article key={post.id} className="group">
               <Link to={`/blog/${post.slug}`} className="block">
                 <div className="relative h-48 mb-4 overflow-hidden rounded-2xl">
@@ -90,7 +91,7 @@ export default function BlogPage() {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute top-3 left-3 bg-violet-600 px-3 py-1 rounded-full text-xs font-medium">
-                    {post.category}
+                    {post.categories}
                   </div>
                 </div>
                 <p className="text-sm text-gray-400 mb-2">{post.date}</p>

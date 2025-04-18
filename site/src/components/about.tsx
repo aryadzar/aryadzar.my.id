@@ -25,7 +25,7 @@ export default function About() {
             className="relative"
           >
             <div className="relative h-[400px] w-full rounded-2xl overflow-hidden">
-              <img src="/placeholder.svg?height=400&width=400" alt="John Doe" className="w-full h-full object-cover" />
+              <img src="/foto_profile.jpg" alt="John Doe" className="w-full h-full object-cover" />
             </div>
             <div className="absolute -bottom-6 -right-6 h-40 w-40 bg-violet-600 rounded-2xl -z-10" />
           </motion.div>
@@ -36,7 +36,7 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-bold mb-4 text-white">Hello, I'm John</h3>
+            <h3 className="text-2xl font-bold mb-4 text-white">Hello, I'm Arya Dzaky</h3>
             <p className="text-gray-300 mb-6">
               I'm a passionate Full Stack Developer with 5 years of experience creating beautiful, functional, and
               user-centered digital experiences. I am constantly exploring new technologies and techniques to push the
@@ -47,24 +47,24 @@ export default function About() {
               with digital art. I believe in continuous learning and sharing knowledge with the developer community.
             </p>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-900 p-4 rounded-lg">
+            {/* <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-900 p-4 rounded-2xl">
                 <h4 className="font-bold text-violet-400">5+</h4>
                 <p className="text-sm text-gray-400">Years Experience</p>
               </div>
-              <div className="bg-gray-900 p-4 rounded-lg">
+              <div className="bg-gray-900 p-4 rounded-2xl">
                 <h4 className="font-bold text-violet-400">50+</h4>
                 <p className="text-sm text-gray-400">Projects Completed</p>
               </div>
-              <div className="bg-gray-900 p-4 rounded-lg">
+              <div className="bg-gray-900 p-4 rounded-2xl">
                 <h4 className="font-bold text-violet-400">20+</h4>
                 <p className="text-sm text-gray-400">Happy Clients</p>
               </div>
-              <div className="bg-gray-900 p-4 rounded-lg">
+              <div className="bg-gray-900 p-4 rounded-2xl">
                 <h4 className="font-bold text-violet-400">10+</h4>
                 <p className="text-sm text-gray-400">Awards Won</p>
               </div>
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </div>

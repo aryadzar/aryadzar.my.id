@@ -47,6 +47,16 @@ const projects: Project[] = [
     demo: "#",
     featured: false,
   },
+  {
+    id: 3,
+    title: "Task Management App",
+    description: "Collaborative task management application",
+    image: "/placeholder.svg?height=400&width=600",
+    tags: ["TypeScript", "Redux", "MongoDB"],
+    github: "#",
+    demo: "#",
+    featured: false,
+  },
   // Keep only 3 projects for the main page preview
 ]
 

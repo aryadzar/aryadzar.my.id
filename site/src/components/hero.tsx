@@ -78,7 +78,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          John Doe
+          M Arya Dzaky Arenanto
         </motion.h1>
         <motion.p
           className="text-xl md:text-2xl text-muted-foreground mb-8"
@@ -86,7 +86,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Full Stack Developer & UI/UX Designer
+          Full Stack Developer
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -94,12 +94,13 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           <a
-            href="#projects"
+            href="/CV_Muhammad_Arya_Dzaky_Arenanto_New.pdf"
+            target="_blank"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className="group relative inline-flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-full font-medium overflow-hidden hover:scale-105 transition-transform"
           >
-            <span>View My Work</span>
+            <span>View My Curiculum Vitae</span>
             <motion.span animate={{ x: isHovered ? 5 : 0 }} transition={{ duration: 0.2 }}>
               <ArrowRight className="w-4 h-4" />
             </motion.span>
