@@ -23,6 +23,13 @@ export default defineConfig({
         // Tampilkan warning lain seperti biasa
         warn(warning);
       },
+      output: {
+        banner: `/*! 
+ * @license aryadzar.my.id
+ * (c) 2025 M Arya Dzaky Arenanto
+ * This build is licensed under MIT.
+ */`
+      }
     },
   },
 })
