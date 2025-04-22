@@ -6,6 +6,8 @@ import Home from "./pages/Home"
 import ProjectsPage from "./pages/ProjectsPage"
 import { HelmetProvider } from "react-helmet-async"
 import NotFoundPage from "./pages/ErrorPage"
+import BlogPage from "./pages/BlogPage"
+import BlogPostPage from "./pages/BlogPostPage"
 
 function App() {
   return (
@@ -14,8 +16,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogPostPage />} /> */}
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="*" element={<NotFoundPage status={404} />} />
         </Routes>

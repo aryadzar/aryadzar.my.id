@@ -1,8 +1,12 @@
 "use client"
 
+import { api } from "@/utils/api"
+import { extractFirstImage } from "@/utils/thumbnail-ext"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import Loading from "./loading"
 
 interface BlogPost {
   id: number
@@ -13,36 +17,17 @@ interface BlogPost {
   slug: string
 }
 
-const blogPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: "The Future of Web Development in 2025",
-    excerpt: "Exploring the latest trends and technologies shaping the future of web development.",
-    date: "March 15, 2025",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "future-web-development-2025",
-  },
-  {
-    id: 2,
-    title: "Mastering Next.js: Tips and Tricks",
-    excerpt: "Learn advanced techniques to take your Next.js applications to the next level.",
-    date: "February 28, 2025",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "mastering-nextjs-tips-tricks",
-  },
-  {
-    id: 3,
-    title: "Intern UPT TIK bermitra PT PGN GasNet",
-    excerpt: "My experience as an intern at UPT TIK in partnership with PT PGN GasNet.",
-    date: "January 24, 2025",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "intern-upt-tik-pgn-gasnet",
-  },
-]
 
-interface BlogPostCardProps {
-  post: BlogPost
-  index: number
+export interface BlogPostCardProps {
+  post: {
+    id: string;
+    title: string;
+    image?: string;
+    date: string;
+    excerpt: string;
+    slug: string;
+  };
+  index: number;
 }
 
 function BlogPostCard({ post, index }: BlogPostCardProps) {
@@ -65,14 +50,56 @@ function BlogPostCard({ post, index }: BlogPostCardProps) {
         <div className="p-4">
           <p className="text-sm text-gray-400 mb-2">{post.date}</p>
           <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{post.title}</h3>
-          <p className="text-gray-300">{post.excerpt}</p>
+          <p className="text-gray-300" dangerouslySetInnerHTML={{ 
+            __html : post.excerpt
+           }}>{}</p>
         </div>
       </Link>
     </motion.article>
   )
 }
 
+
+
 export default function BlogPreview() {
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await api.get(`/posts`, { 
+          params: {
+            maxResults: 3,        // Maksimal 3 post
+            orderBy: "published", // Urut dari yang terbaru
+          }
+        });
+        const items = res.data.items || [];
+
+        const formattedPosts: any[] = items.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          image: extractFirstImage(item.content) ?? "/placeholder.svg",
+          date: new Date(item.published).toLocaleDateString(),
+          excerpt: item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "...",
+          slug: item.id, // or create a slug from title if needed
+        }));
+
+        console.log(items);
+
+        setBlogPosts(formattedPosts);
+      } catch (err) {
+        console.error("Failed to fetch blog posts:", err);
+      }finally{
+        setIsLoading(false)
+      }
+    }
+
+    fetchPosts();
+  }, []);
+  if (isLoading){
+    return <Loading/>
+  } 
   return (
     <section id="blog" className="py-20 px-6 bg-black">
       <div className="max-w-6xl mx-auto">
