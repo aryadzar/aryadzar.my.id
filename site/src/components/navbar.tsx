@@ -30,11 +30,14 @@ export default function Navbar() {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
-    const element = document.getElementById(href)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
     setIsOpen(false)
+  
+    setTimeout(() => {
+      const element = document.getElementById(href)
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" })
+      }
+    }, 300) // delay agar menu sempat tertutup dulu
   }
 
   return (
@@ -46,8 +49,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <RouterLink to="/" className="text-2xl font-bold text-primary">
-              JD
+            <RouterLink to="/" className="text-2xl size-14 mt-5 font-bold text-primary">
+              <img src="/icons/logo.svg" alt="" />
             </RouterLink>
           </div>
           <div className="hidden md:block">
@@ -91,7 +94,9 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <motion.div
-        className="md:hidden"
+        className={`md:hidden transition-all duration-300 ${
+          isOpen ? "pointer-events-auto" : "pointer-events-none overflow-hidden"
+        }`}
         initial="closed"
         animate={isOpen ? "open" : "closed"}
         variants={{

@@ -13,40 +13,33 @@ interface Experience {
 
 const experiences: Experience[] = [
   {
-    title: "Senior Frontend Developer",
-    company: "Tech Innovators Inc.",
-    period: "2023 - Present",
-    description:
-      "Lead the frontend development team in creating cutting-edge web applications using React and Next.js.",
-    type: "work",
-  },
-  {
-    title: "Frontend Developer",
+    title: "Asistant Lecturer of Object Oriented Programming",
     company: "Web Solutions Co.",
-    period: "2020 - 2023",
+    period: "Sept 2024 -  Dec 2024",
     description:
-      "Developed responsive and accessible web applications for various clients using modern JavaScript frameworks.",
+      "Teaching a student with Java and create the application with java",
     type: "work",
   },
   {
-    title: "Junior Web Developer",
-    company: "StartUp Ventures",
-    period: "2018 - 2020",
-    description: "Assisted in the development of web applications and gained experience in full-stack development.",
+    title: "Asistant Lecturer of Structured Programming",
+    company: "Web Solutions Co.",
+    period: "Sept 2024 -  Dec 2024",
+    description:
+      "Teaching a student with Java and how to write a clean code using C++",
     type: "work",
   },
   {
-    title: "Master of Science in Computer Science",
-    company: "Tech University",
-    period: "2016 - 2018",
-    description: "Specialized in Web Technologies and Human-Computer Interaction.",
-    type: "education",
+    title: "Fullstack Developer",
+    company: "UPT TIK Unila",
+    period: "Sept 2024 - Jan 2025",
+    description: "Doing Internship as a fullstack developer",
+    type: "work",
   },
   {
     title: "Bachelor of Science in Computer Science",
-    company: "State University",
-    period: "2012 - 2016",
-    description: "Graduated with honors. Focused on Software Engineering and Web Development.",
+    company: "Lampung University",
+    period: "2022 - Now",
+    description: "Specialized in Web Technologies and Human-Computer Interaction.",
     type: "education",
   },
 ]

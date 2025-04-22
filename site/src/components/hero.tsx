@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
+import { FlipWords } from "./ui/flip-words"
 
 export default function Hero() {
   const [isHovered, setIsHovered] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-
+  const words = ["Fullstack", "Backend"];
+  const name = ["Muhammad Arya", "Dzaky Arenanto"]
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
@@ -24,7 +26,7 @@ export default function Hero() {
     <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
-        <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+        <video autoPlay loop muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
           <source
             src="https://videos.pexels.com/video-files/2278095/2278095-hd_1920_1080_30fps.mp4"
             type="video/mp4"
@@ -77,8 +79,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-        >
-          M Arya Dzaky Arenanto
+        >       
+          <FlipWords words={name}/>
         </motion.h1>
         <motion.p
           className="text-xl md:text-2xl text-muted-foreground mb-8"
@@ -86,7 +88,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Full Stack Developer
+          <FlipWords words={words}/> Developer
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

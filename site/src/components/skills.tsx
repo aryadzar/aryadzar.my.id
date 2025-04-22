@@ -110,10 +110,12 @@ export default function Skills() {
                   "SEO",
                   "Performance Optimization",
                   "Agile/Scrum",
-                  "CI/CD",
+                  // "CI/CD",
                   "Testing",
-                  "AWS",
-                  "Firebase",
+                  // "AWS",
+                  // "Firebase",
+                  "Laravel",
+                  "MySQL"
                 ].map((skill, index) => (
                   <motion.span
                     key={index}

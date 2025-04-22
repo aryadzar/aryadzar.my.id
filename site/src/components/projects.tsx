@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { ArrowUpRight, Github, ArrowRight } from "lucide-react"
-import { Link } from "react-router-dom"
+import { ArrowUpRight, Github } from "lucide-react"
+// import { Link } from "react-router-dom"
 
 interface Project {
   id: number
@@ -19,42 +19,72 @@ interface Project {
 const projects: Project[] = [
   {
     id: 1,
-    title: "E-Commerce Platform",
-    description: "A full-featured online store with payment integration",
-    image: "/placeholder.svg?height=600&width=800",
-    tags: ["Next.js", "Tailwind CSS", "Stripe"],
-    github: "#",
-    demo: "#",
+    title: "Presensi UPT TIK",
+    description: "Pembuatan Aplikasi Presensi untuk khusus pegawai UPT TIK seperti EOS dsb ",
+    image: "/projects/presensi_upttik.png",
+    tags: ["Laravel", "Tailwind CSS", "Backend", "PostgreSQL", "PHP"],
+    github: "https://github.com/aryadzar/absensi-project",
+    demo: "https://presensi.unila.ac.id",
     featured: true,
   },
   {
     id: 2,
-    title: "Social Media Dashboard",
-    description: "Analytics dashboard for social media management",
-    image: "/placeholder.svg?height=400&width=600",
-    tags: ["React", "Chart.js", "Firebase"],
+    title: "Hospitality Plus",
+    description: "Pemesanan hotel dengan framework javafx",
+    image: "/projects/javafx.png",
+    tags: ["Java", "JavaFx", "MariaDB", "MySQL"],
+    github: "https://github.com/aryadzar/project-uas-pbo",
+    demo: "#",
+    featured: true,
+  },
+  {
+    id: 3,
+    title: "Taskete Project",
+    description: "To Do List App dengan PHP MySQL",
+    image: "/projects/taskete.png",
+    tags: ["PHP", "Bootstrap", "MySQL", "Native"],
+    github: "#",
+    demo: "https://taskete.aryadzar.my.id",
+    featured: true,
+  },
+  {
+    id: 4,
+    title: "Halaman Login SSO Unila",
+    description: "Membuat tampilan halaman login SSO WiFi Unila dengan modern",
+    image: "/projects/login_sso.png",
+    tags: ["HTML", "Tailwind CSS", "Fortigate"],
     github: "#",
     demo: "#",
     featured: false,
   },
   {
-    id: 3,
-    title: "Task Management App",
-    description: "Collaborative task management application",
-    image: "/placeholder.svg?height=400&width=600",
-    tags: ["TypeScript", "Redux", "MongoDB"],
+    id: 4,
+    title: "SIM-APK (Sistem Infomarsi Manajement Armada Pesawat Komersial) ADSI (Analisis Desain Sistem Informasi)",
+    description: "Membuat alur bisnis dan implementasi dari sistem informasi",
+    image: "/projects/sim-apk.png",
+    tags: ["HTML", "Bootstrap", "JQuery", "PHP Native", "CRUD", "MariaDB"],
+    github: "https://github.com/aryadzar/SIM-APK",
+    demo: "#",
+    featured: false,
+  },
+  {
+    id: 4,
+    title: "Halaman Blokir dengan WiFI Unila",
+    description: "Membuat halaman yang diblokir oleh Unila (UPT TIK Unila)",
+    image: "/projects/halaman_blokir.png",
+    tags: ["HTML", "Tailwind CSS", "PHP Native"],
     github: "#",
     demo: "#",
     featured: false,
   },
   {
-    id: 3,
-    title: "Task Management App",
-    description: "Collaborative task management application",
-    image: "/placeholder.svg?height=400&width=600",
-    tags: ["TypeScript", "Redux", "MongoDB"],
-    github: "#",
-    demo: "#",
+    id: 4,
+    title: "First Portofolio",
+    description: "Membuat Portofolio First Time",
+    image: "/projects/first_port.png",
+    tags: ["HTML", "CSS Native"],
+    github: "https://github.com/aryadzar/UTP-PEMWEB",
+    demo: "https://old-portofolio.aryadzar.my.id",
     featured: false,
   },
   // Keep only 3 projects for the main page preview
@@ -81,11 +111,11 @@ function ProjectCard({ project, index, className = "" }: ProjectCardProps) {
     >
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10" />
 
-      {/* <img
+      <img
         src={project.image || "/placeholder.svg"}
         alt={project.title}
-        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
-      /> */}
+        className="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-500 group-hover:scale-110"
+      />
 
       <div className="relative z-20 flex flex-col h-full p-6 justify-end">
         <div className="flex flex-wrap gap-2 mb-3">
@@ -105,6 +135,7 @@ function ProjectCard({ project, index, className = "" }: ProjectCardProps) {
           </a>
           <a
             href={project.demo}
+            target="_blank"
             className="flex items-center gap-1 px-3 py-1 bg-violet-600/80 rounded-full hover:bg-violet-500 transition-colors"
           >
             <span className="text-sm">Live Demo</span>
@@ -144,13 +175,13 @@ export default function Projects() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Link
+            {/* <Link
               to="/projects"
               className="group inline-flex items-center gap-2 text-primary hover:text-primary-foreground transition-colors"
             >
               <span>View All</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </Link> */}
           </motion.div>
         </div>
 
