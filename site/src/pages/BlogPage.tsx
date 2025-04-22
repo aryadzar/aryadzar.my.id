@@ -1,78 +1,11 @@
 import { Link } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
 import BackHome from "@/utils/BackHome"
-import { posts } from "@/post"
 import { extractFirstImage } from "@/utils/thumbnail-ext"
 import { useEffect, useState } from "react"
 import { api } from "@/utils/api"
 import Loading from "@/components/loading"
 
-interface BlogPost {
-  id: number
-  title: string
-  excerpt: string
-  date: string
-  image: string
-  slug: string
-  category: string
-}
 
-const blogPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: "The Future of Web Development in 2025",
-    excerpt: "Exploring the latest trends and technologies shaping the future of web development.",
-    date: "March 15, 2025",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "future-web-development-2025",
-    category: "Web Development",
-  },
-  {
-    id: 2,
-    title: "Mastering Next.js: Tips and Tricks",
-    excerpt: "Learn advanced techniques to take your Next.js applications to the next level.",
-    date: "February 28, 2025",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "mastering-nextjs-tips-tricks",
-    category: "Next.js",
-  },
-  {
-    id: 3,
-    title: "Intern UPT TIK bermitra PT PGN GasNet",
-    excerpt: "My experience as an intern at UPT TIK in partnership with PT PGN GasNet.",
-    date: "January 24, 2025",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "intern-upt-tik-pgn-gasnet",
-    category: "Internship",
-  },
-  {
-    id: 4,
-    title: "The Power of Tailwind CSS",
-    excerpt: "Why Tailwind CSS has become my go-to framework for styling web applications.",
-    date: "January 10, 2025",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "power-of-tailwind-css",
-    category: "CSS",
-  },
-  {
-    id: 5,
-    title: "Building Accessible Web Applications",
-    excerpt: "Best practices for creating web applications that everyone can use.",
-    date: "December 20, 2024",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "building-accessible-web-applications",
-    category: "Accessibility",
-  },
-  {
-    id: 6,
-    title: "Getting Started with TypeScript",
-    excerpt: "A beginner's guide to using TypeScript in your JavaScript projects.",
-    date: "December 5, 2024",
-    image: "/placeholder.svg?height=400&width=600",
-    slug: "getting-started-with-typescript",
-    category: "TypeScript",
-  },
-]
 
 export default function BlogPage() {
     const [blogPosts, setBlogPosts] = useState<any[]>([]);

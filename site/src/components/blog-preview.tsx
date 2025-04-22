@@ -8,14 +8,6 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Loading from "./loading"
 
-interface BlogPost {
-  id: number
-  title: string
-  excerpt: string
-  date: string
-  image: string
-  slug: string
-}
 
 
 export interface BlogPostCardProps {
