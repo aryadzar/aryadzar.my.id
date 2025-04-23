@@ -8,11 +8,13 @@ import { HelmetProvider } from "react-helmet-async"
 import NotFoundPage from "./pages/ErrorPage"
 import BlogPage from "./pages/BlogPage"
 import BlogPostPage from "./pages/BlogPostPage"
-
+import {Toaster} from 'react-hot-toast'
 function App() {
   return (
     <>
       <HelmetProvider>
+      <Toaster position="top-right" reverseOrder={false} />
+
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

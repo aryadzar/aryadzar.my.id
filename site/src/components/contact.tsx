@@ -5,6 +5,8 @@ import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Mail, Phone, MapPin, Send } from "lucide-react"
+import axios from "axios"
+import toast from "react-hot-toast"
 
 interface FormState {
   name: string
@@ -18,6 +20,7 @@ export default function Contact() {
     email: "",
     message: "",
   })
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormState({
@@ -26,14 +29,37 @@ export default function Contact() {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission here
-    console.log(formState)
-    // Reset form
-    setFormState({ name: "", email: "", message: "" })
-    alert("Thank you for your message! I'll get back to you soon.")
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const toastId = toast.loading("Sending message...");
+
+    const formEncoded = new URLSearchParams();
+    formEncoded.append("name", formState.name);
+    formEncoded.append("email", formState.email);
+    formEncoded.append("message", formState.message);
+    try {
+      const res = await axios.post("https://script.google.com/macros/s/AKfycbxVy3_CM9AL-rCZx_qVjFI6b2Igy4cJrmfBizk2qjt9kGP1OsvIqH76289iCQJ25wb8/exec", formEncoded, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
+  
+      if (res.status === 200) {
+        toast.success("Message sent successfully!", { id: toastId });
+        setFormState({ name: "", email: "", message: "" });
+      } else {
+        alert("Oops! Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Submission failed", error);
+      toast.error("Failed to send. Please try again later.", { id: toastId });
+    }finally{
+      setLoading(false);
+
+    }
+  };
 
   return (
     <section id="contact" className="py-20 px-6 bg-black">
@@ -160,21 +186,50 @@ export default function Contact() {
 
               <motion.button
                 type="submit"
-                className="group relative inline-flex items-center gap-2 px-6 py-3 bg-violet-600 text-white rounded-2xl font-medium overflow-hidden hover:bg-violet-700 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={loading}
+                className={`group relative inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-medium overflow-hidden transition-colors ${
+                  loading ? "bg-gray-600 cursor-not-allowed" : "bg-violet-600 hover:bg-violet-700 text-white"
+                }`}
+                whileHover={!loading ? { scale: 1.02 } : {}}
+                whileTap={!loading ? { scale: 0.98 } : {}}
               >
-                <span>Send Message</span>
-                <Send className="w-4 h-4" />
-                <motion.div
-                  className="absolute inset-0 bg-violet-500"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: "0%" }}
-                  transition={{ duration: 0.3 }}
-                />
+                {/* Background hover animation */}
+                {!loading && (
+                  <motion.div
+                    className="absolute inset-0 bg-violet-500"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "0%" }}
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+
+                {/* Content */}
                 <span className="relative z-10 flex items-center gap-2">
-                  {/* <span>Send Message</span> */}
-                  {/* <Send className="w-4 h-4" /> */}
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <span>Send Message</span>
+                      <Send className="w-4 h-4" />
+                    </>
+                  )}
                 </span>
               </motion.button>
             </form>
