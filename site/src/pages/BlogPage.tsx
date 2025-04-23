@@ -17,7 +17,6 @@ export default function BlogPage() {
       try {
         const res = await api.get(`/posts`, { 
           params: {
-            maxResults: 3,        // Maksimal 3 post
             orderBy: "published", // Urut dari yang terbaru
           }
         });
