@@ -133,6 +133,7 @@ import { api } from "@/utils/api"  // Axios instance kamu
 import NotFoundPage from "./ErrorPage" 
 import Loading from "@/components/loading"
 import { extractFirstImage } from "@/utils/thumbnail-ext"
+import MetaTags from "@/utils/MetaTags"
 
 type BloggerPost = {
   id: string
@@ -174,6 +175,12 @@ export default function BlogPostPage() {
   return (
     <div className="min-h-screen bg-[#0a0a18] text-white relative overflow-hidden">
       {/* Stars background */}
+      <MetaTags
+          title={post.title}
+          description={post.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."}
+          image={ extractFirstImage(post.content) ?? undefined }
+          name={post.title}
+      />
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(100)].map((_, i) => (
           <div
@@ -220,7 +227,15 @@ export default function BlogPostPage() {
         </div>
 
         <div
-          className="prose prose-invert max-w-none"
+          className="prose prose-invert prose-img:mx-auto 
+             prose-video:mx-auto 
+             prose-iframe:mx-auto 
+             prose-img:rounded-xl 
+             prose-video:rounded-xl
+             prose-iframe:rounded-xl
+             prose-img:mx-auto
+             prose-img:object-cover
+             max-w-none"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </div>

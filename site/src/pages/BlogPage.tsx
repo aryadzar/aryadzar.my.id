@@ -4,6 +4,7 @@ import { extractFirstImage } from "@/utils/thumbnail-ext"
 import { useEffect, useState } from "react"
 import { api } from "@/utils/api"
 import Loading from "@/components/loading"
+import MetaTags from "@/utils/MetaTags"
 
 
 
@@ -49,6 +50,12 @@ export default function BlogPage() {
     } 
   return (
     <div className="min-h-screen bg-black text-white">
+            <MetaTags
+          title="Blog Arya Dzaky"
+          description="Portofolio Arya Dzaky"
+          image="/foto_profile.jpg"
+          name="Blog Arya Dzaky"
+      />
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="mb-8">
           <BackHome/>

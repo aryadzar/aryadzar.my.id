@@ -30,7 +30,11 @@ body {
   font-weight: 400;
   font-style: normal;
 }
-
+.prose img, .prose video, .prose iframe {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block;
+}
 @layer base {
   * {
     @apply border-border;
