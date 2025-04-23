@@ -68,3 +68,7 @@ body {
   box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.5);
 }
 
+.prose :where(iframe) {
+  @apply w-full rounded-xl;
+  aspect-ratio: 16 / 9;
+}
