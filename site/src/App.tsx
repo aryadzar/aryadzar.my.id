@@ -9,12 +9,29 @@ import NotFoundPage from "./pages/ErrorPage"
 import BlogPage from "./pages/BlogPage"
 import BlogPostPage from "./pages/BlogPostPage"
 import {Toaster} from 'react-hot-toast'
+import AnimatedCursor from "react-animated-cursor"
+
 function App() {
   return (
     <>
       <HelmetProvider>
       <Toaster position="top-right" reverseOrder={false} />
-
+      <AnimatedCursor
+        innerSize={8}
+        outerSize={35}
+        color="255, 255, 255"
+        outerAlpha={0.2}
+        innerScale={0.7}
+        outerScale={2}
+        outerStyle={{
+          mixBlendMode: 'difference',
+          backgroundColor: 'white'
+        }}
+        innerStyle={{
+          mixBlendMode: 'difference',
+          backgroundColor: 'white'
+        }}
+      />
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
