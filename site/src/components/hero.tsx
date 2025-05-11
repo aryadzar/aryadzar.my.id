@@ -28,7 +28,7 @@ export default function Hero() {
       <div className="absolute inset-0 w-full h-full">
         <video autoPlay loop muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
           <source
-            src="https://videos.pexels.com/video-files/2278095/2278095-hd_1920_1080_30fps.mp4"
+            src="video/video_bg_1.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
