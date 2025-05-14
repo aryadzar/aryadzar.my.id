@@ -86,7 +86,7 @@ export default function About() {
                   }}
                 >
                   <img
-                    src="https://www.aryadzar.my.id/foto_profile.jpg"
+                    src="/foto_profile.jpg"
                     alt="Arya Dzaky"
                     className="w-full h-full object-cover"
                   />

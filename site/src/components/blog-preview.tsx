@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Loading from "./loading"
+import { generateSlug } from "@/utils/slug-helper"
 
 
 
@@ -74,7 +75,7 @@ export default function BlogPreview() {
           image: extractFirstImage(item.content) ?? "/placeholder.svg",
           date: new Date(item.published).toLocaleDateString(),
           excerpt: item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "...",
-          slug: item.id, // or create a slug from title if needed
+          slug: generateSlug(item.title, item.id), // or create a slug from title if needed
         }));
 
         console.log(items);
