@@ -1,8 +1,6 @@
 import { Routes, Route } from "react-router-dom"
 import Navbar from "./components/navbar"
 import Home from "./pages/Home"
-// import BlogPage from "./pages/BlogPage"
-// import BlogPostPage from "./pages/BlogPostPage"
 import ProjectsPage from "./pages/ProjectsPage"
 import { HelmetProvider } from "react-helmet-async"
 import NotFoundPage from "./pages/ErrorPage"
@@ -10,6 +8,7 @@ import BlogPage from "./pages/BlogPage"
 import BlogPostPage from "./pages/BlogPostPage"
 import {Toaster} from 'react-hot-toast'
 import AnimatedCursor from "react-animated-cursor"
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -40,8 +39,8 @@ function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="*" element={<NotFoundPage status={404} />} />
         </Routes>
-
-      </HelmetProvider>
+        <Analytics/>
+        </HelmetProvider>
     </>
   )
 }
