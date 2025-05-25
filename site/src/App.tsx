@@ -7,7 +7,7 @@ import NotFoundPage from "./pages/ErrorPage"
 import BlogPage from "./pages/BlogPage"
 import BlogPostPage from "./pages/BlogPostPage"
 import {Toaster} from 'react-hot-toast'
-import AnimatedCursor from "react-animated-cursor"
+// import AnimatedCursor from "react-animated-cursor"
 import { Analytics } from '@vercel/analytics/react';
 import Footer from "./components/footer"
 
