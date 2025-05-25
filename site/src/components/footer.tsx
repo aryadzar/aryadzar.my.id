@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { motion } from "framer-motion"
-import { Github, Twitter, Linkedin, Instagram, ArrowUp, Mail, MapPin, Heart } from "lucide-react"
+import { Github, Twitter, Linkedin, Instagram, ArrowUp, Mail, MapPin } from "lucide-react"
 
 interface SocialLinkProps {
   href: string
