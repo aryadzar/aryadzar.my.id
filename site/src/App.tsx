@@ -6,17 +6,19 @@ import { HelmetProvider } from "react-helmet-async"
 import NotFoundPage from "./pages/ErrorPage"
 import BlogPage from "./pages/BlogPage"
 import BlogPostPage from "./pages/BlogPostPage"
-import {Toaster} from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 // import AnimatedCursor from "react-animated-cursor"
 import { Analytics } from '@vercel/analytics/react';
 import Footer from "./components/footer"
+import ScrollToTop from "./utils/scrollToTop"
 
 function App() {
   return (
     <>
       <HelmetProvider>
-      <Toaster position="top-right" reverseOrder={false} />
-      {/* <AnimatedCursor
+        <ScrollToTop />
+        <Toaster position="top-right" reverseOrder={false} />
+        {/* <AnimatedCursor
         innerSize={8}
         outerSize={35}
         color="255, 255, 255"
@@ -40,9 +42,9 @@ function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="*" element={<NotFoundPage status={404} />} />
         </Routes>
-        <Footer/>
-        <Analytics/>
-        </HelmetProvider>
+        <Footer />
+        <Analytics />
+      </HelmetProvider>
     </>
   )
 }
