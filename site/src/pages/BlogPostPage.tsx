@@ -43,7 +43,9 @@ export default function BlogPostPage() {
 
   if (notFound) return <NotFoundPage status={404} />
   if (!post){
-    return <Loading/>
+    return <Loading 
+    // done={false}
+    />
   } 
 
   return (

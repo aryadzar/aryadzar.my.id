@@ -9,13 +9,14 @@ import BlogPostPage from "./pages/BlogPostPage"
 import {Toaster} from 'react-hot-toast'
 import AnimatedCursor from "react-animated-cursor"
 import { Analytics } from '@vercel/analytics/react';
+import Footer from "./components/footer"
 
 function App() {
   return (
     <>
       <HelmetProvider>
       <Toaster position="top-right" reverseOrder={false} />
-      <AnimatedCursor
+      {/* <AnimatedCursor
         innerSize={8}
         outerSize={35}
         color="255, 255, 255"
@@ -30,7 +31,7 @@ function App() {
           mixBlendMode: 'difference',
           backgroundColor: 'white'
         }}
-      />
+      /> */}
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -39,6 +40,7 @@ function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="*" element={<NotFoundPage status={404} />} />
         </Routes>
+        <Footer/>
         <Analytics/>
         </HelmetProvider>
     </>
