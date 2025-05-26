@@ -3,7 +3,6 @@ import About from "@/components/about"
 import Projects from "@/components/projects"
 import Skills from "@/components/skills"
 import Contact from "@/components/contact"
-import Footer from "@/components/footer"
 import BlogPreview from "@/components/blog-preview"
 import Experience from "@/components/experience"
 import MetaTags from "@/utils/MetaTags"
@@ -38,7 +37,6 @@ export default function Home() {
       <section id="contact">
         <Contact />
       </section>
-      <Footer />
     </main>
   )
 }

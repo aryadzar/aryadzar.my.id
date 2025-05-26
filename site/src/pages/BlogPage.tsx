@@ -46,7 +46,10 @@ export default function BlogPage() {
     fetchPosts();
   }, []);
     if (isLoading){
-      return <Loading/>
+      return <Loading 
+    
+      // done={false}
+      />
     } 
   return (
     <div className="min-h-screen bg-black text-white">
