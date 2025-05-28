@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { ArrowRight, ExternalLink } from "lucide-react"
+import { ExternalLink } from "lucide-react"
 import { FlipWords } from "./ui/flip-words"
 
 export default function Hero() {
