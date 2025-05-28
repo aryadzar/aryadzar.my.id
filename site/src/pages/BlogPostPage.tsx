@@ -7,6 +7,7 @@ import Loading from "@/components/loading"
 import { extractFirstImage } from "@/utils/thumbnail-ext"
 import MetaTags from "@/utils/MetaTags"
 import { extractIdFromSlug } from "@/utils/slug-helper"
+import { motion } from "framer-motion"
 
 type BloggerPost = {
   id: string
@@ -73,36 +74,83 @@ export default function BlogPostPage() {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
-        <div className="mb-8">
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%)",
+        }}
+        animate={{
+          backgroundPosition: ["0% 0%", "100% 100%"],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Number.POSITIVE_INFINITY,
+          ease: "linear",
+        }}
+      />
+
+      <motion.div 
+        className="relative z-10 max-w-4xl mx-auto px-6 py-12"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      
+      >
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <Link
             to="/blog"
             className="inline-flex items-center mt-5 gap-2 text-gray-400 hover:text-white transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Go back</span>
+            <motion.div whileHover={{ x: -5 }} transition={{ type: "spring", stiffness: 300 }}>
+              <ArrowLeft className="w-4 h-4" />
+            </motion.div>            <span>Go back</span>
           </Link>
-        </div>
+        </motion.div>
 
-        <div className="mb-6">
+        <motion.div 
+          className="mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
           <p className="text-gray-400">
             {new Date(post.published).toLocaleDateString()}
           </p>
-          <h1 className="text-3xl md:text-5xl font-bold mt-2 mb-8">
+          <motion.h1 
+            className="text-3xl md:text-5xl font-bold mt-2 mb-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
             {post.title}
-          </h1>
-        </div>
+          </motion.h1>
+        </motion.div>
 
         {/* Optional: ambil gambar pertama dari content */}
-        <div className="relative h-[300px] md:h-[400px] mb-12 rounded-2xl overflow-hidden">
-          <img
+        <motion.div
+          className="relative h-[300px] md:h-[400px] mb-12 rounded-2xl overflow-hidden group"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          whileHover={{ scale: 1.02 }}
+        >
+          <motion.img
             src={extractFirstImage(post.content) ?? "/placeholder.svg"}
             alt={post.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1 }}
           />
-        </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </motion.div>
 
-        <div
+        <motion.div
           className="prose prose-invert prose-img:mx-auto 
              prose-video:mx-auto 
              prose-iframe:mx-auto 
@@ -113,8 +161,11 @@ export default function BlogPostPage() {
              prose-img:object-cover
              max-w-none"
           dangerouslySetInnerHTML={{ __html: post.content }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
         />
-      </div>
+      </motion.div>
     </div>
   )
 }
