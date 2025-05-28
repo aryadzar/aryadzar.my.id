@@ -10,7 +10,13 @@ export default defineConfig({
     },
   },
   build: {
+    minify: "terser",
     sourcemap: false,
+    terserOptions:{
+      format:{
+        comments: false
+      }
+    },
     rollupOptions: {
       onwarn(warning, warn) {
         // Abaikan warning tertentu
