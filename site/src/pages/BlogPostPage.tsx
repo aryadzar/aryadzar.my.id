@@ -8,6 +8,8 @@ import { extractFirstImage } from "@/utils/thumbnail-ext"
 import MetaTags from "@/utils/MetaTags"
 import { extractIdFromSlug } from "@/utils/slug-helper"
 import { motion } from "framer-motion"
+import ModernTableOfContents from "@/components/table-of-contents"
+import { addIdsToHeadings, extractHeadingsFromHtml } from "@/utils/header-helper"
 
 type BloggerPost = {
   id: string
@@ -15,16 +17,16 @@ type BloggerPost = {
   content: string
   published: string
 }
-
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
   const [post, setPost] = useState<BloggerPost | null>(null)
   const [notFound, setNotFound] = useState(false)
+  const [headings, setHeadings] = useState<{ id: string; text: string; level: number }[]>([])
 
   useEffect(() => {
     if (!slug) return
 
-    const id = extractIdFromSlug(slug ?? '')
+    const id = extractIdFromSlug(slug ?? "")
     async function fetchPost() {
       try {
         const res = await api.get(`/posts/${id}`, {
@@ -32,7 +34,14 @@ export default function BlogPostPage() {
             key: import.meta.env.VITE_API_BLOG_KEY,
           },
         })
-        setPost(res.data)
+
+        const contentWithIds = addIdsToHeadings(res.data.content)
+        setHeadings(extractHeadingsFromHtml(contentWithIds))
+
+        setPost({
+          ...res.data,
+          content: contentWithIds,
+        })
       } catch (err) {
         console.error("Post not found:", err)
         setNotFound(true)
@@ -43,21 +52,18 @@ export default function BlogPostPage() {
   }, [slug])
 
   if (notFound) return <NotFoundPage status={404} />
-  if (!post){
-    return <Loading 
-    // done={false}
-    />
-  } 
+  if (!post) return <Loading />
 
   return (
     <div className="min-h-screen bg-[#0a0a18] text-white relative overflow-hidden">
-      {/* Stars background */}
       <MetaTags
-          title={post.title}
-          description={post.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."}
-          image={ extractFirstImage(post.content) ?? undefined }
-          name={post.title}
+        title={post.title}
+        description={post.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."}
+        image={extractFirstImage(post.content) ?? undefined}
+        name={post.title}
       />
+
+      {/* Stars background */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(100)].map((_, i) => (
           <div
@@ -77,7 +83,8 @@ export default function BlogPostPage() {
       <motion.div
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%)",
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%)",
         }}
         animate={{
           backgroundPosition: ["0% 0%", "100% 100%"],
@@ -89,14 +96,15 @@ export default function BlogPostPage() {
         }}
       />
 
-      <motion.div 
+      {/* Table of Contents */}
+      <ModernTableOfContents headings={headings} />
+      <motion.div
         className="relative z-10 max-w-4xl mx-auto px-6 py-12"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-      
       >
-        <motion.div 
+        <motion.div
           className="mb-8"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -108,20 +116,19 @@ export default function BlogPostPage() {
           >
             <motion.div whileHover={{ x: -5 }} transition={{ type: "spring", stiffness: 300 }}>
               <ArrowLeft className="w-4 h-4" />
-            </motion.div>            <span>Go back</span>
+            </motion.div>
+            <span>Go back</span>
           </Link>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <p className="text-gray-400">
-            {new Date(post.published).toLocaleDateString()}
-          </p>
-          <motion.h1 
+          <p className="text-gray-400">{new Date(post.published).toLocaleDateString()}</p>
+          <motion.h1
             className="text-3xl md:text-5xl font-bold mt-2 mb-8"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -131,7 +138,6 @@ export default function BlogPostPage() {
           </motion.h1>
         </motion.div>
 
-        {/* Optional: ambil gambar pertama dari content */}
         <motion.div
           className="relative h-[300px] md:h-[400px] mb-12 rounded-2xl overflow-hidden group"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -151,15 +157,10 @@ export default function BlogPostPage() {
         </motion.div>
 
         <motion.div
-          className="prose prose-invert prose-img:mx-auto 
-             prose-video:mx-auto 
-             prose-iframe:mx-auto 
-             prose-img:rounded-xl 
-             prose-video:rounded-xl
-             prose-iframe:rounded-xl
-             prose-a:hover:text-gray-500
-             prose-img:object-cover
-             max-w-none"
+          className="prose prose-invert max-w-none 
+            prose-img:mx-auto prose-video:mx-auto prose-iframe:mx-auto
+            prose-img:rounded-xl prose-video:rounded-xl prose-iframe:rounded-xl
+            prose-a:hover:text-gray-500 prose-img:object-cover"
           dangerouslySetInnerHTML={{ __html: post.content }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
