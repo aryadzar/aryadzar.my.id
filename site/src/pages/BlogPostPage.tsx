@@ -23,42 +23,45 @@ export default function BlogPostPage() {
   const [notFound, setNotFound] = useState(false)
   const [headings, setHeadings] = useState<{ id: string; text: string; level: number }[]>([])
 
-  useEffect(() => {
-    if (!slug) return
-    const hash = window.location.hash;
-    if (hash) {
-      const id = hash.replace("#", "");
-      const element = document.getElementById(id);
-      if (element) {
+useEffect(() => {
+  if (!slug) return;
+
+  const id = extractIdFromSlug(slug);
+  async function fetchPost() {
+    try {
+      const res = await api.get(`/posts/${id}`, {
+        params: {
+          key: import.meta.env.VITE_API_BLOG_KEY,
+        },
+      });
+
+      const contentWithIds = addIdsToHeadings(res.data.content);
+      setHeadings(extractHeadingsFromHtml(contentWithIds));
+
+      setPost({
+        ...res.data,
+        content: contentWithIds,
+      });
+
+      // Scroll ke #id jika ada hash setelah konten dimuat
+      const hash = window.location.hash;
+      if (hash) {
+        const headingId = hash.slice(1);
         setTimeout(() => {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 100); // delay kecil untuk pastikan DOM sudah siap
+          const element = document.getElementById(headingId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 100);
       }
+    } catch (err) {
+      console.error("Post not found:", err);
+      setNotFound(true);
     }
-    const id = extractIdFromSlug(slug ?? "")
-    async function fetchPost() {
-      try {
-        const res = await api.get(`/posts/${id}`, {
-          params: {
-            key: import.meta.env.VITE_API_BLOG_KEY,
-          },
-        })
+  }
 
-        const contentWithIds = addIdsToHeadings(res.data.content)
-        setHeadings(extractHeadingsFromHtml(contentWithIds))
-
-        setPost({
-          ...res.data,
-          content: contentWithIds,
-        })
-      } catch (err) {
-        console.error("Post not found:", err)
-        setNotFound(true)
-      }
-    }
-
-    fetchPost()
-  }, [slug, post])
+  fetchPost();
+}, [slug]); // ✅ hanya slug
 
   if (notFound) return <NotFoundPage status={404} />
   if (!post) return <Loading />
