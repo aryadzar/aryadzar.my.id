@@ -25,7 +25,16 @@ export default function BlogPostPage() {
 
   useEffect(() => {
     if (!slug) return
-
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.replace("#", "");
+      const element = document.getElementById(id);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100); // delay kecil untuk pastikan DOM sudah siap
+      }
+    }
     const id = extractIdFromSlug(slug ?? "")
     async function fetchPost() {
       try {
@@ -49,7 +58,7 @@ export default function BlogPostPage() {
     }
 
     fetchPost()
-  }, [slug])
+  }, [slug, post])
 
   if (notFound) return <NotFoundPage status={404} />
   if (!post) return <Loading />

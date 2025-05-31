@@ -46,6 +46,8 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
         behavior: "smooth",
         block: "start",
       })
+      window.history.pushState(null, "", `#${id}`)
+
     }
     setIsOpen(false)
   }
