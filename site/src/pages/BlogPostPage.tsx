@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { ArrowLeft } from "lucide-react"
 import { api } from "@/utils/api"  // Axios instance kamu
-import NotFoundPage from "./ErrorPage" 
+import NotFoundPage from "./ErrorPage"
 import Loading from "@/components/loading"
 import { extractFirstImage } from "@/utils/thumbnail-ext"
 import MetaTags from "@/utils/MetaTags"
@@ -10,6 +10,7 @@ import { extractIdFromSlug } from "@/utils/slug-helper"
 import { motion } from "framer-motion"
 import ModernTableOfContents from "@/components/table-of-contents"
 import { addIdsToHeadings, extractHeadingsFromHtml } from "@/utils/header-helper"
+import { TracingBeam } from "@/components/ui/tracing-beam"
 
 type BloggerPost = {
   id: string
@@ -23,45 +24,45 @@ export default function BlogPostPage() {
   const [notFound, setNotFound] = useState(false)
   const [headings, setHeadings] = useState<{ id: string; text: string; level: number }[]>([])
 
-useEffect(() => {
-  if (!slug) return;
+  useEffect(() => {
+    if (!slug) return;
 
-  const id = extractIdFromSlug(slug);
-  async function fetchPost() {
-    try {
-      const res = await api.get(`/posts/${id}`, {
-        params: {
-          key: import.meta.env.VITE_API_BLOG_KEY,
-        },
-      });
+    const id = extractIdFromSlug(slug);
+    async function fetchPost() {
+      try {
+        const res = await api.get(`/posts/${id}`, {
+          params: {
+            key: import.meta.env.VITE_API_BLOG_KEY,
+          },
+        });
 
-      const contentWithIds = addIdsToHeadings(res.data.content);
-      setHeadings(extractHeadingsFromHtml(contentWithIds));
+        const contentWithIds = addIdsToHeadings(res.data.content);
+        setHeadings(extractHeadingsFromHtml(contentWithIds));
 
-      setPost({
-        ...res.data,
-        content: contentWithIds,
-      });
+        setPost({
+          ...res.data,
+          content: contentWithIds,
+        });
 
-      // Scroll ke #id jika ada hash setelah konten dimuat
-      const hash = window.location.hash;
-      if (hash) {
-        const headingId = hash.slice(1);
-        setTimeout(() => {
-          const element = document.getElementById(headingId);
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 100);
+        // Scroll ke #id jika ada hash setelah konten dimuat
+        const hash = window.location.hash;
+        if (hash) {
+          const headingId = hash.slice(1);
+          setTimeout(() => {
+            const element = document.getElementById(headingId);
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }, 100);
+        }
+      } catch (err) {
+        console.error("Post not found:", err);
+        setNotFound(true);
       }
-    } catch (err) {
-      console.error("Post not found:", err);
-      setNotFound(true);
     }
-  }
 
-  fetchPost();
-}, [slug]); // ✅ hanya slug
+    fetchPost();
+  }, [slug]); // ✅ hanya slug
 
   if (notFound) return <NotFoundPage status={404} />
   if (!post) return <Loading />
@@ -132,52 +133,53 @@ useEffect(() => {
             <span>Go back</span>
           </Link>
         </motion.div>
+        <TracingBeam>
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <p className="text-gray-400">{new Date(post.published).toLocaleDateString()}</p>
+            <motion.h1
+              className="text-3xl md:text-5xl font-bold mt-2 mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              {post.title}
+            </motion.h1>
+          </motion.div>
 
-        <motion.div
-          className="mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <p className="text-gray-400">{new Date(post.published).toLocaleDateString()}</p>
-          <motion.h1
-            className="text-3xl md:text-5xl font-bold mt-2 mb-8"
+          <motion.div
+            className="relative h-[300px] md:h-[400px] mb-12 rounded-2xl overflow-hidden group"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <motion.img
+              src={extractFirstImage(post.content) ?? "/placeholder.svg"}
+              alt={post.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1 }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </motion.div>
+
+          <motion.div
+            className="prose prose-invert max-w-none prose-p:mx-auto
+              prose-img:mx-auto prose-video:mx-auto prose-iframe:mx-auto
+              prose-img:rounded-xl prose-video:rounded-xl prose-iframe:rounded-xl
+              prose-a:hover:text-gray-500 prose-img:object-cover"
+            dangerouslySetInnerHTML={{ __html: post.content }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            {post.title}
-          </motion.h1>
-        </motion.div>
-
-        <motion.div
-          className="relative h-[300px] md:h-[400px] mb-12 rounded-2xl overflow-hidden group"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          whileHover={{ scale: 1.02 }}
-        >
-          <motion.img
-            src={extractFirstImage(post.content) ?? "/placeholder.svg"}
-            alt={post.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </motion.div>
-
-        <motion.div
-          className="prose prose-invert max-w-none 
-            prose-img:mx-auto prose-video:mx-auto prose-iframe:mx-auto
-            prose-img:rounded-xl prose-video:rounded-xl prose-iframe:rounded-xl
-            prose-a:hover:text-gray-500 prose-img:object-cover"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-        />
+        </TracingBeam>
       </motion.div>
     </div>
   )
