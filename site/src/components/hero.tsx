@@ -81,7 +81,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >       
-          <FlipWords words={name}/>
+          <FlipWords className=" text-white" words={name}/>
         </motion.h1>
         <motion.p
           className="text-xl md:text-2xl text-muted-foreground mb-8"
@@ -89,7 +89,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <FlipWords words={words}/> Developer
+          <FlipWords className="text-white" words={words}/> Developer
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

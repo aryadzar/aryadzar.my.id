@@ -11,6 +11,7 @@ import { Toaster } from 'react-hot-toast'
 import { Analytics } from '@vercel/analytics/react';
 import Footer from "./components/footer"
 import ScrollToTop from "./utils/scrollToTop"
+import PhotoGalleryView from "./pages/PhotoGallery"
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/gallery" element={<PhotoGalleryView />} />
           <Route path="*" element={<NotFoundPage status={404} />} />
         </Routes>
         <Footer />
