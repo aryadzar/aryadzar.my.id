@@ -12,7 +12,7 @@ import { Analytics } from '@vercel/analytics/react';
 import Footer from "./components/footer"
 import ScrollToTop from "./utils/scrollToTop"
 import PhotoGalleryView from "./pages/PhotoGallery"
-
+import 'highlight.js/styles/github-dark.css';
 function App() {
   return (
     <>

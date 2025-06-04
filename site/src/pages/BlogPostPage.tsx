@@ -11,6 +11,7 @@ import { motion } from "framer-motion"
 import ModernTableOfContents from "@/components/table-of-contents"
 import { addIdsToHeadings, extractHeadingsFromHtml } from "@/utils/header-helper"
 import { TracingBeam } from "@/components/ui/tracing-beam"
+import hljs from 'highlight.js';
 
 type BloggerPost = {
   id: string
@@ -63,6 +64,33 @@ export default function BlogPostPage() {
 
     fetchPost();
   }, [slug]); // ✅ hanya slug
+
+  useEffect(() => {
+    if (!post?.content) return;
+
+    const container = document.querySelector('.post-content');
+    if (!container) return;
+
+    container.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightElement(block as HTMLElement);
+
+      const pre = block.parentElement;
+      if (!pre || pre.querySelector('.copy-button')) return;
+
+      const button = document.createElement('button');
+      button.textContent = 'Copy';
+      button.className =
+        'copy-button absolute top-2 right-2 px-2 py-1 text-xs bg-gray-800 text-white rounded z-10';
+      button.onclick = () => {
+        navigator.clipboard.writeText((block as HTMLElement).innerText);
+        button.textContent = 'Copied!';
+        setTimeout(() => (button.textContent = 'Copy'), 1500);
+      };
+
+      pre.style.position = 'relative';
+      pre.appendChild(button);
+    });
+  }, [post?.content]);
 
   if (notFound) return <NotFoundPage status={404} />
   if (!post) return <Loading />
@@ -170,7 +198,7 @@ export default function BlogPostPage() {
           </motion.div>
 
           <motion.div
-            className="prose prose-invert max-w-none prose-p:mx-auto
+            className="post-content prose prose-invert max-w-none prose-p:mx-auto
               prose-img:mx-auto prose-video:mx-auto prose-iframe:mx-auto
               prose-img:rounded-xl prose-video:rounded-xl prose-iframe:rounded-xl
               prose-a:hover:text-gray-500 prose-img:object-cover"
