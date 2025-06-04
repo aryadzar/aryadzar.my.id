@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { Menu, X } from "lucide-react"
+import { Menu, Pause, Play, X } from "lucide-react"
 import { motion } from "framer-motion"
 import NavItem from "./NavItem"
 
@@ -17,12 +17,56 @@ const navItems = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement>(new Audio("https://res.cloudinary.com/din8s15ri/video/upload/v1749043736/%E7%9E%AC%E3%81%8D_Instrumental_rd5qy7.mp3"))
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    const handleEnded = () => setIsPlaying(false)
+    audio.addEventListener("ended", handleEnded)
+    return () => audio.removeEventListener("ended", handleEnded)
+  }, [])
+
+  useEffect(() => {
+    const handleFirstClick = () => {
+      const audio = audioRef.current
+      if (!audio) return
+
+      audio.preload = "auto"
+      audio.volume = 0.5
+
+      if (audio.paused) {
+        audio.play().then(() => {
+          setIsPlaying(true)
+        }).catch(error => {
+          console.warn("Autoplay blocked:", error)
+        })
+      }
+
+      // Listener hanya sekali
+      document.removeEventListener("click", handleFirstClick)
+    }
+
+    document.addEventListener("click", handleFirstClick, { once: true })
+
+    return () => {
+      document.removeEventListener("click", handleFirstClick)
+    }
+  }, [])
+
+  const togglePlay = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    isPlaying ? audio.pause() : audio.play()
+    setIsPlaying(!isPlaying)
+  }
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-background/80 backdrop-blur-md" : ""}`}>
@@ -33,29 +77,46 @@ export default function Navbar() {
               <img src="/icons/logo.svg" alt="Logo" />
             </RouterLink>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {navItems.map((item) => (
-                <NavItem
-                  key={item.name}
-                  {...item}
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                />
-              ))}
-            </div>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-4">
+            {navItems.map((item) => (
+              <NavItem
+                key={item.name}
+                {...item}
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              />
+            ))}
+            <button
+              onClick={togglePlay}
+              className="p-2 rounded-full bg-primary/20 hover:bg-primary/30 transition-colors"
+              aria-label={isPlaying ? "Pause music" : "Play music"}
+            >
+              {isPlaying ? <Pause className="h-5 w-5 text-white" /> : <Play className="h-5 w-5 text-white" />}
+            </button>
           </div>
-          <div className="md:hidden">
+
+          {/* Mobile Menu Toggle + Audio Button */}
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={togglePlay}
+              className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+              aria-label={isPlaying ? "Pause music" : "Play music"}
+            >
+              {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+            </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              aria-label="Toggle menu"
             >
-              {isOpen ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Nav Items */}
       <motion.div
         className={`md:hidden transition-all duration-300 ${isOpen ? "pointer-events-auto" : "pointer-events-none overflow-hidden"}`}
         initial="closed"

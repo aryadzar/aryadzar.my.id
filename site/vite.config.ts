@@ -1,7 +1,7 @@
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import path from "path"
-import mdx from '@mdx-js/rollup'; 
+import mdx from '@mdx-js/rollup';
 export default defineConfig({
   plugins: [react(), mdx()],
   resolve: {
@@ -12,8 +12,8 @@ export default defineConfig({
   build: {
     minify: "terser",
     sourcemap: false,
-    terserOptions:{
-      format:{
+    terserOptions: {
+      format: {
         comments: false
       }
     },
@@ -34,7 +34,23 @@ export default defineConfig({
  * @license aryadzar.my.id
  * (c) 2025 M Arya Dzaky Arenanto
  * This build is licensed under MIT.
- */`
+ */`,
+        chunkFileNames: 'assets/[hash].js',
+
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom')) return 'react-dom';
+            if (id.includes('react-router-dom')) return 'react-router';
+            if (id.includes('react')) return 'react'; // ini akan menangkap 'react' tanpa 'dom' atau 'router'
+            if (id.includes('redux')) return 'redux';
+            if (id.includes('zustand')) return 'zustand';
+            if (id.includes('axios')) return 'axios';
+            if (id.includes('lodash')) return 'lodash';
+            if (id.includes('dayjs')) return 'dayjs';
+            if (id.includes('classnames')) return 'classnames';
+            if (id.includes('react-dom.production')) return 'react-dom.production';
+          }
+        }
       }
     },
   },
