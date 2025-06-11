@@ -29,13 +29,13 @@ export default function Hero() {
       <div className="absolute inset-0 w-full h-full">
         <video autoPlay loop muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
           <source
-            src="video/video_bg_1.mp4"
+            src="video/video_bg_2.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
         </video>
         {/* Dark overlay with opacity */}
-        <div className="absolute inset-0 bg-background/90" />
+        <div className="absolute inset-0 bg-background/50" />
       </div>
 
       {/* Lamp effect */}
