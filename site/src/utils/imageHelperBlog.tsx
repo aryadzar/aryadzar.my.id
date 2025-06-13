@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from "react-dom";
 import { X } from 'lucide-react';
-import Loading from '@/components/loading';
+// import Loading from '@/components/loading';
 
 const ZoomImage = ({ thumbSrc, fullSrc }: { thumbSrc: string; fullSrc: string }) => {
   const [open, setOpen] = useState(false);
