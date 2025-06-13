@@ -35,7 +35,7 @@ export default defineConfig({
  * (c) 2025 M Arya Dzaky Arenanto
  * This build is licensed under MIT.
  */`,
-        chunkFileNames: 'assets/[hash].js',
+        chunkFileNames: 'assets/vendor.[hash].js',
 
         manualChunks(id) {
           if (id.includes('node_modules')) {

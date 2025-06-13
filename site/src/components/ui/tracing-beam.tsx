@@ -25,9 +25,31 @@ export const TracingBeam = ({
    const [svgHeight, setSvgHeight] = useState(0);
 
    useEffect(() => {
+      const measure = () => {
+         if (contentRef.current) {
+            setSvgHeight(contentRef.current.offsetHeight);
+         }
+      };
+
+      measure();
+
+      // Tambahkan pengukuran ulang untuk gambar yang load belakangan
+      const observer = new MutationObserver(measure);
       if (contentRef.current) {
-         setSvgHeight(contentRef.current.offsetHeight);
+         observer.observe(contentRef.current, {
+            childList: true,
+            subtree: true,
+         });
       }
+
+      window.addEventListener('load', measure);
+      window.addEventListener('resize', measure);
+
+      return () => {
+         window.removeEventListener('load', measure);
+         window.removeEventListener('resize', measure);
+         observer.disconnect();
+      };
    }, []);
 
    const y1 = useSpring(

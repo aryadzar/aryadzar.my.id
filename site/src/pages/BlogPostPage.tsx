@@ -12,6 +12,8 @@ import ModernTableOfContents from "@/components/table-of-contents"
 import { addIdsToHeadings, extractHeadingsFromHtml } from "@/utils/header-helper"
 import { TracingBeam } from "@/components/ui/tracing-beam"
 import hljs from 'highlight.js';
+import preprocessHtmlWithZoomWrapper, { renderWithZoom } from "@/utils/imageHelperBlog"
+
 
 type BloggerPost = {
   id: string
@@ -19,6 +21,8 @@ type BloggerPost = {
   content: string
   published: string
 }
+
+
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
   const [post, setPost] = useState<BloggerPost | null>(null)
@@ -36,8 +40,9 @@ export default function BlogPostPage() {
             key: import.meta.env.VITE_API_BLOG_KEY,
           },
         });
-
-        const contentWithIds = addIdsToHeadings(res.data.content);
+        const contentWithZoomWrapper = preprocessHtmlWithZoomWrapper(res.data.content);
+        // console.log(contentWithZoomWrapper);
+        const contentWithIds = addIdsToHeadings(contentWithZoomWrapper);
         setHeadings(extractHeadingsFromHtml(contentWithIds));
 
         setPost({
@@ -198,15 +203,18 @@ export default function BlogPostPage() {
           </motion.div>
 
           <motion.div
-            className="post-content prose prose-invert max-w-none prose-p:mx-auto
+            className="post-content prose prose-invert max-w-none prose-p:mx-auto 
+             prose-img:object-contain
               prose-img:mx-auto prose-video:mx-auto prose-iframe:mx-auto
               prose-img:rounded-xl prose-video:rounded-xl prose-iframe:rounded-xl
-              prose-a:hover:text-gray-500 prose-img:object-cover"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+              prose-a:hover:text-gray-500 "
+            // dangerouslySetInnerHTML={{ __html: post.content }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
-          />
+          >
+            {renderWithZoom(post.content)}
+          </motion.div>
         </TracingBeam>
       </motion.div>
     </div>
