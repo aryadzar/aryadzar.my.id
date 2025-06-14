@@ -3,9 +3,11 @@ import react from "@vitejs/plugin-react"
 import path from "path"
 import mdx from '@mdx-js/rollup';
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { splitVendorChunkPlugin } from 'vite';
 
 export default defineConfig({
-  plugins: [react(), mdx(), sentryVitePlugin({
+  plugins: [react(), mdx(),    splitVendorChunkPlugin()
+, sentryVitePlugin({
     org: "aryadzar",
     project: "new-portofolio",
     authToken: `${process.env.SENTRY_AUTH_TOKEN}`,
@@ -46,20 +48,20 @@ export default defineConfig({
  */`,
         chunkFileNames: 'assets/vendor.[hash].js',
 
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react-dom')) return 'react-dom';
-            if (id.includes('react-router-dom')) return 'react-router';
-            if (id.includes('react')) return 'react'; // ini akan menangkap 'react' tanpa 'dom' atau 'router'
-            if (id.includes('redux')) return 'redux';
-            if (id.includes('zustand')) return 'zustand';
-            if (id.includes('axios')) return 'axios';
-            if (id.includes('lodash')) return 'lodash';
-            if (id.includes('dayjs')) return 'dayjs';
-            if (id.includes('classnames')) return 'classnames';
-            if (id.includes('react-dom.production')) return 'react-dom.production';
-          }
-        }
+        // manualChunks(id) {
+        //   if (id.includes('node_modules')) {
+        //     if (id.includes('react-dom')) return 'react-dom';
+        //     if (id.includes('react-router-dom')) return 'react-router';
+        //     if (id.includes('react')) return 'react'; // ini akan menangkap 'react' tanpa 'dom' atau 'router'
+        //     if (id.includes('redux')) return 'redux';
+        //     if (id.includes('zustand')) return 'zustand';
+        //     if (id.includes('axios')) return 'axios';
+        //     if (id.includes('lodash')) return 'lodash';
+        //     if (id.includes('dayjs')) return 'dayjs';
+        //     if (id.includes('classnames')) return 'classnames';
+        //     if (id.includes('react-dom.production')) return 'react-dom.production';
+        //   }
+        // }
       }
     },
   },
