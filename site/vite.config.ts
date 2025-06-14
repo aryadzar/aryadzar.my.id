@@ -6,15 +6,24 @@ import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { splitVendorChunkPlugin } from 'vite';
 
 export default defineConfig({
-  plugins: [react(), mdx(),    splitVendorChunkPlugin()
-, sentryVitePlugin({
-    org: "aryadzar",
-    project: "new-portofolio",
-    authToken: `${process.env.SENTRY_AUTH_TOKEN}`,
-  }), sentryVitePlugin({
-    org: "aryadzar",
-    project: "new-portofolio"
-  })],
+  plugins: [react(), mdx(), splitVendorChunkPlugin()
+    , sentryVitePlugin({
+      org: "aryadzar",
+      project: "new-portofolio",
+      authToken: `${process.env.SENTRY_AUTH_TOKEN}`,
+    }), sentryVitePlugin({
+      org: "aryadzar",
+      project: "new-portofolio"
+    })],
+  server: {
+    proxy: {
+      '/api/now-playing': {
+        target: 'https://now-play.vercel.app',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/now-playing/, '/api/generate?uid=d7db6b1a-c866-430d-872f-f6236a927ad2'),
+      },
+    }
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
