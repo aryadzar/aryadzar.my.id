@@ -63,7 +63,7 @@ interface SpotifyTrack {
   previewUrl?: string
   externalUrl?: string
 }
-const POLLING_INTERVAL = 5000 // 5 detik
+const POLLING_INTERVAL = 10000 // 5 detik
 
 function SpotifyNowPlaying() {
   const [track, setTrack] = useState<SpotifyTrack | null>(null)
