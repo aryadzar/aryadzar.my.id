@@ -3,7 +3,7 @@
 import type React from "react"
 import { motion } from "framer-motion"
 import { Github, Twitter, Linkedin, Instagram, ArrowUp, Mail, MapPin } from "lucide-react"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import axios from "axios"
 
 interface SocialLinkProps {
@@ -63,37 +63,27 @@ interface SpotifyTrack {
   previewUrl?: string
   externalUrl?: string
 }
-const POLLING_INTERVAL = 10000 // 5 detik
 
 function SpotifyNowPlaying() {
   const [track, setTrack] = useState<SpotifyTrack | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const previousTrackRef = useRef<string | null>(null)
 
   useEffect(() => {
-    let intervalId: number
-
     const fetchTrack = async () => {
       try {
-        const response = await axios.get(import.meta.env.VITE_BASE_URL_API_SPOTIFY_NOW_PLAYING)
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL_API_SPOTIFY_NOW_PLAYING}`)
         const data = response.data
 
-        // Cek apakah lagu berubah
-        const currentTitle = data.title
-        if (previousTrackRef.current !== currentTitle) {
-          previousTrackRef.current = currentTitle
-
-          const newTrack: SpotifyTrack = {
-            name: data.title,
-            artist: data.artist,
-            album: data.album,
-            image: data.albumImageUrl,
-            isPlaying: data.isPlaying,
-            externalUrl: data.songUrl,
-          }
-
-          setTrack(newTrack)
+        const newTrack: SpotifyTrack = {
+          name: data.title,
+          artist: data.artist,
+          album: data.album,
+          image: data.albumImageUrl,
+          isPlaying: data.isPlaying,
+          externalUrl: data.songUrl,
         }
+
+        setTrack(newTrack)
       } catch (error) {
         console.error("Gagal mengambil data Spotify:", error)
       } finally {
@@ -101,14 +91,7 @@ function SpotifyNowPlaying() {
       }
     }
 
-    // Jalankan langsung saat mount
     fetchTrack()
-
-    // Setup interval polling
-    intervalId = setInterval(fetchTrack, POLLING_INTERVAL)
-
-    // Cleanup saat unmount
-    return () => clearInterval(intervalId)
   }, [])
 
   if (isLoading) {
