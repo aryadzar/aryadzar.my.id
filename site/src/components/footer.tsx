@@ -3,7 +3,7 @@
 import type React from "react"
 import { motion } from "framer-motion"
 import { Github, Twitter, Linkedin, Instagram, ArrowUp, Mail, MapPin } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import axios from "axios"
 
 interface SocialLinkProps {
@@ -63,60 +63,52 @@ interface SpotifyTrack {
   previewUrl?: string
   externalUrl?: string
 }
+const POLLING_INTERVAL = 5000 // 5 detik
 
 function SpotifyNowPlaying() {
   const [track, setTrack] = useState<SpotifyTrack | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const previousTrackRef = useRef<string | null>(null)
 
-  // Mock data - replace with actual Spotify API call
   useEffect(() => {
-    // const mockTrack: SpotifyTrack = {
-    //   name: "Blinding Lights",
-    //   artist: "The Weeknd",
-    //   album: "After Hours",
-    //   image: "/placeholder.svg?height=64&width=64",
-    //   isPlaying: true,
-    //   externalUrl: "https://open.spotify.com/track/0VjIjW4GlULA4LGoDOLVKN",
-    // }
+    let intervalId: number
 
-    // setTimeout(() => {
-    //   setTrack(mockTrack)
-    //   setIsLoading(false)
-    // }, 1000)
-    const fetchTrackFromSVG = async () => {
-    try {
-      const response = await axios.get("/api/now-playing", { responseType: "text" });
+    const fetchTrack = async () => {
+      try {
+        const response = await axios.get(import.meta.env.VITE_BASE_URL_API_SPOTIFY_NOW_PLAYING)
+        const data = response.data
 
+        // Cek apakah lagu berubah
+        const currentTitle = data.title
+        if (previousTrackRef.current !== currentTitle) {
+          previousTrackRef.current = currentTitle
 
-      const svgText = response.data
+          const newTrack: SpotifyTrack = {
+            name: data.title,
+            artist: data.artist,
+            album: data.album,
+            image: data.albumImageUrl,
+            isPlaying: data.isPlaying,
+            externalUrl: data.songUrl,
+          }
 
-      const parser = new DOMParser()
-      const svgDoc = parser.parseFromString(svgText, "image/svg+xml")
-
-      const titleNode = svgDoc.querySelector(".title")
-      const artistNode = svgDoc.querySelector(".artist")
-      const imageNode = svgDoc.querySelector("image")
-
-      const base64 = imageNode?.getAttribute("xlink:href") ?? ""
-      const imgSrc = base64.startsWith("data:image") ? base64 : "/placeholder.svg"
-
-      const newTrack: SpotifyTrack = {
-        name: titleNode?.textContent?.trim() || "Unknown",
-        artist: artistNode?.textContent?.trim() || "Unknown",
-        album: "",
-        image: imgSrc,
-        isPlaying: true,
+          setTrack(newTrack)
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data Spotify:", error)
+      } finally {
+        setIsLoading(false)
       }
-
-      setTrack(newTrack)
-    } catch (error) {
-      console.error("Gagal mengambil/parsing SVG:", error)
-    } finally {
-      setIsLoading(false)
     }
-  }
 
-  fetchTrackFromSVG()
+    // Jalankan langsung saat mount
+    fetchTrack()
+
+    // Setup interval polling
+    intervalId = setInterval(fetchTrack, POLLING_INTERVAL)
+
+    // Cleanup saat unmount
+    return () => clearInterval(intervalId)
   }, [])
 
   if (isLoading) {
