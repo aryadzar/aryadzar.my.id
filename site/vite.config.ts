@@ -2,8 +2,17 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import path from "path"
 import mdx from '@mdx-js/rollup';
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
 export default defineConfig({
-  plugins: [react(), mdx()],
+  plugins: [react(), mdx(), sentryVitePlugin({
+    org: "aryadzar",
+    project: "new-portofolio",
+    authToken: `${process.env.SENTRY_AUTH_TOKEN}`,
+  }), sentryVitePlugin({
+    org: "aryadzar",
+    project: "new-portofolio"
+  })],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -11,7 +20,7 @@ export default defineConfig({
   },
   build: {
     minify: "terser",
-    sourcemap: false,
+    sourcemap: true,
     terserOptions: {
       format: {
         comments: false
@@ -55,4 +64,3 @@ export default defineConfig({
     },
   },
 })
-
