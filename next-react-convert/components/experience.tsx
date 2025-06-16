@@ -16,14 +16,16 @@ const experiences: Experience[] = [
     title: "Asistant Lecturer of Object Oriented Programming",
     company: "Web Solutions Co.",
     period: "Sept 2024 -  Dec 2024",
-    description: "Teaching a student with Java and create the application with java",
+    description:
+      "Teaching a student with Java and create the application with java",
     type: "work",
   },
   {
     title: "Asistant Lecturer of Structured Programming",
     company: "Web Solutions Co.",
     period: "Sept 2024 -  Dec 2024",
-    description: "Teaching a student with Java and how to write a clean code using C++",
+    description:
+      "Teaching a student with Java and how to write a clean code using C++",
     type: "work",
   },
   {
@@ -94,3 +96,4 @@ export default function Experience() {
     </section>
   )
 }
+

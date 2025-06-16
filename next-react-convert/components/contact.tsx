@@ -20,7 +20,7 @@ export default function Contact() {
     email: "",
     message: "",
   })
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormState({
@@ -30,39 +30,36 @@ export default function Contact() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
-    const toastId = toast.loading("Sending message...")
+    const toastId = toast.loading("Sending message...");
 
-    const formEncoded = new URLSearchParams()
-    formEncoded.append("name", formState.name)
-    formEncoded.append("email", formState.email)
-    formEncoded.append("message", formState.message)
+    const formEncoded = new URLSearchParams();
+    formEncoded.append("name", formState.name);
+    formEncoded.append("email", formState.email);
+    formEncoded.append("message", formState.message);
     try {
-      const res = await axios.post(
-        "https://script.google.com/macros/s/AKfycbxVy3_CM9AL-rCZx_qVjFI6b2Igy4cJrmfBizk2qjt9kGP1OsvIqH76289iCQJ25wb8/exec",
-        formEncoded,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+      const res = await axios.post("https://script.google.com/macros/s/AKfycbxVy3_CM9AL-rCZx_qVjFI6b2Igy4cJrmfBizk2qjt9kGP1OsvIqH76289iCQJ25wb8/exec", formEncoded, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-      )
-
+      });
+  
       if (res.status === 200) {
-        toast.success("Message sent successfully!", { id: toastId })
-        setFormState({ name: "", email: "", message: "" })
+        toast.success("Message sent successfully!", { id: toastId });
+        setFormState({ name: "", email: "", message: "" });
       } else {
-        alert("Oops! Something went wrong.")
+        alert("Oops! Something went wrong.");
       }
     } catch (error) {
-      console.error("Submission failed", error)
-      toast.error("Failed to send. Please try again later.", { id: toastId })
-    } finally {
-      setLoading(false)
+      console.error("Submission failed", error);
+      toast.error("Failed to send. Please try again later.", { id: toastId });
+    }finally{
+      setLoading(false);
+
     }
-  }
+  };
 
   return (
     <section id="contact" className="py-20 px-6 bg-black">
@@ -219,7 +216,11 @@ export default function Contact() {
                           stroke="currentColor"
                           strokeWidth="4"
                         ></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
                       </svg>
                       Sending...
                     </>
@@ -238,3 +239,4 @@ export default function Contact() {
     </section>
   )
 }
+

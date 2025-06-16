@@ -1,117 +1,128 @@
-"use client"
-
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import Link from "next/link"
+"use client";
+import { useEffect, useRef, useState } from "react"
+import  Link   from "next/link"
+import { Menu, Pause, Play, X } from "lucide-react"
 import { motion } from "framer-motion"
-import { Menu, X } from "lucide-react"
+import NavItem from "./NavItem"
 
 const navItems = [
-  { name: "Home", href: "home" },
-  { name: "About", href: "about" },
-  { name: "Projects", href: "projects" },
-  { name: "Experience", href: "experience" },
-  { name: "Blog", href: "blog" },
-  { name: "Contact", href: "contact" },
-]
+  { name: "Home", href: "/", type: "route" },
+  { name: "About", href: "about", type: "scroll" },
+  { name: "Projects", href: "projects", type: "scroll" },
+  { name: "Experience", href: "experience", type: "scroll" },
+  { name: "Blog", href: "/blog", type: "route" },
+  { name: "Contact", href: "contact", type: "scroll" },
+  { name: "Gallery", href: "/gallery", type: "route" },
+] as const
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isHomePage, setIsHomePage] = useState(true)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
+  useEffect(()=> {
+    audioRef.current = new Audio("https://res.cloudinary.com/din8s15ri/video/upload/v1749043736/%E7%9E%AC%E3%81%8D_Instrumental_rd5qy7.mp3") 
+  }, [])
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
-
-    // Check if we're on the home page
-    setIsHomePage(window.location.pathname === "/")
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (!isHomePage) return // Don't prevent default if not on home page
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    const handleEnded = () => setIsPlaying(false)
+    audio.addEventListener("ended", handleEnded)
+    return () => audio.removeEventListener("ended", handleEnded)
+  }, [])
 
-    e.preventDefault()
-    setIsOpen(false)
+  useEffect(() => {
+    const handleFirstClick = () => {
+      const audio = audioRef.current
+      if (!audio) return
 
-    setTimeout(() => {
-      const element = document.getElementById(href)
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" })
+      audio.preload = "auto"
+      audio.volume = 0.5
+
+      if (audio.paused) {
+        audio.play().then(() => {
+          setIsPlaying(true)
+        }).catch(error => {
+          console.warn("Autoplay blocked:", error)
+        })
       }
-    }, 300)
+
+      // Listener hanya sekali
+      document.removeEventListener("click", handleFirstClick)
+    }
+
+    document.addEventListener("click", handleFirstClick, { once: true })
+
+    return () => {
+      document.removeEventListener("click", handleFirstClick)
+    }
+  }, [])
+
+  const togglePlay = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    isPlaying ? audio.pause() : audio.play()
+    setIsPlaying(!isPlaying)
   }
 
   return (
-    <nav
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/80 backdrop-blur-md" : ""
-      }`}
-    >
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-background/80 backdrop-blur-md" : ""}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-2xl size-14 mt-5 font-bold text-primary">
-              <img src="/icons/logo.svg" alt="" />
+              <img src="/icons/logo.svg" alt="Logo" />
             </Link>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {navItems.map((item) =>
-                item.name === "Home" ? (
-                  <Link
-                    key={item.name}
-                    href="/"
-                    className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                ) : item.name === "Blog" || item.name === "Projects" ? (
-                  <Link
-                    key={item.name}
-                    href={`/${item.href}`}
-                    className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                ) : (
-                  <a
-                    key={item.name}
-                    href={`#${item.href}`}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    {item.name}
-                  </a>
-                ),
-              )}
-            </div>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-4">
+            {navItems.map((item) => (
+              <NavItem
+                key={item.name}
+                {...item}
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              />
+            ))}
+            <button
+              onClick={togglePlay}
+              className="p-2 rounded-full bg-primary/20 hover:bg-primary/30 transition-colors"
+              aria-label={isPlaying ? "Pause music" : "Play music"}
+            >
+              {isPlaying ? <Pause className="h-5 w-5 text-white" /> : <Play className="h-5 w-5 text-white" />}
+            </button>
           </div>
-          <div className="md:hidden">
+
+          {/* Mobile Menu Toggle + Audio Button */}
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={togglePlay}
+              className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+              aria-label={isPlaying ? "Pause music" : "Play music"}
+            >
+              {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+            </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              aria-label="Toggle menu"
             >
-              {isOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
-              )}
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Nav Items */}
       <motion.div
-        className={`md:hidden transition-all duration-300 ${
-          isOpen ? "pointer-events-auto" : "pointer-events-none overflow-hidden"
-        }`}
+        className={`md:hidden transition-all duration-300 ${isOpen ? "pointer-events-auto" : "pointer-events-none overflow-hidden"}`}
         initial="closed"
         animate={isOpen ? "open" : "closed"}
         variants={{
@@ -120,36 +131,14 @@ export default function Navbar() {
         }}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-background/80 backdrop-blur-md">
-          {navItems.map((item) =>
-            item.name === "Home" ? (
-              <Link
-                key={item.name}
-                href="/"
-                className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ) : item.name === "Blog" || item.name === "Projects" ? (
-              <Link
-                key={item.name}
-                href={`/${item.href}`}
-                className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ) : (
-              <a
-                key={item.name}
-                href={`#${item.href}`}
-                onClick={(e) => handleNavClick(e, item.href)}
-                className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-              >
-                {item.name}
-              </a>
-            ),
-          )}
+          {navItems.map((item) => (
+            <NavItem
+              key={item.name}
+              {...item}
+              onClick={() => setIsOpen(false)}
+              className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            />
+          ))}
         </div>
       </motion.div>
     </nav>

@@ -1,13 +1,39 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
+import { useRef, useState } from "react"
 
 export default function About() {
+  const containerRef = useRef(null)
+  const imageRef = useRef<HTMLDivElement>(null)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  })
+
+  const imageY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
+
+  const handleMouseMove = (e : React.MouseEvent) => {
+    if (!imageRef.current) return
+
+    const rect = imageRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+
+    setMousePosition({ x, y })
+  }
+
+  const handleMouseLeave = () => {
+    setMousePosition({ x: 0, y: 0 })
+  }
+
   return (
     <section id="about" className="py-20 px-6 bg-black">
       <div className="max-w-6xl mx-auto">
         <motion.h2
-          className="text-3xl md:text-4xl font-bold mb-16 text-center"
+          className="text-3xl md:text-4xl font-bold mb-16 text-center text-white"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -18,18 +44,90 @@ export default function About() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <motion.div
+            ref={containerRef}
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="relative z-0"
           >
-            <div className="relative h-[400px] w-full rounded-2xl overflow-hidden">
-              <img src="/foto_profile.jpg" alt="John Doe" className="w-full h-full object-cover" />
-            </div>
+            {/* 3D Photo Card Container */}
+            <motion.div
+              ref={imageRef}
+              className="relative h-[400px] w-full rounded-2xl overflow-hidden cursor-pointer"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{
+                perspective: "1200px",
+                transformStyle: "preserve-3d",
+              }}
+            >
+              {/* 3D Card Inner */}
+              <motion.div
+                className="w-full h-full relative"
+                style={{
+                  rotateY: mousePosition.x * 20, // More pronounced X rotation
+                  rotateX: mousePosition.y * -20, // More pronounced Y rotation
+                  transformStyle: "preserve-3d",
+                  transition: "transform 0.1s ease-out",
+                }}
+                whileHover={{
+                  boxShadow: "0 30px 60px rgba(0,0,0,0.4)",
+                  transition: { duration: 0.3 },
+                }}
+              >
+                {/* Image Container */}
+                <motion.div
+                  className="absolute inset-0 h-[120%] w-full"
+                  style={{
+                    y: imageY,
+                    transformStyle: "preserve-3d",
+                    transform: "translateZ(0px)",
+                  }}
+                >
+                  <img
+                    src="/foto_profile.jpg"
+                    alt="Arya Dzaky"
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+
+                {/* Shine Effect Overlay */}
+                <motion.div
+                  className="absolute inset-0 w-full h-full"
+                  style={{
+                    background: `linear-gradient(
+                      ${105 + mousePosition.x * 30}deg, 
+                      rgba(255, 255, 255, 0) 0%, 
+                      rgba(255, 255, 255, ${0.15 + mousePosition.y * 0.1}) 40%, 
+                      rgba(255, 255, 255, 0) 60%
+                    )`,
+                    transform: "translateZ(1px)",
+                    pointerEvents: "none",
+                  }}
+                />
+
+                {/* Border Frame */}
+                <motion.div
+                  className="absolute inset-0 border-2 border-white/10 rounded-2xl"
+                  style={{
+                    transform: "translateZ(2px)",
+                    boxShadow: "inset 0 0 20px rgba(124, 58, 237, 0.3)",
+                  }}
+                />
+              </motion.div>
+            </motion.div>
 
             {/* Box ungu di belakang gambar */}
-            <div className="absolute -bottom-9 -right-9 h-40 w-40 bg-violet-600 rounded-2xl -z-10" />
+            <motion.div
+              className="absolute -bottom-9 -right-9 h-40 w-40 bg-violet-600 rounded-2xl -z-10"
+              animate={{
+                rotate: mousePosition.x * 8,
+                x: mousePosition.x * 15,
+                y: mousePosition.y * 15,
+              }}
+              transition={{ type: "spring", stiffness: 150, damping: 15 }}
+            />
           </motion.div>
 
           <motion.div

@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { Toaster } from "react-hot-toast"
 import Navbar from "@/components/navbar"
-import Footer from "@/src/components/footer"
+import Footer from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Arya Dzaky's Portfolio",

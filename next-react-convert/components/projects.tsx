@@ -137,7 +137,6 @@ function ProjectCard({ project, index, className = "" }: ProjectCardProps) {
             href={project.demo}
             target="_blank"
             className="flex items-center gap-1 px-3 py-1 bg-violet-600/80 rounded-full hover:bg-violet-500 transition-colors"
-            rel="noreferrer"
           >
             <span className="text-sm">Live Demo</span>
             <ArrowUpRight className="w-4 h-4" />
@@ -200,3 +199,4 @@ export default function Projects() {
     </section>
   )
 }
+

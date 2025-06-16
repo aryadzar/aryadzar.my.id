@@ -115,7 +115,7 @@ export default function Skills() {
                   // "AWS",
                   // "Firebase",
                   "Laravel",
-                  "MySQL",
+                  "MySQL"
                 ].map((skill, index) => (
                   <motion.span
                     key={index}
@@ -136,3 +136,4 @@ export default function Skills() {
     </section>
   )
 }
+
