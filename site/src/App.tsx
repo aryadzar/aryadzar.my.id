@@ -13,6 +13,7 @@ import Footer from "./components/footer"
 import ScrollToTop from "./utils/scrollToTop"
 import PhotoGalleryView from "./pages/PhotoGallery"
 import 'highlight.js/styles/github-dark.css';
+import ProjectPostPage from "./pages/ProjectPostPage"
 function App() {
   return (
     <>
@@ -40,7 +41,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/project" element={<ProjectsPage />} />
+          <Route path="/project/:slug" element={<ProjectPostPage />} />
           <Route path="/gallery" element={<PhotoGalleryView />} />
           <Route path="*" element={<NotFoundPage status={404} />} />
         </Routes>

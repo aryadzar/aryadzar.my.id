@@ -10,7 +10,7 @@ import { extractIdFromSlug } from "@/utils/slug-helper"
 import { motion } from "framer-motion"
 import ModernTableOfContents from "@/components/table-of-contents"
 import { addIdsToHeadings, extractHeadingsFromHtml } from "@/utils/header-helper"
-import { TracingBeam } from "@/components/ui/tracing-beam"
+// import { TracingBeam } from "@/components/ui/tracing-beam"
 import hljs from 'highlight.js';
 import preprocessHtmlWithZoomWrapper, { renderWithZoom } from "@/utils/imageHelperBlog"
 
@@ -23,7 +23,7 @@ type BloggerPost = {
 }
 
 
-export default function BlogPostPage() {
+export default function ProjectPostPage() {
   const { slug } = useParams<{ slug: string }>()
   const [post, setPost] = useState<BloggerPost | null>(null)
   const [notFound, setNotFound] = useState(false)
@@ -40,6 +40,13 @@ export default function BlogPostPage() {
             key: import.meta.env.VITE_API_BLOG_KEY,
           },
         });
+
+        const labels = res.data.labels ?? []
+        console.log(labels);
+        if(!labels.includes("Project")){
+            setNotFound(true)
+            return
+        }
         const contentWithZoomWrapper = preprocessHtmlWithZoomWrapper(res.data.content);
         // console.log(contentWithZoomWrapper);
         const contentWithIds = addIdsToHeadings(contentWithZoomWrapper);
@@ -157,7 +164,7 @@ export default function BlogPostPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Link
-            to="/blog"
+            to="/project"
             className="inline-flex items-center mt-5 gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <motion.div whileHover={{ x: -5 }} transition={{ type: "spring", stiffness: 300 }}>

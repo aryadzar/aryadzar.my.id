@@ -1,94 +1,22 @@
-"use client"
-
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { ArrowUpRight, Github } from "lucide-react"
+import { ArrowRight, ArrowUpRight } from "lucide-react"
+import { api } from "@/utils/api"
+import { extractFirstImage } from "@/utils/thumbnail-ext"
+import { generateSlug } from "@/utils/slug-helper"
+import Loading from "./loading"
+import { Link } from "react-router-dom"
 // import { Link } from "react-router-dom"
 
 interface Project {
   id: number
   title: string
-  description: string
+  excerpt: string
   image: string
-  tags: string[]
-  github: string
-  demo: string
-  featured: boolean
+  labels: string[]
+  slug : string
 }
 
-const projects: Project[] = [
-  {
-    id: 1,
-    title: "Presensi UPT TIK",
-    description: "Pembuatan Aplikasi Presensi untuk khusus pegawai UPT TIK seperti EOS dsb ",
-    image: "/projects/presensi_upttik.png",
-    tags: ["Laravel", "Tailwind CSS", "Backend", "PostgreSQL", "PHP"],
-    github: "https://github.com/aryadzar/absensi-project",
-    demo: "https://presensi.unila.ac.id",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "Hospitality Plus",
-    description: "Pemesanan hotel dengan framework javafx",
-    image: "/projects/javafx.png",
-    tags: ["Java", "JavaFx", "MariaDB", "MySQL"],
-    github: "https://github.com/aryadzar/project-uas-pbo",
-    demo: "#",
-    featured: true,
-  },
-  {
-    id: 3,
-    title: "Taskete Project",
-    description: "To Do List App dengan PHP MySQL",
-    image: "/projects/taskete.png",
-    tags: ["PHP", "Bootstrap", "MySQL", "Native"],
-    github: "#",
-    demo: "https://taskete.aryadzar.my.id",
-    featured: true,
-  },
-  {
-    id: 4,
-    title: "Halaman Login SSO Unila",
-    description: "Membuat tampilan halaman login SSO WiFi Unila dengan modern",
-    image: "/projects/login_sso.png",
-    tags: ["HTML", "Tailwind CSS", "Fortigate"],
-    github: "#",
-    demo: "#",
-    featured: false,
-  },
-  {
-    id: 4,
-    title: "SIM-APK (Sistem Infomarsi Manajement Armada Pesawat Komersial) ADSI (Analisis Desain Sistem Informasi)",
-    description: "Membuat alur bisnis dan implementasi dari sistem informasi",
-    image: "/projects/sim-apk.png",
-    tags: ["HTML", "Bootstrap", "JQuery", "PHP Native", "CRUD", "MariaDB"],
-    github: "https://github.com/aryadzar/SIM-APK",
-    demo: "#",
-    featured: false,
-  },
-  {
-    id: 4,
-    title: "Halaman Blokir dengan WiFI Unila",
-    description: "Membuat halaman yang diblokir oleh Unila (UPT TIK Unila)",
-    image: "/projects/halaman_blokir.png",
-    tags: ["HTML", "Tailwind CSS", "PHP Native"],
-    github: "#",
-    demo: "#",
-    featured: false,
-  },
-  {
-    id: 4,
-    title: "First Portofolio",
-    description: "Membuat Portofolio First Time",
-    image: "/projects/first_port.png",
-    tags: ["HTML", "CSS Native"],
-    github: "https://github.com/aryadzar/UTP-PEMWEB",
-    demo: "https://old-portofolio.aryadzar.my.id",
-    featured: false,
-  },
-  // Keep only 3 projects for the main page preview
-]
 
 interface ProjectCardProps {
   project: Project
@@ -119,7 +47,7 @@ function ProjectCard({ project, index, className = "" }: ProjectCardProps) {
 
       <div className="relative z-20 flex flex-col h-full p-6 justify-end">
         <div className="flex flex-wrap gap-2 mb-3">
-          {project.tags.map((tag, i) => (
+          {project.labels.map((tag, i) => (
             <span key={i} className="text-xs bg-violet-600/80 px-2 py-1 rounded-full">
               {tag}
             </span>
@@ -127,20 +55,17 @@ function ProjectCard({ project, index, className = "" }: ProjectCardProps) {
         </div>
 
         <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-        <p className="text-gray-300 text-sm mb-4">{project.description}</p>
+        <p className="text-gray-300 text-sm mb-4">{project.excerpt}</p>
 
         <div className="flex gap-3">
-          <a href={project.github} className="p-2 bg-gray-800/80 rounded-full hover:bg-gray-700 transition-colors">
-            <Github className="w-5 h-5" />
-          </a>
-          <a
-            href={project.demo}
-            target="_blank"
+          <Link
+            to={`/project/${project.slug}`}
+            // target="_blank"
             className="flex items-center gap-1 px-3 py-1 bg-violet-600/80 rounded-full hover:bg-violet-500 transition-colors"
           >
-            <span className="text-sm">Live Demo</span>
+            <span className="text-sm">Lihat Project</span>
             <ArrowUpRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
 
         <motion.div
@@ -155,6 +80,45 @@ function ProjectCard({ project, index, className = "" }: ProjectCardProps) {
 }
 
 export default function Projects() {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await api.get(`/posts`, { 
+          params: {
+            maxResults: 3,        // Maksimal 3 post
+            orderBy: "published", // Urut dari yang terbaru
+            labels: "Project"
+          }
+        });
+        const items = res.data.items || [];
+
+        const formattedPosts: any[] = items.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          image: extractFirstImage(item.content) ?? "/placeholder.svg",
+          date: new Date(item.published).toLocaleDateString(),
+          labels : item.labels ?? [],
+          excerpt: item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "...",
+          slug: generateSlug(item.title, item.id), // or create a slug from title if needed
+        }));
+
+        console.log(items);
+
+        setProjects(formattedPosts);
+      } catch (err) {
+        console.error("Failed to fetch blog posts:", err);
+      }finally{
+        setIsLoading(false)
+      }
+    }
+
+    fetchPosts();
+  }, []);
+  if (isLoading){
+    return <Loading/>
+  } 
   return (
     <section id="projects" className="py-20 px-6 bg-gradient-to-b from-black to-gray-900">
       <div className="max-w-6xl mx-auto">
@@ -175,13 +139,13 @@ export default function Projects() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            {/* <Link
-              to="/projects"
+            <Link
+              to="/project"
               className="group inline-flex items-center gap-2 text-primary hover:text-primary-foreground transition-colors"
             >
               <span>View All</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link> */}
+            </Link>
           </motion.div>
         </div>
 
