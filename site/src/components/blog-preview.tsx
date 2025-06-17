@@ -68,8 +68,10 @@ export default function BlogPreview() {
           }
         });
         const items = res.data.items || [];
-
-        const formattedPosts: any[] = items.map((item: any) => ({
+        const filteredItems = items.filter((item: any) => {
+          return !item.labels?.includes("Project");
+        });
+        const formattedPosts: any[] = filteredItems.map((item: any) => ({
           id: item.id,
           title: item.title,
           image: extractFirstImage(item.content) ?? "/placeholder.svg",
