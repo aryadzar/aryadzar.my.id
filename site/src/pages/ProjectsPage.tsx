@@ -31,7 +31,7 @@ export default function ProjectPage() {
         q: query,
         orderBy: "published",
         maxResults: 100,
-        labels : "Project"
+        labels: "Project"
       };
       if (!isSearch && page) {
         params.pageToken = page;
@@ -42,8 +42,8 @@ export default function ProjectPage() {
       const res = await api.get(endpoint, { params });
       const items = res.data.items || [];
       const filtered = isSearch
-                      ? items.filter((item: any) => item.labels?.includes("Project"))
-                      : items;
+        ? items.filter((item: any) => item.labels?.includes("Project"))
+        : items;
       console.log(items);
       const formattedPosts = filtered.map((item: any) => ({
         id: item.id,
@@ -76,7 +76,7 @@ export default function ProjectPage() {
   //     }, 500);
   //   }
   // }, [searchQuery]);
-  
+
   //sementara masih pakai ini
   useEffect(() => {
     fetchPosts("", "");
@@ -123,12 +123,12 @@ export default function ProjectPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-            {/* Background decoration */}
+      {/* Background decoration */}
       <MetaTags
-        title="Blog Arya Dzaky"
+        title="Project Arya Dzaky"
         description="Portofolio Arya Dzaky"
         image="/foto_profile.jpg"
-        name="Blog Arya Dzaky"
+        name="Project Arya Dzaky"
       />
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="mb-8">
@@ -144,12 +144,12 @@ export default function ProjectPage() {
           placeholder="Search blog..."
           className="w-full mb-12 px-4 py-3 bg-gray-900 border border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-violet-600"
         /> */}
-      <div className="absolute inset-0 pointer-events-none  bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-transparent to-transparent" />
+        <div className="absolute inset-0 pointer-events-none  bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-transparent to-transparent" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.map((post) => (
             <article key={post.id} className="group">
-              <Link to={`/blog/${post.slug}`} className="block">
+              <Link to={`/project/${post.slug}`} className="block">
                 <div className="relative h-48 mb-4 overflow-hidden rounded-2xl">
                   <img
                     src={post.image || "/placeholder.svg"}
@@ -170,14 +170,14 @@ export default function ProjectPage() {
           ))}
         </div>
 
-            {isFetchingMore && (
-              <div className="flex items-center justify-center mt-12 py-8">
-                <div className="flex items-center space-x-3 text-gray-400">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span className="text-sm font-medium">Loading more articles...</span>
-                </div>
-              </div>
-            )}
+        {isFetchingMore && (
+          <div className="flex items-center justify-center mt-12 py-8">
+            <div className="flex items-center space-x-3 text-gray-400">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-sm font-medium">Loading more articles...</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -40,6 +40,12 @@ export default function BlogPostPage() {
             key: import.meta.env.VITE_API_BLOG_KEY,
           },
         });
+        const labels = res.data.labels ?? []
+
+        if(labels.includes("Project")){
+            setNotFound(true)
+            return
+        }
         const contentWithZoomWrapper = preprocessHtmlWithZoomWrapper(res.data.content);
         // console.log(contentWithZoomWrapper);
         const contentWithIds = addIdsToHeadings(contentWithZoomWrapper);

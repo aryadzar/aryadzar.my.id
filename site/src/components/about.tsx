@@ -1,33 +1,33 @@
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef, useState } from "react"
+import { motion } from "framer-motion"
+import { useRef } from "react"
 
 export default function About() {
   const containerRef = useRef(null)
-  const imageRef = useRef<HTMLDivElement>(null)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  // const imageRef = useRef<HTMLDivElement>(null)
+  // const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  })
+  // const { scrollYProgress } = useScroll({
+  //   target: containerRef,
+  //   offset: ["start end", "end start"],
+  // })
 
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
+  // const imageY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
 
-  const handleMouseMove = (e : React.MouseEvent) => {
-    if (!imageRef.current) return
+  // const handleMouseMove = (e : React.MouseEvent) => {
+  //   if (!imageRef.current) return
 
-    const rect = imageRef.current.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
+  //   const rect = imageRef.current.getBoundingClientRect()
+  //   const x = (e.clientX - rect.left) / rect.width - 0.5
+  //   const y = (e.clientY - rect.top) / rect.height - 0.5
 
-    setMousePosition({ x, y })
-  }
+  //   setMousePosition({ x, y })
+  // }
 
-  const handleMouseLeave = () => {
-    setMousePosition({ x: 0, y: 0 })
-  }
+  // const handleMouseLeave = () => {
+  //   setMousePosition({ x: 0, y: 0 })
+  // }
 
   return (
     <section id="about" className="py-20 px-6 bg-black">
@@ -51,8 +51,12 @@ export default function About() {
             transition={{ duration: 0.6 }}
             className="relative z-0"
           >
-            {/* 3D Photo Card Container */}
-            <motion.div
+            <img
+              src="https://res.cloudinary.com/din8s15ri/image/upload/c_thumb,g_face,h_500,w_500/v1750168114/ChatGPT_Image_Jun_17__2025__08_43_00_PM-removebg-preview_murbcm.png"
+              alt="Arya Dzaky"
+              className=""
+            />
+            {/* <motion.div
               ref={imageRef}
               className="relative h-[400px] w-full rounded-2xl overflow-hidden cursor-pointer"
               onMouseMove={handleMouseMove}
@@ -62,7 +66,6 @@ export default function About() {
                 transformStyle: "preserve-3d",
               }}
             >
-              {/* 3D Card Inner */}
               <motion.div
                 className="w-full h-full relative"
                 style={{
@@ -76,7 +79,6 @@ export default function About() {
                   transition: { duration: 0.3 },
                 }}
               >
-                {/* Image Container */}
                 <motion.div
                   className="absolute inset-0 h-[120%] w-full"
                   style={{
@@ -85,14 +87,9 @@ export default function About() {
                     transform: "translateZ(0px)",
                   }}
                 >
-                  <img
-                    src="/foto_profile.jpg"
-                    alt="Arya Dzaky"
-                    className="w-full h-full object-cover"
-                  />
+                  
                 </motion.div>
 
-                {/* Shine Effect Overlay */}
                 <motion.div
                   className="absolute inset-0 w-full h-full"
                   style={{
@@ -107,7 +104,6 @@ export default function About() {
                   }}
                 />
 
-                {/* Border Frame */}
                 <motion.div
                   className="absolute inset-0 border-2 border-white/10 rounded-2xl"
                   style={{
@@ -115,11 +111,11 @@ export default function About() {
                     boxShadow: "inset 0 0 20px rgba(124, 58, 237, 0.3)",
                   }}
                 />
-              </motion.div>
+              </motion.div> */}
             </motion.div>
 
             {/* Box ungu di belakang gambar */}
-            <motion.div
+            {/* <motion.div
               className="absolute -bottom-9 -right-9 h-40 w-40 bg-violet-600 rounded-2xl -z-10"
               animate={{
                 rotate: mousePosition.x * 8,
@@ -127,8 +123,8 @@ export default function About() {
                 y: mousePosition.y * 15,
               }}
               transition={{ type: "spring", stiffness: 150, damping: 15 }}
-            />
-          </motion.div>
+            /> */}
+          {/* </motion.div> */}
 
           <motion.div
             initial={{ opacity: 0, x: 50 }}

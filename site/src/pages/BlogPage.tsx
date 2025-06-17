@@ -39,7 +39,11 @@ export default function BlogPage() {
       const res = await api.get(endpoint, { params });
       const items = res.data.items || [];
       console.log(items);
-      const formattedPosts = items.map((item: any) => ({
+      const filteredItems = items.filter((item: any) => {
+        return !item.labels?.includes("Project");
+      });
+
+      const formattedPosts = filteredItems.map((item: any) => ({
         id: item.id,
         title: item.title,
         image: extractFirstImage(item.content) ?? "/placeholder.svg",

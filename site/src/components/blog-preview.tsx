@@ -115,7 +115,7 @@ export default function BlogPreview() {
           >
             <Link
               to="/blog"
-              className="group inline-flex items-center gap-2 text-primary hover:text-primary-foreground transition-colors"
+              className="group inline-flex items-center gap-2 text-primary text-gray-400 hover:text-white transition-colors "
             >
               <span>View All</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
