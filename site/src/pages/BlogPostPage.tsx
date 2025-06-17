@@ -10,7 +10,7 @@ import { extractIdFromSlug } from "@/utils/slug-helper"
 import { motion } from "framer-motion"
 import ModernTableOfContents from "@/components/table-of-contents"
 import { addIdsToHeadings, extractHeadingsFromHtml } from "@/utils/header-helper"
-import { TracingBeam } from "@/components/ui/tracing-beam"
+// import { TracingBeam } from "@/components/ui/tracing-beam"
 import hljs from 'highlight.js';
 import preprocessHtmlWithZoomWrapper, { renderWithZoom } from "@/utils/imageHelperBlog"
 
