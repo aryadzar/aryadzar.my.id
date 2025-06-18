@@ -13,6 +13,7 @@ import { addIdsToHeadings, extractHeadingsFromHtml } from "@/utils/header-helper
 // import { TracingBeam } from "@/components/ui/tracing-beam"
 import hljs from 'highlight.js';
 import preprocessHtmlWithZoomWrapper, { renderWithZoom } from "@/utils/imageHelperBlog"
+import GiscusComment from "@/components/giscus"
 
 
 type BloggerPost = {
@@ -222,6 +223,7 @@ export default function ProjectPostPage() {
           >
             {renderWithZoom(post.content)}
           </motion.div>
+          <GiscusComment/>
         {/* </TracingBeam> */}
       </motion.div>
     </div>
