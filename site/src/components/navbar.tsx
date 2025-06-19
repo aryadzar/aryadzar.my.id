@@ -12,6 +12,7 @@ const navItems = [
   { name: "Blog", href: "/blog", type: "route" },
   { name: "Contact", href: "contact", type: "scroll" },
   { name: "Gallery", href: "/gallery", type: "route" },
+  { name: "Uses", href: "/uses", type: "route" },
 ] as const
 
 export default function Navbar() {

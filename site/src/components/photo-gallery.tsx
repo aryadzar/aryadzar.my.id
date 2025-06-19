@@ -1,67 +1,22 @@
-"use client"
-
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import axios from "axios"
 import Loading from "./loading"
-
-// const photos = [
-//   { id: 1, src: "/placeholder.svg?height=400&width=600", alt: "Landscape Photo 1", title: "Beautiful Sunset" },
-//   { id: 2, src: "/placeholder.svg?height=600&width=400", alt: "Portrait Photo 1", title: "City Architecture" },
-//   { id: 3, src: "/placeholder.svg?height=400&width=400", alt: "Square Photo 1", title: "Nature Close-up" },
-//   { id: 4, src: "/placeholder.svg?height=500&width=700", alt: "Landscape Photo 2", title: "Mountain View" },
-//   { id: 5, src: "/placeholder.svg?height=600&width=400", alt: "Portrait Photo 2", title: "Street Photography" },
-//   { id: 6, src: "/placeholder.svg?height=400&width=600", alt: "Landscape Photo 3", title: "Ocean Waves" },
-//   { id: 7, src: "/placeholder.svg?height=400&width=400", alt: "Square Photo 2", title: "Urban Life" },
-//   { id: 8, src: "/placeholder.svg?height=600&width=500", alt: "Portrait Photo 3", title: "Forest Path" },
-//   { id: 9, src: "/placeholder.svg?height=400&width=600", alt: "Landscape Photo 4", title: "Desert Dunes" },
-//   { id: 10, src: "/placeholder.svg?height=500&width=400", alt: "Portrait Photo 4", title: "Vintage Car" },
-//   { id: 11, src: "/placeholder.svg?height=400&width=400", alt: "Square Photo 3", title: "Food Photography" },
-//   { id: 12, src: "/placeholder.svg?height=400&width=600", alt: "Landscape Photo 5", title: "Northern Lights" },
-// ]
-
-type Photo = {
-  id: number
-  src: string
-  alt: string
-  title: string
-  type : "photo" | "video"
-}
-
-
+import { useGoogleSheetData } from "@/hooks/useGoogleSheets"
+import useImagesLoaded from "@/hooks/useImageLoaded"
 
 export default function PhotoGallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [photos, setPhotos] = useState<Photo[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { data: photos, loading: loading } = useGoogleSheetData("Gallery")
+  const allImagesLoaded = useImagesLoaded([photos ]);
+
 
   const openModal = (photoId: number) => {
     setSelectedPhoto(photoId)
     setIsModalOpen(true)
   }
-    const  fetchPhotos = async () => {
-      try {
-        const res = await axios.get("/photos.json");
-        const items = res.data || [];
-
-        console.log(items);
-        setPhotos(items)
-        
-      } catch (err) {
-        console.error("Failed to fetch blog posts:", err);
-        setIsLoading(false)
-
-      } finally {
-        setIsLoading(false)
-      }  
-    }
-  useEffect(()=> {
-
-    fetchPhotos()
-  }, [])
 
   const navigatePhoto = (direction: "prev" | "next") => {
     if (selectedPhoto === null) return
@@ -79,24 +34,22 @@ export default function PhotoGallery() {
   }
 
   const selectedPhotoData = photos.find((photo) => photo.id === selectedPhoto)
-  if (isLoading ) {
+  if (loading || !allImagesLoaded) {
     return <Loading />;
   }
   return (
-        <div className="min-h-screen bg-background p-4">
-                <div className="absolute inset-0 pointer-events-none  bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-transparent to-transparent" />
+    <div className="min-h-screen bg-background p-4">
+      <div className="absolute inset-0 pointer-events-none  bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-transparent to-transparent" />
 
       <div className="max-w-7xl mx-auto mt-40">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold  mb-4">Photo Gallery</h1>
-          <p className="text-lg  max-w-2xl mx-auto">
-            Koleksi foto-foto indah yang menampilkan keindahan alam, arsitektur, dan kehidupan sehari-hari
-          </p>
-        </div>
-
+            <div className="max-w-7xl mt-16 mx-auto">
+                <h1 className="text-4xl font-bold my-4 md:text-5xl">Gallery</h1>
+                <h2 className="text-muted-foreground mb-8">A collection of beautiful photographs showcasing the beauty of nature, architecture and everyday life.</h2>
+            </div>
+            <hr />
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[200px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[200px] mt-10">
           {photos.map((photo, index) => (
             <div
               key={photo.id}

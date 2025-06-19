@@ -14,6 +14,7 @@ import ScrollToTop from "./utils/scrollToTop"
 import PhotoGalleryView from "./pages/PhotoGallery"
 import 'highlight.js/styles/github-dark.css';
 import ProjectPostPage from "./pages/ProjectPostPage"
+import UsesPage from "./pages/UsesPage"
 function App() {
   return (
     <>
@@ -37,6 +38,7 @@ function App() {
         }}
       /> */}
         <Navbar />
+              <div className="absolute inset-0 pointer-events-none  bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-transparent to-transparent" />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<BlogPage />} />
@@ -44,6 +46,7 @@ function App() {
           <Route path="/project" element={<ProjectsPage />} />
           <Route path="/project/:slug" element={<ProjectPostPage />} />
           <Route path="/gallery" element={<PhotoGalleryView />} />
+          <Route path="/uses" element={<UsesPage/>}/>
           <Route path="*" element={<NotFoundPage status={404} />} />
         </Routes>
         <Footer />
