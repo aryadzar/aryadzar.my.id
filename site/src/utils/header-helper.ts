@@ -23,3 +23,15 @@ export function extractHeadingsFromHtml(html: string) {
     level: Number(el.tagName[1]),
   }))
 }
+
+export function enhanceLinks(html: string) {
+  return html.replace(
+    /<a\b([^>]*)>/gi,
+    `<a $1 class="text-violet-400 hover:text-violet-500 transition-colors underline underline-offset-2">`
+  );
+}
+
+export function decodeHtmlEntities(str: string) {
+  const doc = new DOMParser().parseFromString(str, "text/html")
+  return doc.documentElement.textContent || ""
+}

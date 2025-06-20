@@ -7,6 +7,7 @@ import Loading from "@/components/loading";
 import MetaTags from "@/utils/MetaTags";
 import { generateSlug } from "@/utils/slug-helper";
 import { Loader2 } from "lucide-react";
+import { decodeHtmlEntities } from "@/utils/header-helper";
 
 let debounceTimeout: any;
 
@@ -48,7 +49,7 @@ export default function BlogPage() {
         title: item.title,
         image: extractFirstImage(item.content) ?? "/placeholder.svg",
         date: new Date(item.published).toLocaleDateString(),
-        excerpt: item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "...",
+        excerpt: decodeHtmlEntities(item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."),
         slug: generateSlug(item.title, item.id),
         category: item.labels?.[0] || "General",
       }));

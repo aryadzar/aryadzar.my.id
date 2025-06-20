@@ -9,7 +9,7 @@ import MetaTags from "@/utils/MetaTags"
 import { extractIdFromSlug } from "@/utils/slug-helper"
 import { motion } from "framer-motion"
 import ModernTableOfContents from "@/components/table-of-contents"
-import { addIdsToHeadings, extractHeadingsFromHtml } from "@/utils/header-helper"
+import { addIdsToHeadings, enhanceLinks, extractHeadingsFromHtml } from "@/utils/header-helper"
 // import { TracingBeam } from "@/components/ui/tracing-beam"
 import hljs from 'highlight.js';
 import preprocessHtmlWithZoomWrapper, { renderWithZoom } from "@/utils/imageHelperBlog"
@@ -54,7 +54,7 @@ export default function BlogPostPage() {
 
         setPost({
           ...res.data,
-          content: contentWithIds,
+          content: enhanceLinks(contentWithIds),
         });
 
         // Scroll ke #id jika ada hash setelah konten dimuat
@@ -214,7 +214,7 @@ export default function BlogPostPage() {
              prose-img:object-contain
               prose-img:mx-auto prose-video:mx-auto prose-iframe:mx-auto
               prose-img:rounded-xl prose-video:rounded-xl prose-iframe:rounded-xl
-              prose-a:hover:text-gray-500 "
+               "
             // dangerouslySetInnerHTML={{ __html: post.content }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

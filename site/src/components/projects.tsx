@@ -6,6 +6,7 @@ import { extractFirstImage } from "@/utils/thumbnail-ext"
 import { generateSlug } from "@/utils/slug-helper"
 import Loading from "./loading"
 import { Link } from "react-router-dom"
+import { decodeHtmlEntities } from "@/utils/header-helper"
 // import { Link } from "react-router-dom"
 
 interface Project {
@@ -100,7 +101,7 @@ export default function Projects() {
           image: extractFirstImage(item.content) ?? "/placeholder.svg",
           date: new Date(item.published).toLocaleDateString(),
           labels : item.labels ?? [],
-          excerpt: item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "...",
+          excerpt: decodeHtmlEntities(item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."),
           slug: generateSlug(item.title, item.id), // or create a slug from title if needed
         }));
 

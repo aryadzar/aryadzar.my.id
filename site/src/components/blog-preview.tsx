@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Loading from "./loading"
 import { generateSlug } from "@/utils/slug-helper"
+import { decodeHtmlEntities } from "@/utils/header-helper"
 
 
 
@@ -76,7 +77,7 @@ export default function BlogPreview() {
           title: item.title,
           image: extractFirstImage(item.content) ?? "/placeholder.svg",
           date: new Date(item.published).toLocaleDateString(),
-          excerpt: item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "...",
+          excerpt: decodeHtmlEntities(item.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."),
           slug: generateSlug(item.title, item.id), // or create a slug from title if needed
         }));
 
