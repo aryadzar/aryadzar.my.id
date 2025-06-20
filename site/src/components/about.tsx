@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useRef } from "react"
+import { LinkPreview } from "./ui/link-preview"
 
 export default function About() {
   const containerRef = useRef(null)
@@ -112,10 +113,10 @@ export default function About() {
                   }}
                 />
               </motion.div> */}
-            </motion.div>
+          </motion.div>
 
-            {/* Box ungu di belakang gambar */}
-            {/* <motion.div
+          {/* Box ungu di belakang gambar */}
+          {/* <motion.div
               className="absolute -bottom-9 -right-9 h-40 w-40 bg-violet-600 rounded-2xl -z-10"
               animate={{
                 rotate: mousePosition.x * 8,
@@ -132,7 +133,13 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-bold mb-4 text-white">Hello, I'm Arya Dzaky</h3>
+            <h3 className="text-2xl font-bold mb-4 text-white">Hello, {" "}
+              <LinkPreview url=" " 
+              imageSrc="https://res.cloudinary.com/din8s15ri/image/upload/v1750426101/1721309054-6699177e1bdd4-1721308982-669917367da08-20240424_052236_ruwhms.jpg" 
+              className=" font-extrabold bg-gradient-to-r from-purple-800 via-purple-500 to-purple-300 text-transparent bg-clip-text animate-gradient" 
+              isStatic>I'm Arya Dzaky
+              </LinkPreview> 
+            </h3>
             <p className="text-gray-300 mb-6">
               I'm a passionate Full Stack Developer with 1 years of experience creating beautiful, functional, and
               user-centered digital experiences. I am constantly exploring new technologies and techniques to push the

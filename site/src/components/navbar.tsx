@@ -7,7 +7,7 @@ import NavItem from "./NavItem"
 const navItems = [
   { name: "Home", href: "/", type: "route" },
   { name: "About", href: "about", type: "scroll" },
-  { name: "Projects", href: "projects", type: "scroll" },
+  { name: "Projects", href: "/project", type: "route" },
   { name: "Experience", href: "experience", type: "scroll" },
   { name: "Blog", href: "/blog", type: "route" },
   { name: "Contact", href: "contact", type: "scroll" },

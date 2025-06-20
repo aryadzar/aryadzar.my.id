@@ -310,8 +310,8 @@ export default function EnhancedFooter() {
                 animation: "gradientShift 3s ease infinite",
               }}
             >
-              Arya Dzaky
             </motion.h3>
+              Arya Dzaky
             <p className="text-gray-400 text-lg mb-6 leading-relaxed">
               Full Stack Developer passionate about creating beautiful and functional web experiences.
             </p>

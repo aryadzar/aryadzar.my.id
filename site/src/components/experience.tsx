@@ -1,7 +1,9 @@
 "use client"
 
+import { useGoogleSheetData } from "@/hooks/useGoogleSheets"
 import { motion } from "framer-motion"
 import { Briefcase, GraduationCap } from "lucide-react"
+import Loading from "./loading"
 
 interface Experience {
   title: string
@@ -9,42 +11,17 @@ interface Experience {
   period: string
   description: string
   type: "work" | "education"
+  logo : string
 }
 
-const experiences: Experience[] = [
-  {
-    title: "Asistant Lecturer of Object Oriented Programming",
-    company: "Web Solutions Co.",
-    period: "Sept 2024 -  Dec 2024",
-    description:
-      "Teaching a student with Java and create the application with java",
-    type: "work",
-  },
-  {
-    title: "Asistant Lecturer of Structured Programming",
-    company: "Web Solutions Co.",
-    period: "Sept 2024 -  Dec 2024",
-    description:
-      "Teaching a student with Java and how to write a clean code using C++",
-    type: "work",
-  },
-  {
-    title: "Fullstack Developer",
-    company: "UPT TIK Unila",
-    period: "Sept 2024 - Jan 2025",
-    description: "Doing Internship as a fullstack developer",
-    type: "work",
-  },
-  {
-    title: "Bachelor of Science in Computer Science",
-    company: "Lampung University",
-    period: "2022 - Now",
-    description: "Specialized in Web Technologies and Human-Computer Interaction.",
-    type: "education",
-  },
-]
-
 export default function Experience() {
+
+  const {data: experiences, loading} = useGoogleSheetData("Exp & Edu");
+
+  if(loading){
+    return <Loading/>
+  }
+
   return (
     <section id="experience" className="py-20 px-6">
       <div className="max-w-6xl mx-auto">
@@ -83,10 +60,30 @@ export default function Experience() {
 
                 {/* Content */}
                 <div className="bg-secondary p-6 rounded-2xl glow-on-hover">
-                  <h3 className="text-xl font-semibold mb-1">{exp.title}</h3>
-                  <p className="text-muted-foreground mb-2">{exp.company}</p>
-                  <p className="text-sm text-muted-foreground mb-4">{exp.period}</p>
-                  <p className="text-muted-foreground">{exp.description}</p>
+                  <div className="flex items-start gap-4 mb-4">
+                    {/* Institution Logo */}
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-white p-1 shadow-sm">
+                        <img
+                          src={exp.logo || "/placeholder.svg"}
+                          alt={`${exp.company} logo`}
+                          width={40}
+                          height={40}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold mb-1">{exp.title}</h3>
+                      <p className="text-muted-foreground mb-2 font-medium">{exp.company}</p>
+                      <p className="text-sm text-muted-foreground mb-3  bg-muted  rounded-md inline-block">
+                        {exp.period}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">{exp.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -96,4 +93,3 @@ export default function Experience() {
     </section>
   )
 }
-
