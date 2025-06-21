@@ -153,7 +153,7 @@ export default function ProjectPostPage() {
       {/* Table of Contents */}
       <ModernTableOfContents headings={headings} />
       <motion.div
-        className="relative z-10 max-w-4xl mx-auto px-6 py-12"
+        className="relative z-10 max-w-4xl mt-10 mx-auto px-6 py-12"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
