@@ -1,38 +1,42 @@
-// components/NavItem.tsx
-import { Link } from "react-router-dom"
+"use client"
+
+import type React from "react"
+import {Link} from "react-router-dom"
 
 interface NavItemProps {
   name: string
   href: string
   type: "route" | "scroll"
-  onClick?: () => void
   className?: string
+  onClick?: () => void
+  renderContent?: () => React.ReactNode
 }
 
-export default function NavItem({ name, href, type, onClick, className }: NavItemProps) {
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+export function NavItem({ name, href, type, className = "", onClick, renderContent }: NavItemProps) {
+  const handleClick = (e: React.MouseEvent) => {
     if (type === "scroll") {
       e.preventDefault()
-      onClick?.()
-
-      setTimeout(() => {
-        const el = document.getElementById(href)
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth" })
-        }
-      }, 300)
-    } else {
-      onClick?.()
+      const element = document.getElementById(href)
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" })
+      }
     }
+    onClick?.()
   }
 
-  return type === "route" ? (
-    <Link to={href} onClick={onClick} className={className}>
-      {name}
-    </Link>
-  ) : (
-    <a href={`#${href}`} onClick={handleClick} className={className}>
-      {name}
-    </a>
+  const content = renderContent ? renderContent() : name
+
+  if (type === "route") {
+    return (
+      <Link to={href} className={`group ${className}`} onClick={onClick}>
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <button onClick={handleClick} className={`group ${className}`}>
+      {content}
+    </button>
   )
 }
