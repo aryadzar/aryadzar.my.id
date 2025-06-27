@@ -2,7 +2,10 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-export default function BackToBlog() {
+interface goBackLinkProps{
+    link : 'blog' | 'project'
+}
+export default function BackToBlog({link } : goBackLinkProps ) {
   return (
     <motion.div
       className="mb-8"
@@ -11,7 +14,7 @@ export default function BackToBlog() {
       transition={{ duration: 0.6, delay: 0.2 }}
     >
       <Link
-        to="/blog"
+        to={`/${link}`}
         className="inline-flex items-center mt-5 gap-2 text-gray-400 hover:text-white transition-colors"
       >
         <motion.div whileHover={{ x: -5 }} transition={{ type: "spring", stiffness: 300 }}>

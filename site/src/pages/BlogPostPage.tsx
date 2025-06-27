@@ -41,7 +41,7 @@ export default function BlogPostPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-          <BackToBlog />
+          <BackToBlog link="blog" />
           <PostHeader title={post.title} date={new Date(post.published).toLocaleDateString()} />
           <PostCover image={extractFirstImage(post.content) ?? "/placeholder.svg"} title={post.title} />
           <PostBody>{renderWithZoom(post.content)}</PostBody>
