@@ -13,6 +13,7 @@ import PostHeader from "@/components/blog/post-header"
 import PostCover from "@/components/blog/post-cover"
 import PostBody from "@/components/blog/post-body"
 import { renderWithZoom } from "@/utils/imageHelperBlog"
+import { useEffect } from "react"
 
 
 export default function ProjectPostPage() {
@@ -20,6 +21,23 @@ export default function ProjectPostPage() {
   const { post, notFound, headings } = useFetchBloggerPost(slug, "Project");
   useCodeHighlighter(post?.content);
 
+  useEffect(() => {
+    if (!post?.content) return;
+
+    // ⏳ Delay agar konten ter-render dulu
+    const hash = window.location.hash;
+    if (hash) {
+      const headingId = hash.slice(1);
+      setTimeout(() => {
+        const element = document.getElementById(headingId);
+        if (element) {
+          const yOffset = -120; // offset scroll (misal untuk navbar tinggi 80px)
+          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, [post?.content]);
   if (notFound) return <NotFoundPage status={404} />
   if (!post) return <Loading />
 
