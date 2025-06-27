@@ -64,7 +64,7 @@ function ProjectCard({ project, index, className = "" }: ProjectCardProps) {
             // target="_blank"
             className="flex items-center gap-1 px-3 py-1 bg-violet-600/80 rounded-full hover:bg-violet-500 transition-colors"
           >
-            <span className="text-sm">Lihat Project</span>
+            <span className="text-sm">Detail</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>

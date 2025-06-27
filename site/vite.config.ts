@@ -30,13 +30,8 @@ export default defineConfig({
     },
   },
   build: {
-    minify: "terser",
+    minify: "esbuild",
     sourcemap: false,
-    terserOptions: {
-      format: {
-        comments: false
-      }
-    },
     rollupOptions: {
       onwarn(warning, warn) {
         // Abaikan warning tertentu

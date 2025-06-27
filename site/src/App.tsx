@@ -15,6 +15,7 @@ import PhotoGalleryView from "./pages/PhotoGallery"
 import 'highlight.js/styles/github-dark.css';
 import ProjectPostPage from "./pages/ProjectPostPage"
 import UsesPage from "./pages/UsesPage"
+import About from "./pages/About"
 function App() {
   return (
     <>
@@ -41,6 +42,7 @@ function App() {
               <div className="absolute inset-0 pointer-events-none  bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-transparent to-transparent" />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About/>} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/project" element={<ProjectsPage />} />
