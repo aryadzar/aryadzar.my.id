@@ -7,7 +7,7 @@ const navItems = [
   { name: "Home", href: "/", type: "route", icon: Home },
   { name: "Blog", href: "/blog", type: "route" },
   { name: "Projects", href: "/project", type: "route" },
-  { name: "About", href: "about", type: "scroll" },
+  { name: "About", href: "/about", type: "route" },
   { name: "Contact", href: "contact", type: "scroll" },
 ] as const
 
@@ -130,6 +130,7 @@ export default function MinimalNavbar() {
         className="fixed top-6 left-6 z-50"
       >
           <img src="/icons/logo.svg" className="size-14" alt="" />
+
       </motion.div>
 
       {/* Minimal Floating Navbar */}
@@ -159,19 +160,30 @@ export default function MinimalNavbar() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1, duration: 0.4 }}
+                    className="relative"
                   >
                     <NavItem
                       {...item}
                       onClick={() => setActiveItem(item.name)}
                       className={`
-                        text-sm font-medium transition-all duration-200 py-1 px-3 rounded-lg relative
+                        text-sm font-medium transition-all duration-300 py-2 px-4 rounded-lg relative overflow-hidden group
                         ${
                           activeItem === item.name
-                            ? "text-white bg-white/10"
-                            : "text-white/90 hover:text-white hover:bg-white/5"
+                            ? "text-white bg-white/15 shadow-lg"
+                            : "text-white/80 hover:text-white hover:bg-white/10"
                         }
                       `}
                     />
+                    {/* Active indicator line */}
+                    {activeItem === item.name && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full"
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                    {/* Hover effect background */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg -z-10" />
                   </motion.div>
                 ))}
 
@@ -183,14 +195,14 @@ export default function MinimalNavbar() {
                   <button
                     onClick={() => setShowMore(!showMore)}
                     className={`
-                      flex items-center space-x-1 text-sm font-medium transition-all duration-200 py-1 px-3 rounded-lg
-                      ${showMore ? "text-white bg-white/10" : "text-white/90 hover:text-white hover:bg-white/5"}
+                      flex items-center space-x-1 text-sm font-medium transition-all duration-300 py-2 px-4 rounded-lg relative overflow-hidden group
+                      ${showMore || activeItem === "More" ? "text-white bg-white/15 shadow-lg" : "text-white/80 hover:text-white hover:bg-white/10"}
                     `}
                   >
                     <span>More</span>
-                    <ChevronDown
-                      className={`w-3 h-3 transition-transform duration-200 ${showMore ? "rotate-180" : ""}`}
-                    />
+                    <ChevronDown className={`w-3 h-3 transition-all duration-300 ${showMore ? "rotate-180" : ""}`} />
+                    {/* Hover effect background */}
+                    {/* <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg -z-10" /> */}
                   </button>
 
                   <AnimatePresence>
@@ -204,7 +216,7 @@ export default function MinimalNavbar() {
                         onMouseLeave={() => setShowMore(false)}
                       >
                         {moreItems.map((item) => {
-                          const IconComponent = "icon" in item ? item.icon : null
+                          const IconComponent = item.icon
                           return (
                             <NavItem
                               key={item.name}
@@ -214,17 +226,24 @@ export default function MinimalNavbar() {
                                 setShowMore(false)
                               }}
                               className={`
-                                flex items-center space-x-3 w-full text-left px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-lg mx-1
+                                flex items-center space-x-3 w-full text-left px-4 py-3 text-sm font-medium transition-all duration-300 rounded-lg mx-1 relative overflow-hidden group
                                 ${
                                   activeItem === item.name
-                                    ? "text-white bg-white/10"
-                                    : "text-white/90 hover:text-white hover:bg-white/5"
+                                    ? "text-white bg-white/20 shadow-lg"
+                                    : "text-white/80 hover:text-white hover:bg-white/10 hover:scale-[1.02]"
                                 }
                               `}
                               renderContent={() => (
                                 <>
-                                  {IconComponent && <IconComponent className="w-4 h-4" />}
-                                  <span>{item.name}</span>
+                                  {IconComponent && (
+                                    <IconComponent
+                                      className={`w-4 h-4 transition-all duration-300 ${
+                                        activeItem === item.name ? "text-white" : "text-white/70 group-hover:text-white"
+                                      }`}
+                                    />
+                                  )}
+                                  <span className="transition-all duration-300">{item.name}</span>
+                                  {/* Hover effect background */}
                                 </>
                               )}
                             />
@@ -323,17 +342,25 @@ export default function MinimalNavbar() {
                             setIsOpen(false)
                           }}
                           className={`
-                            flex items-center space-x-3 w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
+                            flex items-center space-x-3 w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 relative overflow-hidden group
                             ${
                               activeItem === item.name
-                                ? "text-white bg-white/10"
-                                : "text-white/90 hover:text-white hover:bg-white/5"
+                                ? "text-white bg-white/20 shadow-lg scale-[1.02]"
+                                : "text-white/80 hover:text-white hover:bg-white/10 hover:scale-[1.01]"
                             }
                           `}
                           renderContent={() => (
                             <>
-                              {IconComponent && <IconComponent className="w-4 h-4" />}
-                              <span>{item.name}</span>
+                              {IconComponent && (
+                                <IconComponent
+                                  className={`w-4 h-4 transition-all duration-300 ${
+                                    activeItem === item.name ? "text-white" : "text-white/70 group-hover:text-white"
+                                  }`}
+                                />
+                              )}
+                              <span className="transition-all duration-300">{item.name}</span>
+                              {/* Hover effect background */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg -z-10" />
                             </>
                           )}
                         />

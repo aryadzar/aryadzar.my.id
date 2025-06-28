@@ -40,17 +40,17 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
   }, [headings])
 
   const handleClick = (id: string) => {
-    const element = document.getElementById(id)
+    const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      })
-      window.history.pushState(null, "", `#${id}`)
+      const yOffset = -120; // ✅ ganti sesuai tinggi navbar kamu (misal 80px)
+      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
 
+      window.scrollTo({ top: y, behavior: "smooth" });
+      window.history.pushState(null, "", `#${id}`);
     }
-    setIsOpen(false)
-  }
+
+    setIsOpen(false); // ✅ tetap tutup sidebar/toast TOC kalau di mobile
+  };
 
   if (headings.length === 0) return null
 
@@ -123,10 +123,9 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
                       onClick={() => handleClick(heading.id)}
                       className={`
                         w-full text-left p-2 rounded-lg transition-all duration-300 group relative overflow-hidden
-                        ${
-                          isActive
-                            ? "bg-blue-500/20 text-white border-l-2 border-blue-400"
-                            : "text-gray-300 hover:text-white hover:bg-white/5"
+                        ${isActive
+                          ? "bg-blue-500/20 text-white border-l-2 border-blue-400"
+                          : "text-gray-300 hover:text-white hover:bg-white/5"
                         }
                       `}
                       style={{ marginLeft: `${marginLeft}px` }}
@@ -150,9 +149,8 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
 
                       <div className="flex items-center gap-2">
                         <ChevronRight
-                          className={`w-3 h-3 transition-transform duration-200 ${
-                            isActive ? "rotate-90 text-blue-400" : "group-hover:translate-x-1"
-                          }`}
+                          className={`w-3 h-3 transition-transform duration-200 ${isActive ? "rotate-90 text-blue-400" : "group-hover:translate-x-1"
+                            }`}
                         />
                         <span className="text-xs font-medium line-clamp-2 leading-relaxed">{heading.text}</span>
                       </div>
@@ -238,10 +236,9 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
                           onClick={() => handleClick(heading.id)}
                           className={`
                             w-full text-left p-3 rounded-lg transition-all duration-300 group
-                            ${
-                              isActive
-                                ? "bg-blue-500/20 text-white border-l-2 border-blue-400"
-                                : "text-gray-300 hover:text-white hover:bg-white/10"
+                            ${isActive
+                              ? "bg-blue-500/20 text-white border-l-2 border-blue-400"
+                              : "text-gray-300 hover:text-white hover:bg-white/10"
                             }
                           `}
                           style={{ marginLeft: `${marginLeft}px` }}
@@ -251,9 +248,8 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
                         >
                           <div className="flex items-center gap-2">
                             <ChevronRight
-                              className={`w-4 h-4 transition-transform duration-200 ${
-                                isActive ? "rotate-90 text-blue-400" : ""
-                              }`}
+                              className={`w-4 h-4 transition-transform duration-200 ${isActive ? "rotate-90 text-blue-400" : ""
+                                }`}
                             />
                             <span className="text-sm font-medium line-clamp-2">{heading.text}</span>
                           </div>
