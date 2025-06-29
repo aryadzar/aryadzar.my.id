@@ -1,0 +1,117 @@
+[
+  {
+    "id": 1,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921435/20250517_175702_dbnhxe.jpg",
+    "alt": "Sunset Indomaret",
+    "title": "Sunset Indomaret",
+    "type" : "photo"
+  },
+  {
+    "id": 2,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921439/20250517_120828_rb3cam.jpg",
+    "alt": "Foto Pantai",
+    "title": "Foto Pantai",
+        "type" : "photo"
+  },
+  {
+    "id": 3,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921439/20250517_120132_kh5ucg.jpg",
+    "alt": "Foto Pohon Kelapa",
+    "title": "Foto Pohon Kelapa",
+        "type" : "photo"
+
+  },
+  {
+    "id": 4,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921438/20250517_121529_ewy4ej.jpg",
+    "alt": "Foto Dekat Pantai",
+    "title": "Foto Dekat Pantai",
+        "type" : "photo"
+
+  },
+  {
+    "id": 5,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921436/20250517_120145_w5wgvi.jpg",
+    "alt": "Foto Pohon Kelapa dan Pantai",
+    "title": "Foto Pohon Kelapa dan Pantai",
+        "type" : "photo"
+
+  },
+  {
+    "id": 6,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921435/20250517_175652_lnxewb.jpg",
+    "alt": "Foto Indomaret",
+    "title": "Foto Indomaret",
+        "type" : "photo"
+  },
+  {
+    "id": 7,
+    "src": "https://res.cloudinary.com/din8s15ri/video/upload/v1748921467/20250517_160908_ekjnzt.mp4",
+    "alt": "Video Di atas Gunung",
+    "title": "Video Di atas Gunung",
+        "type" : "video"
+  },
+  {
+    "id": 8,
+    "src": "https://res.cloudinary.com/din8s15ri/video/upload/v1748921457/20250517_121131_qawps4.mp4",
+    "alt": "Video Pinggir Pantai",
+    "title": "Video Pinggir Pantai",
+        "type" : "video"
+  },
+  {
+    "id": 9,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921438/20250517_161751_g355ue.jpg",
+    "alt": "Foto Atas Pantai",
+    "title": "Foto Atas Pantai",
+        "type" : "photo"
+  },
+  {
+    "id": 10,
+    "src": "https://res.cloudinary.com/din8s15ri/video/upload/v1748921466/20250517_121550_rpc7q5.mp4",
+    "alt": "Video Atas Pantai",
+    "title": "Video Sekitar Pantai",
+    "type" : "video"
+  },
+  {
+    "id": 11,
+    "src": "https://res.cloudinary.com/din8s15ri/video/upload/v1748921465/20250517_162136_mqze6s.mp4",
+    "alt": "Video Atas Pantai",
+    "title": "Video Di atas Gunung",
+    "type" : "video"
+  },
+  {
+    "id": 12,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921435/20250517_163422_qjn3zg.jpg",
+    "alt": "Video Atas Pantai",
+    "title": "Foto Di atas Gunung",
+    "type" : "photo"
+  },
+  {
+    "id": 13,
+    "src": "https://res.cloudinary.com/din8s15ri/video/upload/v1748921474/20250517_162316_jkgqvx.mp4",
+    "alt": "Video Di atas Gunung",
+    "title": "Video Di atas Gunung",
+    "type" : "video"
+  },
+  {
+    "id": 14,
+    "src": "https://res.cloudinary.com/din8s15ri/video/upload/v1748921474/20250517_161129_ugs9t4.mp4",
+    "alt": "Video Di atas Gunung",
+    "title": "Video Di atas Gunung",
+    "type" : "video"
+  },
+  {
+    "id": 15,
+    "src": "https://res.cloudinary.com/din8s15ri/image/upload/v1748921436/20250517_120145_w5wgvi.jpg",
+    "alt": "Foto Dekat Pantai",
+    "title": "Foto Dekat Pantai",
+    "type" : "photo"
+  },
+  {
+    "id": 16,
+    "src": "https://res.cloudinary.com/din8s15ri/video/upload/v1748921477/20250517_161151_e8vgob.mp4",
+    "alt": "Video Atas Pantai",
+    "title": "Video Atas Pantai",
+    "type" : "video"
+  }
+]
