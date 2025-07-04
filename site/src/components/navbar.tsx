@@ -29,7 +29,7 @@ export default function MinimalNavbar() {
 
   useEffect(() => {
     audioRef.current = new Audio(
-      "https://res.cloudinary.com/din8s15ri/video/upload/v1749043736/%E7%9E%AC%E3%81%8D_Instrumental_rd5qy7.mp3",
+      "https://res.cloudinary.com/din8s15ri/video/upload/v1751588192/Marutsuke_Instrumental_mtppye.mp3",
     )
   }, [])
 
