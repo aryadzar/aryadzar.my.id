@@ -5,9 +5,9 @@ import { api } from "@/utils/api"
 import { extractFirstImage } from "@/utils/thumbnail-ext"
 import { generateSlug } from "@/utils/slug-helper"
 import Loading from "./loading"
-import { Link } from "react-router-dom"
 import { decodeHtmlEntities } from "@/utils/header-helper"
-// import { Link } from "react-router-dom"
+import PreserveLink from "./preserve-link"
+// import { PreserveLink } from "react-router-dom"
 
 interface Project {
   id: number
@@ -59,14 +59,14 @@ function ProjectCard({ project, index, className = "" }: ProjectCardProps) {
         <p className="text-gray-300 text-sm mb-4">{project.excerpt}</p>
 
         <div className="flex gap-3">
-          <Link
+          <PreserveLink
             to={`/project/${project.slug}`}
             // target="_blank"
             className="flex items-center gap-1 px-3 py-1 bg-violet-600/80 rounded-full hover:bg-violet-500 transition-colors"
           >
             <span className="text-sm">Detail</span>
             <ArrowUpRight className="w-4 h-4" />
-          </Link>
+          </PreserveLink>
         </div>
 
         <motion.div
@@ -140,13 +140,13 @@ export default function Projects() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Link
+            <PreserveLink
               to="/project"
               className="group inline-flex items-center gap-2 text-primary text-gray-400 hover:text-white  transition-colors"
             >
               <span>View All</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </PreserveLink>
           </motion.div>
         </div>
 

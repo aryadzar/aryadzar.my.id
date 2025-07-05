@@ -1,6 +1,7 @@
 import AboutEducation from "@/components/about-education";
 import AboutExperience from "@/components/about-experience";
 import AboutSkills from "@/components/about-skills";
+import PreserveLink from "@/components/preserve-link";
 import TechStack from "@/components/tech-stack";
 import MetaTags from "@/utils/MetaTags";
 import { ArrowLeft, Calendar, Download, Mail, MapPin, Phone } from "lucide-react";
@@ -17,10 +18,7 @@ export default function About() {
             />
             <div className="max-w-6xl mx-auto px-6 py-12">
                 <div className="mb-8">
-                    <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-                        <ArrowLeft className="w-4 h-4" />
-                        <span>Back to Home</span>
-                    </Link>
+
                 </div>
 
                 {/* Hero Section */}

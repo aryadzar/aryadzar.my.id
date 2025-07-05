@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { Menu, Pause, Play, X, ChevronDown, Settings, ImageIcon, Home } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import  {NavItem}  from "./NavItem"
+import { NavItem } from "./NavItem"
+import { useLocation } from "react-router-dom"
 
 const navItems = [
   { name: "Home", href: "/", type: "route", icon: Home },
@@ -98,13 +99,17 @@ export default function MinimalNavbar() {
   }, [])
 
   // Set active item based on current path
+  const location = useLocation()
+
   useEffect(() => {
-    const path = window.location.pathname
-    const currentItem = [...navItems, ...moreItems].find((item) => item.type === "route" && item.href === path)
+    const path = location.pathname
+    const currentItem = [...navItems, ...moreItems].find(
+      (item) => item.type === "route" && item.href === path
+    )
     if (currentItem) {
       setActiveItem(currentItem.name)
     }
-  }, [])
+  }, [location.pathname]) // <- React akan re-run saat path berubah
 
   const togglePlay = () => {
     const audio = audioRef.current
@@ -129,7 +134,7 @@ export default function MinimalNavbar() {
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className="fixed top-6 left-6 z-50"
       >
-          <img src="/icons/logo.svg" className="size-14" alt="" />
+        <img src="/icons/logo.svg" className="size-14" alt="" />
 
       </motion.div>
 
@@ -167,10 +172,9 @@ export default function MinimalNavbar() {
                       onClick={() => setActiveItem(item.name)}
                       className={`
                         text-sm font-medium transition-all duration-300 py-2 px-4 rounded-lg relative overflow-hidden group
-                        ${
-                          activeItem === item.name
-                            ? "text-white bg-white/15 shadow-lg"
-                            : "text-white/80 hover:text-white hover:bg-white/10"
+                        ${activeItem === item.name
+                          ? "text-white bg-white/15 shadow-lg"
+                          : "text-white/80 hover:text-white hover:bg-white/10"
                         }
                       `}
                     />
@@ -227,19 +231,17 @@ export default function MinimalNavbar() {
                               }}
                               className={`
                                 flex items-center space-x-3 w-full text-left px-4 py-3 text-sm font-medium transition-all duration-300 rounded-lg mx-1 relative overflow-hidden group
-                                ${
-                                  activeItem === item.name
-                                    ? "text-white bg-white/20 shadow-lg"
-                                    : "text-white/80 hover:text-white hover:bg-white/10 hover:scale-[1.02]"
+                                ${activeItem === item.name
+                                  ? "text-white bg-white/20 shadow-lg"
+                                  : "text-white/80 hover:text-white hover:bg-white/10 hover:scale-[1.02]"
                                 }
                               `}
                               renderContent={() => (
                                 <>
                                   {IconComponent && (
                                     <IconComponent
-                                      className={`w-4 h-4 transition-all duration-300 ${
-                                        activeItem === item.name ? "text-white" : "text-white/70 group-hover:text-white"
-                                      }`}
+                                      className={`w-4 h-4 transition-all duration-300 ${activeItem === item.name ? "text-white" : "text-white/70 group-hover:text-white"
+                                        }`}
                                     />
                                   )}
                                   <span className="transition-all duration-300">{item.name}</span>
@@ -343,19 +345,17 @@ export default function MinimalNavbar() {
                           }}
                           className={`
                             flex items-center space-x-3 w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 relative overflow-hidden group
-                            ${
-                              activeItem === item.name
-                                ? "text-white bg-white/20 shadow-lg scale-[1.02]"
-                                : "text-white/80 hover:text-white hover:bg-white/10 hover:scale-[1.01]"
+                            ${activeItem === item.name
+                              ? "text-white bg-white/20 shadow-lg scale-[1.02]"
+                              : "text-white/80 hover:text-white hover:bg-white/10 hover:scale-[1.01]"
                             }
                           `}
                           renderContent={() => (
                             <>
                               {IconComponent && (
                                 <IconComponent
-                                  className={`w-4 h-4 transition-all duration-300 ${
-                                    activeItem === item.name ? "text-white" : "text-white/70 group-hover:text-white"
-                                  }`}
+                                  className={`w-4 h-4 transition-all duration-300 ${activeItem === item.name ? "text-white" : "text-white/70 group-hover:text-white"
+                                    }`}
                                 />
                               )}
                               <span className="transition-all duration-300">{item.name}</span>

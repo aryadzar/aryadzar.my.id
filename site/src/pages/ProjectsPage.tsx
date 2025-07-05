@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import BackHome from "@/utils/BackHome";
 import { extractFirstImage } from "@/utils/thumbnail-ext";
 import { useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import MetaTags from "@/utils/MetaTags";
 import { generateSlug } from "@/utils/slug-helper";
 import { Loader2 } from "lucide-react";
 import { decodeHtmlEntities } from "@/utils/header-helper";
+import PreserveLink from "@/components/preserve-link";
 
 // let debounceTimeout: any;
 
@@ -150,7 +150,7 @@ export default function ProjectPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.map((post) => (
             <article key={post.id} className="group">
-              <Link to={`/project/${post.slug}`} className="block">
+              <PreserveLink to={`/project/${post.slug}`} className="block">
                 <div className="relative h-48 mb-4 overflow-hidden rounded-2xl">
                   <img
                     src={post.image || "/placeholder.svg"}
@@ -166,7 +166,7 @@ export default function ProjectPage() {
                   {post.title}
                 </h2>
                 <p className="text-gray-300">{post.excerpt}</p>
-              </Link>
+              </PreserveLink>
             </article>
           ))}
         </div>

@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import PreserveLink from "../preserve-link";
 
 interface goBackLinkProps{
     link : 'blog' | 'project'
@@ -13,7 +13,7 @@ export default function BackToBlog({link } : goBackLinkProps ) {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
     >
-      <Link
+      <PreserveLink
         to={`/${link}`}
         className="inline-flex items-center mt-5 gap-2 text-gray-400 hover:text-white transition-colors"
       >
@@ -21,7 +21,7 @@ export default function BackToBlog({link } : goBackLinkProps ) {
           <ArrowLeft className="w-4 h-4" />
         </motion.div>
         <span>Go back</span>
-      </Link>
+      </PreserveLink>
     </motion.div>
   );
 }

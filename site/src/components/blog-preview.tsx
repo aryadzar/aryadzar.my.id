@@ -5,10 +5,11 @@ import { extractFirstImage } from "@/utils/thumbnail-ext"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+
 import Loading from "./loading"
 import { generateSlug } from "@/utils/slug-helper"
 import { decodeHtmlEntities } from "@/utils/header-helper"
+import PreserveLink from "./preserve-link"
 
 
 
@@ -33,7 +34,7 @@ function BlogPostCard({ post, index }: BlogPostCardProps) {
       transition={{ duration: 0.6, delay: index * 0.1 }}
       className="group glow-on-hover rounded-2xl overflow-hidden"
     >
-      <Link to={`/blog/${post.slug}`} className="block">
+      <PreserveLink to={`/blog/${post.slug}`} className="block">
         <div className="relative h-48 mb-4 overflow-hidden rounded-t-lg">
           <img
             src={post.image || "/placeholder.svg"}
@@ -48,7 +49,7 @@ function BlogPostCard({ post, index }: BlogPostCardProps) {
             __html : post.excerpt
            }}>{}</p>
         </div>
-      </Link>
+      </PreserveLink>
     </motion.article>
   )
 }
@@ -116,13 +117,13 @@ export default function BlogPreview() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Link
+            <PreserveLink
               to="/blog"
               className="group inline-flex items-center gap-2 text-primary text-gray-400 hover:text-white transition-colors "
             >
               <span>View All</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </PreserveLink>
           </motion.div>
         </div>
 

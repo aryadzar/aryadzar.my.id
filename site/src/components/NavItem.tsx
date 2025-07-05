@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import {Link} from "react-router-dom"
+import PreserveLink from "./preserve-link"
 
 interface NavItemProps {
   name: string
@@ -28,9 +28,9 @@ export function NavItem({ name, href, type, className = "", onClick, renderConte
 
   if (type === "route") {
     return (
-      <Link to={href} className={`group ${className}`} onClick={onClick}>
+      <PreserveLink to={href} className={`group ${className}`} onClick={onClick}>
         {content}
-      </Link>
+      </PreserveLink>
     )
   }
 
