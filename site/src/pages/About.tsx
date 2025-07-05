@@ -1,10 +1,9 @@
 import AboutEducation from "@/components/about-education";
 import AboutExperience from "@/components/about-experience";
 import AboutSkills from "@/components/about-skills";
-import PreserveLink from "@/components/preserve-link";
 import TechStack from "@/components/tech-stack";
 import MetaTags from "@/utils/MetaTags";
-import { ArrowLeft, Calendar, Download, Mail, MapPin, Phone } from "lucide-react";
+import {  Calendar, Download, Mail, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function About() {
