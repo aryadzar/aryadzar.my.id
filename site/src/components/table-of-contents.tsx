@@ -59,7 +59,7 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
       {/* Mobile Toggle Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-20 right-4 z-50 p-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
+        className="xl:hidden fixed top-20 right-4 z-50 p-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -90,7 +90,7 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
 
       {/* Desktop TOC */}
       <motion.div
-        className="hidden lg:block fixed top-28 right-6 w-72 z-30"
+        className="hidden xl:block fixed top-28 right-6 w-72 z-30"
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.8 }}
@@ -197,7 +197,7 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
           <>
             {/* Backdrop */}
             <motion.div
-              className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              className="xl:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -206,7 +206,7 @@ export default function ModernTableOfContents({ headings }: ModernTableOfContent
 
             {/* Mobile TOC */}
             <motion.div
-              className="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[70vh]"
+              className="xl:hidden fixed top-20 right-4 left-4 md:left-auto md:w-80 z-50 max-h-[70vh]"
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
