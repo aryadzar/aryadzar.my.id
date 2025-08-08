@@ -14,6 +14,7 @@ import PostCover from "@/components/blog/post-cover"
 import PostBody from "@/components/blog/post-body"
 import { renderWithZoom } from "@/utils/imageHelperBlog"
 import { useEffect } from "react"
+import PostAuthor from "@/components/post-author"
 
 
 export default function BlogPostPage() {
@@ -62,6 +63,13 @@ export default function BlogPostPage() {
       >
         <BackToBlog link="blog" />
         <PostHeader title={post.title} date={new Date(post.published).toLocaleDateString()} />
+        {post.author && (
+          <PostAuthor
+            name={post.author.displayName}
+            imageUrl={post.author.image?.url}
+            publishedDate={post.published}
+          />
+        )}
         <PostCover image={extractFirstImage(post.content) ?? "/placeholder.svg"} title={post.title} />
         <PostBody>{renderWithZoom(post.content)}</PostBody>
         <GiscusComment />

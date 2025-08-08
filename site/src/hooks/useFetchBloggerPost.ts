@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { api } from "@/utils/api";
 import { extractIdFromSlug } from "@/utils/slug-helper";
  // kamu bisa gabungkan helper di sini
-import { BloggerPost } from "@/types/blogger-post";
 import preprocessHtmlWithZoomWrapper from "@/utils/imageHelperBlog";
 import { addIdsToHeadings, enhanceLinks, extractHeadingsFromHtml } from "@/utils/header-helper";
 
 export function useFetchBloggerPost(slug: string | undefined, requiredLabel?: string) {
-  const [post, setPost] = useState<BloggerPost | null>(null);
+  const [post, setPost] = useState<any | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [headings, setHeadings] = useState<{ id: string; text: string; level: number }[]>([]);
 
