@@ -11,7 +11,7 @@ import { Toaster } from 'react-hot-toast'
 import { Analytics } from '@vercel/analytics/react';
 import Footer from "./components/footer"
 import ScrollToTop from "./utils/scrollToTop"
-import PhotoGalleryView from "./pages/PhotoGallery"
+// import PhotoGalleryView from "./pages/PhotoGallery"
 import 'highlight.js/styles/github-dark.css';
 import ProjectPostPage from "./pages/ProjectPostPage"
 import UsesPage from "./pages/UsesPage"
@@ -47,7 +47,7 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/project" element={<ProjectsPage />} />
           <Route path="/project/:slug" element={<ProjectPostPage />} />
-          <Route path="/gallery" element={<PhotoGalleryView />} />
+          {/* <Route path="/gallery" element={<PhotoGalleryView />} /> */}
           <Route path="/uses" element={<UsesPage/>}/>
           <Route path="*" element={<NotFoundPage status={404} />} />
         </Routes>

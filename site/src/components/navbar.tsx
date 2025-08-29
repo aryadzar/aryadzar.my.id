@@ -13,7 +13,7 @@ const navItems = [
 ] as const
 
 const moreItems = [
-  { name: "Gallery", href: "/gallery", type: "route", icon: ImageIcon },
+  { name: "Gallery", href: "https://gallery.aryadzar.my.id/", type: "route", icon: ImageIcon },
   { name: "Uses", href: "/uses", type: "route", icon: Settings },
 ] as const
 
