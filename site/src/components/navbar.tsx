@@ -442,6 +442,7 @@ export default function MinimalNavbar() {
               className="absolute top-20 left-4 right-4"
               onClick={(e) => e.stopPropagation()}
             >
+
               <div className="overflow-hidden border shadow-xl bg-black/95 backdrop-blur-sm rounded-2xl border-gray-800/50">
                 <div className="p-4 space-y-1">
                   {[...navItems, ...moreItems].map((item, index) => {
