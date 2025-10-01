@@ -1,0 +1,11 @@
+{
+    "route": {
+        "home": "Home",
+        "blog": "Blog",
+        "projects": "Projects",
+        "about": "About",
+        "contact": "Contact",
+        "gallery": "Gallery",
+        "uses": "Uses"
+    }
+}

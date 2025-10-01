@@ -1,0 +1,11 @@
+{
+    "route": {
+        "home": "Beranda",
+        "blog": "Blog",
+        "projects": "Proyek",
+        "about": "Tentang",
+        "contact": "Kontak",
+        "gallery": "Galeri",
+        "uses": "Penggunaan"
+    }
+}
