@@ -1,0 +1,7 @@
+{
+  "default": "id",
+  "fallbacks": {
+    "id": "Konten tidak tersedia dalam bahasa Indonesia, ditampilkan fallback.",
+    "en": "Content not available in English, showing fallback language."
+  }
+}

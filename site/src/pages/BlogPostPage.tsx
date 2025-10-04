@@ -15,11 +15,16 @@ import PostBody from "@/components/blog/post-body"
 import { renderWithZoom } from "@/utils/imageHelperBlog"
 import { useEffect } from "react"
 import PostAuthor from "@/components/post-author"
+import { useTranslation } from "react-i18next"
 
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
-  const { post, notFound, headings } = useFetchBloggerPost(slug, "");
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
+
+  const { post, notFound, headings, fallbackMsg } = useFetchBloggerPost(slug, lang);
+
   useCodeHighlighter(post?.content);
 
   useEffect(() => {
@@ -52,17 +57,19 @@ export default function BlogPostPage() {
         name={post.title}
       />
 
-
       {/* Table of Contents */}
       <ModernTableOfContents headings={headings} />
       <motion.div
-        className="relative mt-10 z-10 max-w-4xl mx-auto px-6 py-12"
+        className="relative z-10 max-w-4xl px-6 py-12 mx-auto mt-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <BackToBlog link="blog" />
-        <PostHeader title={post.title} date={new Date(post.published).toLocaleDateString()} />
+        <PostHeader
+          title={post.title}
+          date={new Date(post.published).toLocaleDateString()}
+        />
         {post.author && (
           <PostAuthor
             name={post.author.displayName}
@@ -70,11 +77,20 @@ export default function BlogPostPage() {
             publishedDate={post.published}
           />
         )}
-        <PostCover image={extractFirstImage(post.content) ?? "/placeholder.svg"} title={post.title} />
+        <PostCover
+          image={extractFirstImage(post.content) ?? "/placeholder.svg"}
+          title={post.title}
+        />
+        {fallbackMsg && (
+          <div className="flex items-center gap-2 p-4 mb-4 text-sm text-red-600 border border-yellow-600 rounded-lg ">
+            <span className="text-lg">⚠️</span>
+            <span>{fallbackMsg}</span>
+          </div>
+        )}{" "}
         <PostBody>{renderWithZoom(post.content)}</PostBody>
         <GiscusComment />
         {/* </TracingBeam> */}
       </motion.div>
     </div>
-  )
+  );
 }

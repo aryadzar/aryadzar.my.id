@@ -3,9 +3,11 @@
 import { motion } from "framer-motion"
 import { useRef } from "react"
 import { LinkPreview } from "./ui/link-preview"
+import { useTranslation } from "react-i18next"
 
 export default function About() {
   const containerRef = useRef(null)
+  const {t} = useTranslation()
   // const imageRef = useRef<HTMLDivElement>(null)
   // const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
@@ -31,19 +33,19 @@ export default function About() {
   // }
 
   return (
-    <section id="about" className="py-20 px-6 bg-black">
+    <section id="about" className="px-6 py-20 bg-black">
       <div className="max-w-6xl mx-auto">
         <motion.h2
-          className="text-3xl md:text-4xl font-bold mb-16 text-center text-white"
+          className="mb-16 text-3xl font-bold text-center text-white md:text-4xl"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          About Me
+          {t("home.about.heading_1")}
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="grid items-center grid-cols-1 gap-12 md:grid-cols-2">
           <motion.div
             ref={containerRef}
             initial={{ opacity: 0, x: -50 }}
@@ -68,7 +70,7 @@ export default function About() {
               }}
             >
               <motion.div
-                className="w-full h-full relative"
+                className="relative w-full h-full"
                 style={{
                   rotateY: mousePosition.x * 20, // More pronounced X rotation
                   rotateX: mousePosition.y * -20, // More pronounced Y rotation
@@ -117,7 +119,7 @@ export default function About() {
 
           {/* Box ungu di belakang gambar */}
           {/* <motion.div
-              className="absolute -bottom-9 -right-9 h-40 w-40 bg-violet-600 rounded-2xl -z-10"
+              className="absolute w-40 h-40 -bottom-9 -right-9 bg-violet-600 rounded-2xl -z-10"
               animate={{
                 rotate: mousePosition.x * 8,
                 x: mousePosition.x * 15,
@@ -133,37 +135,34 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-bold mb-4 text-white">Hello, {" "}
+            <h3 className="mb-4 text-2xl font-bold text-white">{t("home.about.greetings")}, {" "}
               <LinkPreview url=" " 
               imageSrc="https://res.cloudinary.com/din8s15ri/image/upload/v1750426101/1721309054-6699177e1bdd4-1721308982-669917367da08-20240424_052236_ruwhms.jpg" 
-              className=" font-extrabold bg-gradient-to-r from-purple-800 via-purple-500 to-purple-300 text-transparent bg-clip-text animate-gradient" 
-              isStatic>I'm Arya Dzaky
+              className="font-extrabold text-transparent bg-gradient-to-r from-purple-800 via-purple-500 to-purple-300 bg-clip-text animate-gradient" 
+              isStatic>{t('home.about.name')}
               </LinkPreview> 
             </h3>
-            <p className="text-gray-300 mb-6">
-              I'm a passionate Full Stack Developer with 1 years of experience creating beautiful, functional, and
-              user-centered digital experiences. I am constantly exploring new technologies and techniques to push the
-              boundaries of web development.
+            <p className="mb-6 text-gray-300">
+              {t("home.about.desc_1")}
             </p>
-            <p className="text-gray-300 mb-6">
-              When I'm not coding, you can find me exploring nature, reading about new tech trends, or experimenting
-              with digital art. I believe in continuous learning and sharing knowledge with the developer community.
+            <p className="mb-6 text-gray-300">
+              {t("home.about.desc_2")}
             </p>
 
             {/* <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-900 p-4 rounded-2xl">
+              <div className="p-4 bg-gray-900 rounded-2xl">
                 <h4 className="font-bold text-violet-400">5+</h4>
                 <p className="text-sm text-gray-400">Years Experience</p>
               </div>
-              <div className="bg-gray-900 p-4 rounded-2xl">
+              <div className="p-4 bg-gray-900 rounded-2xl">
                 <h4 className="font-bold text-violet-400">50+</h4>
                 <p className="text-sm text-gray-400">Projects Completed</p>
               </div>
-              <div className="bg-gray-900 p-4 rounded-2xl">
+              <div className="p-4 bg-gray-900 rounded-2xl">
                 <h4 className="font-bold text-violet-400">20+</h4>
                 <p className="text-sm text-gray-400">Happy Clients</p>
               </div>
-              <div className="bg-gray-900 p-4 rounded-2xl">
+              <div className="p-4 bg-gray-900 rounded-2xl">
                 <h4 className="font-bold text-violet-400">10+</h4>
                 <p className="text-sm text-gray-400">Awards Won</p>
               </div>

@@ -7,5 +7,68 @@
         "contact": "Contact",
         "gallery": "Gallery",
         "uses": "Uses"
+    },
+    "footer": {
+        "desc_1": "Full Stack Developer passionate about creating beautiful and functional web experiences."
+    },
+    "warning": {
+        "no_translation": "This article is only available in {{lang}}."
+    },
+    "home": {
+        "hero": {
+            "button_cv": "View My Curiculum Vitae"
+        },
+        "about": {
+            "heading_1": "About Me",
+            "greetings": "Hello",
+            "name": "I'm Arya Dzaky",
+            "desc_1": "I'm a passionate Full Stack Developer with 1 years of experience creating beautiful, functional, and user-centered digital experiences. I am constantly exploring new technologies and techniques to push the boundaries of web development.",
+            "desc_2": "When I'm not coding, you can find me exploring nature, reading about new tech trends, or experimenting with digital art. I believe in continuous learning and sharing knowledge with the developer community."
+        },
+        "project": {
+            "project_heading": "My Projects",
+            "view": "View All"
+        },
+        "skills": {
+            "my_skills": "My Skills",
+            "heading_2": "Technical Proficiency",
+            "desc_1": "With a strong foundation in both frontend and backend technologies, I create seamless, responsive, and user-friendly applications. I'm constantly expanding my skill set to stay at the forefront of web development.",
+            "heading_3": "Additional Skills"
+        },
+        "exp_ed": {
+            "heading_1": "Experience & Education"
+        },
+        "blog": {
+            "heading_1": "Latest Blog Posts",
+            "view": "View All"
+        },
+        "contact": {
+            "heading_1": "Get In Touch",
+            "heading_2": "Contact Information",
+            "desc": "JFeel free to reach out if you're looking for a developer, have a question, or just want to connect.",
+            "sec_1": {
+                "phone": "Phone",
+                "location": "Location"
+            },
+            "sec_2": {
+                "current": "Current Availability",
+                "desc": "I'm currently available for freelance work and open to discussing new opportunities.",
+                "now": "Available for hire"
+            },
+            "sec_3": {
+                "name": {
+                    "label": "Your Name",
+                    "placeholder": "John Doe"
+                },
+                "email": {
+                    "label": "Your Email",
+                    "placeholder": "john@example.com"
+                },
+                "message": {
+                    "label": "Your Message",
+                    "placeholder": "Hello, i'd like to talk about..."
+                }
+            }
+        }
     }
 }

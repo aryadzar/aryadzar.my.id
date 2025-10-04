@@ -7,5 +7,67 @@
         "contact": "Kontak",
         "gallery": "Galeri",
         "uses": "Penggunaan"
+    },
+    "footer": {
+        "desc_1": "Fullstack developer yang bersemangat menciptakan pengalaman web yang indah dan fungsional."
+    },
+    "warning": {
+        "no_translation": "Artikel ini hanya tersedia dalam bahasa {{lang}}."
+    },
+    "home": {
+        "hero": {
+            "button_cv": "Lihat CV Saya"
+        },
+        "about": {
+            "heading_1": "Tentang Saya",
+            "greetings": "Halo",
+            "name": "Saya Arya Dzaky",
+            "desc_1": "Saya seorang Full Stack Developer yang penuh semangat dengan pengalaman 1 tahun dalam menciptakan pengalaman digital yang indah, fungsional, dan berpusat pada pengguna. Saya terus mengeksplorasi teknologi dan teknik baru untuk mendorong batasan pengembangan web.",
+            "desc_2": "Di luar coding, Anda bisa menemukan saya menjelajahi alam, membaca tentang tren teknologi baru, atau bereksperimen dengan seni digital. Saya percaya pada pembelajaran berkelanjutan dan berbagi pengetahuan dengan komunitas developer."
+        },
+        "project": {
+            "project_heading": "Proyek Saya",
+            "view": "Lihat Semua"
+        },
+        "skills": {
+            "my_skills": "Skill Saya",
+            "heading_2": "Kemampuan Teknis",
+            "desc_1": "Dengan fondasi yang kuat dalam teknologi front-end dan back-end, saya menciptakan aplikasi yang mulus, responsif, dan ramah pengguna. Saya terus mengembangkan keahlian saya untuk tetap menjadi yang terdepan dalam pengembangan web.",
+            "heading_3": "Skills Tambahan"
+        },
+        "exp_ed": {
+            "heading_1": "Pengalaman dan Sekolah"
+        },
+        "blog": {
+            "heading_1": "Blog Postingan Terbaru"
+        },
+        "contact": {
+            "heading_1": "Hubungi Saya",
+            "heading_2": "Informasi Kontak",
+            "desc": "Jangan ragu untuk menghubungi kami jika Anda mencari pengembang, punya pertanyaan, atau sekadar ingin terhubung.",
+            "sec_1": {
+                "phone": "Telepon",
+                "location": "Lokasi"
+            },
+            "sec_2": {
+                "current": "Ketersediaan Saat Ini",
+                "desc": "Saat ini saya bersedia bekerja lepas dan terbuka untuk mendiskusikan peluang baru.",
+                "now": "Sekarang bisa untuk direkrut"
+            },
+            "sec_3": {
+                "name": {
+                    "label": "Nama Kamu",
+                    "placeholder": "John Doe"
+                },
+                "email": {
+                    "label": "Email Kamu",
+                    "placeholder": "john@example.com"
+                },
+                "message": {
+                    "label": "Pesan Kamu",
+                    "placeholder": "Halo, saya ingin membicarakan tentang..."
+                }
+            }
+        }
     }
 }
