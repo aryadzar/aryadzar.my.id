@@ -47,11 +47,11 @@ export function useFetchBloggerPost(
         // ✅ Kasus 2: tidak ada label lang, tapi ada label default
         else if (labels.includes(defaultLang)) {
           setFallbackMsg(
-            langFallback.fallbacks[lang] || "Fallback ke bahasa default."
+            langFallback.fallbacks[lang as keyof typeof langFallback["fallbacks"]] || "Fallback ke bahasa default."
           );
         } else {
           setFallbackMsg(
-            langFallback.fallbacks[lang] ||
+            langFallback.fallbacks[lang as keyof typeof langFallback["fallbacks"]] ||
               `Konten tidak tersedia dalam ${lang}, ditampilkan ${labels[0]}.`
           );
         }
