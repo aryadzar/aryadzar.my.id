@@ -14,7 +14,7 @@ export async function GET(
         _id,
         title,
         slug,
-        thumbnail,
+        "thumbnail" : thumbnail.asset->url,
         shortDesc,
         description,
         categories[]->{_id, title, slug},

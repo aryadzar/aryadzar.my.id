@@ -1,157 +1,129 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { motion, useReducedMotion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { SearchBar } from "@/components/search-bar"
-import { Pagination } from "@/components/pagination"
-
-type Project = {
-  title: string
-  description: string
-  image?: string
-  href?: string
-  tags?: string[]
-}
-
-const ALL_PROJECTS: Project[] = [
-  {
-    title: "Portfolio Website",
-    description: "Situs pribadi modern.",
-    image: "/creative-portfolio-layout.png",
-    tags: ["Next.js", "Tailwind"],
-    href: "#",
-  },
-  {
-    title: "Analytics Dashboard",
-    description: "Pantau KPI secara real-time.",
-    image: "/general-data-dashboard.png",
-    tags: ["Recharts", "API"],
-    href: "#",
-  },
-  {
-    title: "E-commerce UI",
-    description: "Fokus konversi & aksesibilitas.",
-    image: "/ecommerce-concept.png",
-    tags: ["UI/UX", "A11y"],
-    href: "#",
-  },
-  {
-    title: "Chat App",
-    description: "Real-time chat dengan AI reply.",
-    image: "/modern-chat-app.png",
-    tags: ["AI", "WebSocket"],
-    href: "#",
-  },
-  {
-    title: "Docs Site",
-    description: "Dokumentasi yang rapi & cepat.",
-    image: "/docs-site.jpg",
-    tags: ["MDX", "Search"],
-    href: "#",
-  },
-  {
-    title: "Landing SaaS",
-    description: "Landing page untuk SaaS.",
-    image: "/saas-landing.jpg",
-    tags: ["Marketing"],
-    href: "#",
-  },
-  {
-    title: "Photo Gallery",
-    description: "Galeri responsif & cepat.",
-    image: "/art-gallery.png",
-    tags: ["Images"],
-    href: "#",
-  },
-  {
-    title: "Task Manager",
-    description: "Produktivitas harian.",
-    image: "/tasks-list.png",
-    tags: ["State"],
-    href: "#",
-  },
-  {
-    title: "Finance Tracker",
-    description: "Kelola pengeluaran/pendapatan.",
-    image: "/finance-growth.png",
-    tags: ["Charts"],
-    href: "#",
-  },
-  {
-    title: "Blog Engine",
-    description: "Mesin blog minimalis.",
-    image: "/blog-engine.jpg",
-    tags: ["Content"],
-    href: "#",
-  },
-  {
-    title: "Booking App",
-    description: "Reservasi waktu slot.",
-    image: "/online-booking-concept.png",
-    tags: ["Calendar"],
-    href: "#",
-  },
-  {
-    title: "Maps Explorer",
-    description: "Eksplorasi peta & tempat.",
-    image: "/maps.jpg",
-    tags: ["Maps"],
-    href: "#",
-  },
-]
+import { useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SearchBar } from "@/components/search-bar";
+import { Pagination } from "@/components/pagination";
+import { useQuery } from "@tanstack/react-query";
+import { getProjects } from "@/lib/getProject";
+import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function ProjectsIndexPage() {
-  const [query, setQuery] = useState("")
-  const [page, setPage] = useState(1)
-  const perPage = 6
-  const prefersReduced = useReducedMotion()
+  const prefersReduced = useReducedMotion();
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 6;
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return ALL_PROJECTS
-    return ALL_PROJECTS.filter((p) => {
-      const inTitle = p.title.toLowerCase().includes(q)
-      const inDesc = p.description.toLowerCase().includes(q)
-      const inTags = (p.tags || []).some((t) => t.toLowerCase().includes(q))
-      return inTitle || inDesc || inTags
-    })
-  }, [query])
+  // ⏳ Debounce 400ms
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      setPage(1); // reset page
+    }, 400);
 
-  const total = filtered.length
-  const totalPages = Math.max(1, Math.ceil(total / perPage))
-  const current = Math.min(page, totalPages)
-  const startIndex = (current - 1) * perPage
-  const pageItems = filtered.slice(startIndex, startIndex + perPage)
+    return () => clearTimeout(handler);
+  }, [query]);
 
-  const container = { hidden: {}, show: { transition: { staggerChildren: prefersReduced ? 0 : 0.06 } } }
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["projects", page, debouncedQuery],
+    queryFn: () => getProjects("en", page, perPage, debouncedQuery),
+  });
+
+  const projects = data?.projects ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 1;
+
+  const container = {
+    hidden: {},
+    show: { transition: { staggerChildren: prefersReduced ? 0 : 0.06 } },
+  };
   const item = {
     hidden: { opacity: 0, y: prefersReduced ? 0 : 18 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.45, ease: "easeOut" },
+    },
+  } as const;
+
+  if (isLoading) {
+    return (
+      <main className="w-full bg-background text-foreground">
+        <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
+          <header className="mb-6 md:mb-8">
+            <Skeleton className="w-1/2 h-10" />
+            <Skeleton className="w-3/4 h-5 mt-2" />
+          </header>
+          <div className="mb-6">
+            <Skeleton className="w-full h-12" />
+          </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i}>
+                <Skeleton className="aspect-[16/9] w-full" />
+                <CardHeader>
+                  <Skeleton className="w-3/4 h-6" />
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Skeleton className="w-16 h-5" />
+                    <Skeleton className="w-20 h-5" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="w-full h-4" />
+                  <Skeleton className="w-5/6 h-4 mt-2" />
+                  <Skeleton className="w-32 h-10 mt-6" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Error loading projects. Please try again later.
+      </div>
+    );
   }
 
   return (
     <main className="w-full bg-background text-foreground">
-      <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
+      <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
         <header className="mb-6 md:mb-8">
-          <h1 className="text-balance text-3xl font-semibold md:text-4xl">Semua Proyek</h1>
-          <p className="mt-2 text-muted-foreground">Pencarian dan pagination untuk menjelajah proyek saya.</p>
+          <h1 className="text-3xl font-semibold text-balance md:text-4xl">
+            Semua Proyek
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            Pencarian dan pagination untuk menjelajah proyek saya.
+          </p>
         </header>
 
         <div className="mb-6">
           <SearchBar
             value={query}
             onChange={(v) => {
-              setQuery(v)
-              setPage(1)
+              setQuery(v);
             }}
             placeholder="Cari proyek berdasarkan judul, deskripsi, atau tag…"
           />
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">
-          {total} hasil • halaman {current}/{totalPages}
+          {total} hasil • halaman {page}/{totalPages}
         </p>
 
         <motion.div
@@ -160,57 +132,57 @@ export default function ProjectsIndexPage() {
           animate="show"
           className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
-          {pageItems.map((p, idx) => (
+          {projects.map((p, idx) => (
             <motion.div
-              key={p.title + idx}
+              key={idx}
               variants={item}
               whileHover={prefersReduced ? undefined : { y: -4, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 250, damping: 24 }}
             >
-              <Card className="group h-full overflow-hidden border-border bg-card text-card-foreground transition hover:shadow-lg hover:border-foreground/20">
+              <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20">
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <img
-                    src={p.image || "/placeholder.svg?height=360&width=640&query=project%20cover"}
+                  <Image
+                    src={p.thumbnail}
                     alt={`Gambar proyek ${p.title}`}
-                    className="h-full w-full object-cover transition-transform duration-300 will-change-transform group-hover:scale-105"
+                    width={640}
+                    height={360}
+                    className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
                     loading="lazy"
                   />
                 </div>
                 <CardHeader className="space-y-1">
-                  <CardTitle className="text-pretty text-lg">{p.title}</CardTitle>
-                  {p.tags && p.tags.length > 0 ? (
+                  <CardTitle className="text-lg text-pretty">
+                    {p.title}
+                  </CardTitle>
+                  {p.categories && p.categories.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {p.tags.slice(0, 6).map((t) => (
+                      {p.categories.slice(0, 6).map((t, i) => (
                         <span
-                          key={t}
-                          className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground"
+                          key={i}
+                          className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
                         >
-                          {t}
+                          {t.title}
                         </span>
                       ))}
                     </div>
                   ) : null}
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
-                  <CardDescription className="text-pretty">{p.description}</CardDescription>
+                  <CardDescription className="text-pretty">
+                    {p.shortDesc}
+                  </CardDescription>
                   <div>
-                    <Button asChild variant="default" className="bg-primary text-primary-foreground">
-                      <a
-                        href={
-                          p.href ||
-                          `/projects/${encodeURIComponent(
-                            p.title
-                              .toLowerCase()
-                              .replace(/[^a-z0-9]+/g, "-")
-                              .replace(/(^-|-$)/g, ""),
-                          )}`
-                        }
-                        target={p.href ? "_blank" : undefined}
-                        rel={p.href ? "noopener noreferrer" : undefined}
+                    <Button
+                      asChild
+                      variant="default"
+                      className="bg-primary text-primary-foreground"
+                    >
+                      <Link
+                        href={`/projects/${p.slug.current}`}
                         aria-label={`Lihat detail proyek ${p.title}`}
                       >
                         Lihat Detail
-                      </a>
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -219,8 +191,14 @@ export default function ProjectsIndexPage() {
           ))}
         </motion.div>
 
-        <Pagination total={total} page={current} perPage={perPage} onPageChange={setPage} className="mt-8" />
+        <Pagination
+          total={total}
+          page={page}
+          perPage={perPage}
+          onPageChange={setPage}
+          className="mt-8"
+        />
       </div>
     </main>
-  )
+  );
 }

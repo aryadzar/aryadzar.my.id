@@ -1,26 +1,33 @@
-import { client } from "@/sanity/lib/client";
 import { NextResponse } from "next/server";
+import { client } from "@/sanity/lib/client";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { lang: string } }
-) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const { lang } = await params;
+export async function GET(req: Request, { params }: any) {
+  const { lang } = await params;
+  const { searchParams } = new URL(req.url);
 
-    // Pagination parameters
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "6");
-    const start = (page - 1) * limit;
+  const page = Number(searchParams.get("page") || 1);
+  const limit = Number(searchParams.get("limit") || 6);
+  const q = (searchParams.get("q") || "").toLowerCase();
 
-    const now = new Date().toISOString();
+  const start = (page - 1) * limit;
 
-    // GROQ Query with filter & pagination
-    const query = `
-      *[_type == "project" && publishedAt <= $now && language == $lang]
-      | order(publishedAt desc)
-      [${start}...${start + limit}] {
+  // GROQ SEARCH FILTER
+  const searchFilter = q
+    ? `&& (
+        lower(title) match "*${q}*" ||
+        lower(shortDesc) match "*${q}*" ||
+        categories[]->title match "*${q}*"
+      )`
+    : "";
+
+  const query = `
+    {
+      "projects": *[
+        _type == "project" &&
+        language == "${lang}" &&
+        publishedAt <= now()
+        ${searchFilter}
+      ] | order(publishedAt desc) [${start}...${start + limit}] {
         _id,
         title,
         slug,
@@ -28,33 +35,27 @@ export async function GET(
         shortDesc,
         categories[]->{_id, title, slug},
         publishedAt
-      }
-    `;
+      },
 
-    const countQuery = `
-      count(*[_type == "project" && publishedAt <= $now && language == $lang])
-    `;
+      "total": count(*[
+        _type == "project" &&
+        language == "${lang}" &&
+        publishedAt <= now()
+        ${searchFilter}
+      ])
+    }
+  `;
 
-    const [projects, total] = await Promise.all([
-      client.fetch(query, { now, lang }),
-      client.fetch(countQuery, { now, lang }),
-    ]);
+  const { projects, total } = await client.fetch(query);
 
-    const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.max(1, Math.ceil(total / limit));
 
-    return NextResponse.json({
-      success: true,
-      page,
-      limit,
-      total,
-      totalPages,
-      projects,
-    });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch projects" },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({
+    success: true,
+    page,
+    limit,
+    total,
+    totalPages,
+    projects,
+  });
 }
