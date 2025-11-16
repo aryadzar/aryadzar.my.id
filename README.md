@@ -1,50 +1,70 @@
 # Project Portofolio
 
-Portofolio pribadi open source yang dibangun menggunakan **React** dan **Next.js**, dirancang untuk menampilkan karya, pengalaman, serta terintegrasi dengan Google Blogger API untuk menampilkan artikel terbaru. Proyek ini bersifat responsif, mendukung dark mode, dan menampilkan animasi modern.
+Portofolio pribadi open source yang dibangun menggunakan **Next.js**, dirancang untuk menampilkan karya, pengalaman, dan keahlian dalam pengembangan web modern.
 
-## 🔧 Teknologi yang Digunakan
+## STATUS PROYEK
 
-- React (folder: `/site`)
-- Next.js (folder: `/next-react-convert`)
-- React Router
-- Tailwind CSS
-- Google Blogger API Integration
+- **`/port_v2` (Aktif):** Versi terbaru dan aktif dikembangkan. Dibangun dengan Next.js 15, Tailwind CSS, dan Sanity sebagai CMS.
+- **`/site` (Deprecated):** Versi lama yang dibangun dengan React (Create React App). Tidak lagi dikelola.
+- **`/next-react-convert` (Deprecated):** Versi awal migrasi ke Next.js. Tidak lagi dikelola.
+
+Dokumentasi di bawah ini berfokus pada proyek `/port_v2`.
+
+## 🔧 Teknologi yang Digunakan (`/port_v2`)
+
+- **Framework:** Next.js 15
+- **Styling:** Tailwind CSS
+- **CMS:** Sanity
+- **UI Components:** Shadcn/UI, Radix UI
+- **Animasi:** Framer Motion
+- **Data Fetching:** React Query, SWR
+- **Deployment:** Vercel
 
 ## 🌐 Demo
 
-- React Version: [https://aryadzar.my.id](https://aryadzar.my.id)
-- Next.js Version (v2): [https://portofolio-v2.aryadzar.my.id](https://portofolio-v2.aryadzar.my.id)
+- **Versi Terbaru (v2):** [https://portofolio-v2.aryadzar.my.id](https://portofolio-v2.aryadzar.my.id)
+- **Versi Lama (React):** [https://aryadzar.my.id](https://aryadzar.my.id)
+
+## 📂 Struktur Folder (`/port_v2`)
+
+```
+port_v2/
+├── app/                  # Halaman dan layout (App Router)
+│   ├── (public)/         # Grup route untuk halaman publik
+│   └── studio/           # Route untuk Sanity Studio
+├── components/           # Komponen React yang dapat digunakan kembali
+├── lib/                  # Fungsi bantuan, koneksi API, dan utilitas
+├── public/               # Aset statis (gambar, ikon, video)
+├── sanity/               # Skema dan konfigurasi Sanity Studio
+└── types/                # Definisi tipe TypeScript
+```
 
 ## ✨ Fitur Unggulan
 
 - 🌙 Dark mode
-- 💫 Animasi antarmuka
-- 📱 Responsif untuk berbagai perangkat
-- 📰 Sinkronisasi artikel blog dari Google Blogger
-- 🧩 Struktur kode modular & mudah dikembangkan
+- 💫 Animasi antarmuka dengan Framer Motion
+- 📱 Desain responsif untuk berbagai perangkat
+- 📝 Konten dinamis yang dikelola melalui Sanity CMS
+- 🧩 Struktur kode modular & modern
 
-## 🚀 Cara Menjalankan Secara Lokal
+## 🚀 Cara Menjalankan Secara Lokal (`/port_v2`)
 
-### React Version (`/site`)
+1.  Masuk ke direktori proyek:
+    ```bash
+    cd port_v2
+    ```
+2.  Install dependensi:
+    ```bash
+    npm install
+    ```
+3.  Jalankan server pengembangan:
+    ```bash
+    npm run dev
+    ```
+4.  Buka [http://localhost:3000](http://localhost:3000) di browser Anda.
 
-```bash
-cd site
-npm install
-npm run start
-```
-## Next.js Version (/next-react-convert)
-
-```bash
-cd next-react-convert
-npm install
-npm run dev
-
-```
-
-# 📝 Lisensi
+## 📝 Lisensi
 Proyek ini dilisensikan di bawah MIT License.
 
-# 🙌 Kontribusi
+## 🙌 Kontribusi
 Kontribusi sangat terbuka! Silakan fork, buat pull request, atau ajukan isu jika menemukan bug atau memiliki ide pengembangan.
-
-
