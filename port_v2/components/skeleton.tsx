@@ -67,3 +67,48 @@ export function AboutSkeleton() {
     </section>
   );
 }
+
+export function CertificationSkeleton() {
+  return (
+    <section className="py-10 md:py-12">
+      <div className="max-w-6xl px-4 mx-auto">
+        {/* Heading Skeleton */}
+        <div className="flex items-center gap-2 mb-6">
+          <Skeleton className="w-5 h-5 rounded-full" />
+          <Skeleton className="w-40 h-6" />
+        </div>
+
+        {/* Grid Skeleton */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {[...Array(4)].map((_, idx) => (
+            <div
+              key={idx}
+              className="p-5 border shadow-sm rounded-xl border-border bg-card"
+            >
+              <div className="flex items-start gap-4">
+                {/* Logo Skeleton */}
+                <Skeleton className="w-12 h-12 rounded-md" />
+
+                <div className="flex-1 space-y-3">
+                  {/* Title */}
+                  <Skeleton className="w-48 h-5" />
+                  {/* Issuer */}
+                  <Skeleton className="w-32 h-4" />
+
+                  {/* Date + Badge */}
+                  <div className="flex items-center gap-3 pt-2">
+                    <Skeleton className="w-20 h-4" />
+                    <Skeleton className="h-4 rounded-full w-14" />
+                  </div>
+
+                  {/* Link */}
+                  <Skeleton className="w-32 h-4 mt-3" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
