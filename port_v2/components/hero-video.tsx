@@ -1,51 +1,49 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { motion, useReducedMotion } from "framer-motion"
+import { Button } from "@/components/ui/button";
+import { getHero } from "@/lib/getHome";
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { motion, useReducedMotion } from "framer-motion";
+import { useEffect } from "react";
+import { HeroSkeleton } from "./skeleton";
+import CvModal from "./cv/cvModal";
 
-type VideoSource = {
-  src: string
-  type: string
-}
+export function HeroVideoBackground() {
+  const prefersReduced = useReducedMotion();
 
-type HeroVideoBackgroundProps = {
-  title: string
-  subtitle?: string
-  ctaPrimary?: { label: string; href: string }
-  ctaSecondary?: { label: string; href: string }
-  sources?: VideoSource[]
-  poster?: string
-  overlayClassName?: string
-  className?: string
-}
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["hero", "en"],
+    queryFn: () => getHero("en"),
+  });
 
-export function HeroVideoBackground({
-}: HeroVideoBackgroundProps) {
-  const prefersReduced = useReducedMotion()
-
+  if (isLoading) {
+    return <HeroSkeleton />;
+  }
 
   return (
     <section
       aria-label="Hero dengan video latar belakang"
-      className={cn("relative isolate min-h-[80vh] overflow-hidden bg-background")}
+      className={cn(
+        "relative isolate min-h-[80vh] overflow-hidden bg-background"
+      )}
     >
       {/* Video latar (dekoratif) */}
       <video
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 object-cover w-full h-full"
         autoPlay
         muted
         loop
         playsInline
         aria-hidden="true"
       >
-        <source key={s.src} src={s.src} type={s.type} />
+        <source src={data?.videoUrl} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
       {/* Overlay untuk keterbacaan teks */}
       <motion.div
-        className={cn("absolute inset-0")}
+        className={cn("absolute inset-0 bg-background/60")}
         aria-hidden="true"
         initial={{ opacity: prefersReduced ? 1 : 0 }}
         animate={{ opacity: 1 }}
@@ -57,30 +55,30 @@ export function HeroVideoBackground({
         <div className="mx-auto flex min-h-[80vh] max-w-6xl items-center px-4 py-16 md:py-24">
           <motion.div
             className="max-w-2xl"
-            initial={{ opacity: prefersReduced ? 1 : 0, y: prefersReduced ? 0 : 16 }}
+            initial={{
+              opacity: prefersReduced ? 1 : 0,
+              y: prefersReduced ? 0 : 16,
+            }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">{title}</h1>
-            {subtitle ? <p className="mt-4 text-pretty text-lg md:text-xl text-muted-foreground">{subtitle}</p> : null}
+            <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl">
+              {data?.title}
+            </h1>
+            <p className="mt-4 text-lg text-pretty md:text-xl text-muted-foreground">
+              {data?.subtitle}
+            </p>
 
-            {(ctaPrimary || ctaSecondary) && (
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                {ctaPrimary ? (
-                  <Button asChild size="lg">
-                    <a href={ctaPrimary.href}>{ctaPrimary.label}</a>
-                  </Button>
-                ) : null}
-                {ctaSecondary ? (
-                  <Button asChild size="lg" variant="secondary">
-                    <a href={ctaSecondary.href}>{ctaSecondary.label}</a>
-                  </Button>
-                ) : null}
-              </div>
-            )}
+            <div className="flex flex-wrap items-center gap-3 mt-8">
+              <CvModal cvLink={data?.cvUrl as string} />
+
+              {/* <Button asChild size="lg" variant="secondary">
+                <a href="">Coba</a>
+              </Button> */}
+            </div>
           </motion.div>
         </div>
       </div>
     </section>
-  )
+  );
 }
