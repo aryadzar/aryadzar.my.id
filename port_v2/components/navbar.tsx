@@ -30,7 +30,7 @@ export function NavbarView() {
     {
       name: "About",
       link: "/about",
-    },    
+    },
     {
       name: "Contact",
       link: "#contact",
@@ -40,7 +40,7 @@ export function NavbarView() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="relative w-full">
+    <div className="">
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>
@@ -48,7 +48,7 @@ export function NavbarView() {
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
             <NavbarButton className="bg-background">
-                <ModeToggle/>
+              <ModeToggle />
             </NavbarButton>
           </div>
         </NavBody>
@@ -77,7 +77,7 @@ export function NavbarView() {
                 <span className="block">{item.name}</span>
               </a>
             ))}
-            <div className="flex w-full flex-col gap-4">
+            <div className="flex flex-col w-full gap-4">
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
@@ -99,4 +99,3 @@ export function NavbarView() {
     </div>
   );
 }
-

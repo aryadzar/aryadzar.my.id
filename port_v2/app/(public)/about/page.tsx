@@ -1,13 +1,14 @@
-import Link from "next/link"
-import { AboutBrief } from "@/components/about-brief"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { CertificationsSection } from "@/components/certifications-section"
+import Link from "next/link";
+import { AboutBrief } from "@/components/about-brief";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { CertificationsSection } from "@/components/certifications-section";
 
 export const metadata = {
   title: "About Arya Dzaky",
-  description: "Tentang saya, keahlian, dan bagaimana Anda dapat menghubungi saya.",
-}
+  description:
+    "Tentang saya, keahlian, dan bagaimana Anda dapat menghubungi saya.",
+};
 
 const skills: string[] = [
   "Next.js",
@@ -18,16 +19,19 @@ const skills: string[] = [
   "Shadcn UI",
   "Node.js",
   "REST/GraphQL",
-]
+];
 
 export default function AboutPage() {
   return (
     <main className="min-h-[60vh]">
       {/* Header */}
-      <header className="mx-auto max-w-5xl px-4 md:px-6 pt-10 md:pt-14">
-        <h1 className="text-balance text-3xl md:text-4xl font-semibold tracking-tight">Tentang Saya</h1>
+      <header className="max-w-5xl px-4 pt-10 mx-auto md:px-6 md:pt-14">
+        <h1 className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">
+          Tentang Saya
+        </h1>
         <p className="mt-2 text-pretty text-muted-foreground">
-          Ringkasan profil, keahlian utama, dan cara terbaik untuk berkolaborasi dengan saya.
+          Ringkasan profil, keahlian utama, dan cara terbaik untuk berkolaborasi
+          dengan saya.
         </p>
       </header>
 
@@ -53,11 +57,14 @@ export default function AboutPage() {
 
       {/* Keahlian */}
       <section aria-labelledby="skills-heading" className="py-10 md:py-14">
-        <div className="mx-auto max-w-5xl px-4 md:px-6">
-          <h2 id="skills-heading" className="text-balance text-2xl font-semibold tracking-tight">
+        <div className="max-w-5xl px-4 mx-auto md:px-6">
+          <h2
+            id="skills-heading"
+            className="text-2xl font-semibold tracking-tight text-balance"
+          >
             Keahlian
           </h2>
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mt-5">
             {skills.map((s) => (
               <Badge key={s} variant="secondary" className="rounded-md">
                 {s}
@@ -74,7 +81,7 @@ export default function AboutPage() {
 
       {/* CTA */}
       <section aria-labelledby="cta-heading" className="pb-16 md:pb-20">
-        <div className="mx-auto max-w-5xl px-4 md:px-6">
+        <div className="max-w-5xl px-4 mx-auto md:px-6">
           <h2 id="cta-heading" className="sr-only">
             Aksi
           </h2>
@@ -89,5 +96,5 @@ export default function AboutPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }
