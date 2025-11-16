@@ -1,45 +1,25 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import useSWR from "swr"
-import Image from "next/image"
-import { motion, useReducedMotion } from "framer-motion"
+import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { getNowPlaying } from "@/lib/getNowPlaying";
 
-type NowPlaying = {
-  isPlaying: boolean
-  title?: string
-  artist?: string
-  album?: string
-  albumImageUrl?: string
-  songUrl?: string
-}
+export function SpotifyNowPlaying({ className }: { className?: string }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["spotify"],
+    queryFn: () => getNowPlaying(),
+  });
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url, { cache: "no-store" })
-  if (!res.ok) {
-    // When API is missing or failed, return a safe fallback
-    return { isPlaying: false } as NowPlaying
-  }
-  return (await res.json()) as NowPlaying
-}
+  const prefersReducedMotion = useReducedMotion();
 
-export function SpotifyNowPlaying({
-  className,
-}: {
-  className?: string
-}) {
-  const { data, isLoading } = useSWR<NowPlaying>("/api/spotify-now-playing", fetcher, {
-    revalidateOnFocus: false,
-  })
-
-  const prefersReducedMotion = useReducedMotion()
-
-  const isPlaying = data?.isPlaying
-  const albumArt = data?.albumImageUrl || "/abstract-soundscape.png"
-  const title = data?.title || "Not playing"
-  const artist = data?.artist || "Spotify"
-  const href = isPlaying && data?.songUrl ? data.songUrl : undefined
+  const isPlaying = data?.isPlaying;
+  const albumArt = data?.albumImageUrl || "/abstract-soundscape.png";
+  const title = data?.title || "Not playing";
+  const artist = data?.artist || "Spotify";
+  const href = isPlaying && data?.songUrl ? data.songUrl : undefined;
 
   if (isLoading) {
     return (
@@ -53,15 +33,15 @@ export function SpotifyNowPlaying({
         aria-busy="true"
       >
         <div className="shrink-0">
-          <div className="h-12 w-12 rounded-md ring-1 ring-border bg-muted animate-pulse" />
+          <div className="w-12 h-12 rounded-md ring-1 ring-border bg-muted animate-pulse" />
         </div>
-        <div className="min-w-0 flex-1 space-y-1">
-          <div className="h-4 w-2/3 rounded bg-muted animate-pulse" />
-          <div className="h-3 w-1/3 rounded bg-muted animate-pulse" />
+        <div className="flex-1 min-w-0 space-y-1">
+          <div className="w-2/3 h-4 rounded bg-muted animate-pulse" />
+          <div className="w-1/3 h-3 rounded bg-muted animate-pulse" />
         </div>
         <div className="ml-auto text-xs text-muted-foreground">Loading…</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -83,10 +63,16 @@ export function SpotifyNowPlaying({
       <div className="relative shrink-0">
         <motion.div
           aria-hidden="true"
-          animate={isPlaying && !prefersReducedMotion ? { rotate: 360 } : { rotate: 0 }}
+          animate={
+            isPlaying && !prefersReducedMotion ? { rotate: 360 } : { rotate: 0 }
+          }
           transition={
             isPlaying && !prefersReducedMotion
-              ? { repeat: Number.POSITIVE_INFINITY, duration: 8, ease: "linear" }
+              ? {
+                  repeat: Number.POSITIVE_INFINITY,
+                  duration: 8,
+                  ease: "linear",
+                }
               : undefined
           }
           className="rounded-md ring-1 ring-border"
@@ -101,26 +87,30 @@ export function SpotifyNowPlaying({
         </motion.div>
       </div>
 
-      <div className="min-w-0 flex-1">
+      <div className="flex-1 min-w-0">
         {href ? (
           <a
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="block truncate font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+            className="block font-medium truncate rounded hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {title}
           </a>
         ) : (
-          <p className="truncate font-medium">{title}</p>
+          <p className="font-medium truncate">{title}</p>
         )}
-        <p className="truncate text-sm text-muted-foreground">{artist}</p>
+        <p className="text-sm truncate text-muted-foreground">{artist}</p>
       </div>
 
-      <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+      <div className="flex items-center gap-2 ml-auto text-xs text-muted-foreground">
         <span className="hidden sm:inline">Now Playing</span>
         {!prefersReducedMotion && isPlaying ? (
-          <div className="flex items-end gap-0.5" aria-label="Audio playing visualization" aria-hidden="true">
+          <div
+            className="flex items-end gap-0.5"
+            aria-label="Audio playing visualization"
+            aria-hidden="true"
+          >
             {[
               { d: 0, h: 8 },
               { d: 0.15, h: 12 },
@@ -144,7 +134,7 @@ export function SpotifyNowPlaying({
         ) : null}
       </div>
     </div>
-  )
+  );
 }
 
-export default SpotifyNowPlaying
+export default SpotifyNowPlaying;

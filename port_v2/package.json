@@ -63,6 +63,7 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.4",
     "sanity": "^4.14.2",
+    "sanity-plugin-asset-source-unsplash": "^4.0.1",
     "sonner": "^1.7.4",
     "styled-components": "^6.1.19",
     "swr": "2.3.6",

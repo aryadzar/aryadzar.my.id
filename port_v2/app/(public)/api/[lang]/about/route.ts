@@ -8,11 +8,14 @@ export async function GET(
   const { lang } = await params;
 
   const data =
-    await client.fetch(`*[_type == "hero" && language == "${lang}"][0]{
-    title,
-    subtitle,
-    "videoUrl" : video.asset->url,
-    "cvUrl" : cvFile.asset->url
+    await client.fetch(`*[_type == "about" && language == "${lang}"][0]{
+        name,
+        jobTitle,
+        description,
+        "imageUrl": profileImage.asset->url,
+        "cvUrl": cvFile.asset->url,
+        "certificateUrl": certificateFile.asset->url
+
     }`);
 
   return NextResponse.json(data);

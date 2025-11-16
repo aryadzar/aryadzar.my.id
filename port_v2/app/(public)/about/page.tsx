@@ -36,24 +36,7 @@ export default function AboutPage() {
       </header>
 
       {/* About Brief */}
-      <AboutBrief
-        photoSrc="/images/profile-hero.jpg"
-        name="Nama Anda"
-        title="Front-end Developer"
-        description="Saya berfokus pada pengembangan antarmuka modern yang cepat, aksesibel, dan mudah dirawat. Saya senang membangun pengalaman yang halus dengan Next.js, memanfaatkan animasi secukupnya dengan framer-motion, serta menerapkan praktik terbaik untuk performa dan SEO."
-        actions={
-          <>
-            <Button asChild size="sm">
-              <Link href="/cv.pdf" download>
-                Download CV
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="#certifications">Lihat Sertifikat</Link>
-            </Button>
-          </>
-        }
-      />
+      <AboutBrief />
 
       {/* Keahlian */}
       <section aria-labelledby="skills-heading" className="py-10 md:py-14">
