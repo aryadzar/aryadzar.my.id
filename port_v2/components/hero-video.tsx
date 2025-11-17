@@ -43,7 +43,7 @@ export function HeroVideoBackground() {
 
       {/* Overlay untuk keterbacaan teks */}
       <motion.div
-        className={cn("absolute inset-0 bg-background/60")}
+        className={cn("absolute inset-0 bg-background/70")}
         aria-hidden="true"
         initial={{ opacity: prefersReduced ? 1 : 0 }}
         animate={{ opacity: 1 }}

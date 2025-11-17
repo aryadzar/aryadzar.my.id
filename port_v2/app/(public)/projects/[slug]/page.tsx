@@ -18,15 +18,16 @@ export default function ProjectDetailPage({
 }) {
   const articleRef = useRef<HTMLElement>(null);
   const prefersReduced = useReducedMotion();
+  const { slug } = params;
 
   const {
     data: result,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["project", params.slug],
-    queryFn: () => getProject(params.slug, "en"),
-    enabled: !!params.slug,
+    queryKey: ["project", slug],
+    queryFn: () => getProject(slug, "en"),
+    enabled: !!slug,
   });
 
   if (isLoading) {

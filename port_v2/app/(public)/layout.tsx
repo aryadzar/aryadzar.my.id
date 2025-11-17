@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import { NavbarView } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import ReactQueryProvider from "@/provider/react-query-provider";
+import BProgressProvider from "@/provider/bprogress-provider";
 
 export const metadata: Metadata = {
   title: "Arya Dzaky's Portfolio",
@@ -24,19 +25,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <ReactQueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <NavbarView />
-            {children}
-            <Footer />
-          </ThemeProvider>
-          <Analytics />
-        </ReactQueryProvider>
+        <BProgressProvider>
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <NavbarView />
+              {children}
+              <Footer />
+            </ThemeProvider>
+            <Analytics />
+          </ReactQueryProvider>
+        </BProgressProvider>
       </body>
     </html>
   );

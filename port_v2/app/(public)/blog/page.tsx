@@ -1,232 +1,190 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { motion, useReducedMotion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { SearchBar } from "@/components/search-bar"
-import { Pagination } from "@/components/pagination"
+import { useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SearchBar } from "@/components/search-bar";
+import { Pagination } from "@/components/pagination";
+import { useQuery } from "@tanstack/react-query";
+import { getBlogs } from "@/lib/getBlogs";
+import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Post = {
-  title: string
-  excerpt: string
-  image?: string
-  date?: string
-  href?: string
-  tags?: string[]
-}
-
-const ALL_POSTS: Post[] = [
-  {
-    title: "Mendesain Hero Video yang Aksesibel",
-    excerpt: "Best practice hero video yang cepat dan terbaca.",
-    image: "/hero-video.jpg",
-    date: "2025-09-14",
-    tags: ["A11y", "Performance"],
-    href: "#",
-  },
-  {
-    title: "Bento Grid untuk Landing Page Modern",
-    excerpt: "Grid responsif untuk konten kaya.",
-    image: "/bento-grid.jpg",
-    date: "2025-08-02",
-    tags: ["UI", "Layout"],
-    href: "#",
-  },
-  {
-    title: "Optimasi Gambar dengan Token Warna",
-    excerpt: "Konsistensi tema dan kontras di kartu.",
-    image: "/design-tokens.jpg",
-    date: "2025-07-10",
-    tags: ["Design System"],
-    href: "#",
-  },
-  {
-    title: "Tips Performance Next.js",
-    excerpt: "Teknik sederhana tingkatkan Lighthouse.",
-    image: "/stage-performance.png",
-    date: "2025-06-11",
-    tags: ["Next.js", "Perf"],
-    href: "#",
-  },
-  {
-    title: "UI yang Ramah Pembaca",
-    excerpt: "Line-length dan leading yang ideal.",
-    image: "/typography-collage.png",
-    date: "2025-05-16",
-    tags: ["Typography"],
-    href: "#",
-  },
-  {
-    title: "Aksesibilitas Dasar",
-    excerpt: "Mulai dari alt text dan fokus states.",
-    image: "/accessibility.jpg",
-    date: "2025-04-03",
-    tags: ["A11y"],
-    href: "#",
-  },
-  {
-    title: "Arsitektur App Router",
-    excerpt: "Pola halaman, RSC, dan actions.",
-    image: "/app-router.jpg",
-    date: "2025-03-14",
-    tags: ["Next.js"],
-    href: "#",
-  },
-  {
-    title: "SWR untuk Data Client",
-    excerpt: "Cache dan revalidate dengan elegan.",
-    image: "/swr.jpg",
-    date: "2025-02-10",
-    tags: ["SWR"],
-    href: "#",
-  },
-  {
-    title: "Recharts di shadcn",
-    excerpt: "Chart yang serasi dengan tema.",
-    image: "/charts.jpg",
-    date: "2024-12-21",
-    tags: ["Charts"],
-    href: "#",
-  },
-  {
-    title: "Form UX Cepat",
-    excerpt: "Validasi dan affordance yang jelas.",
-    image: "/forms.jpg",
-    date: "2024-11-08",
-    tags: ["Forms"],
-    href: "#",
-  },
-  {
-    title: "Pattern Layout Grid",
-    excerpt: "Kapan pakai Flex vs Grid.",
-    image: "/abstract-geometric-layout.png",
-    date: "2024-10-01",
-    tags: ["Layout"],
-    href: "#",
-  },
-  {
-    title: "Dark Mode yang Mantap",
-    excerpt: "Kontras dan token warna.",
-    image: "/dark-mode.jpg",
-    date: "2024-09-12",
-    tags: ["Theme"],
-    href: "#",
-  },
-]
+  title: string;
+  excerpt: string;
+  image?: string;
+  date?: string;
+  href?: string;
+  tags?: string[];
+};
 
 export default function BlogIndexPage() {
-  const [query, setQuery] = useState("")
-  const [page, setPage] = useState(1)
-  const perPage = 6
-  const prefersReduced = useReducedMotion()
+  const prefersReduced = useReducedMotion();
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 6;
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return ALL_POSTS
-    return ALL_POSTS.filter((p) => {
-      const inTitle = p.title.toLowerCase().includes(q)
-      const inExcerpt = p.excerpt.toLowerCase().includes(q)
-      const inTags = (p.tags || []).some((t) => t.toLowerCase().includes(q))
-      return inTitle || inExcerpt || inTags
-    })
-  }, [query])
+  // ⏳ Debounce 400ms
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      setPage(1); // reset page
+    }, 400);
 
-  const total = filtered.length
-  const totalPages = Math.max(1, Math.ceil(total / perPage))
-  const current = Math.min(page, totalPages)
-  const startIndex = (current - 1) * perPage
-  const pageItems = filtered.slice(startIndex, startIndex + perPage)
+    return () => clearTimeout(handler);
+  }, [query]);
 
-  const container = { hidden: {}, show: { transition: { staggerChildren: prefersReduced ? 0 : 0.06 } } }
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["blogs", page, debouncedQuery],
+    queryFn: () => getBlogs("en", page, perPage, debouncedQuery),
+  });
+
+  const blogs = data?.blogs ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 1;
+
+  console.log(data);
+  console.log(blogs);
+  const container = {
+    hidden: {},
+    show: { transition: { staggerChildren: prefersReduced ? 0 : 0.06 } },
+  };
   const item = {
     hidden: { opacity: 0, y: prefersReduced ? 0 : 18 },
     show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
-  }
+  } as const;
 
+  if (isLoading) {
+    return (
+      <main className="w-full bg-background text-foreground">
+        <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
+          <header className="mb-6 md:mb-8">
+            <Skeleton className="w-1/2 h-10" />
+            <Skeleton className="w-3/4 h-5 mt-2" />
+          </header>
+          <div className="mb-6">
+            <Skeleton className="w-full h-12" />
+          </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i}>
+                <Skeleton className="aspect-[16/9] w-full" />
+                <CardHeader>
+                  <Skeleton className="w-3/4 h-6" />
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Skeleton className="w-16 h-5" />
+                    <Skeleton className="w-20 h-5" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="w-full h-4" />
+                  <Skeleton className="w-5/6 h-4 mt-2" />
+                  <Skeleton className="w-32 h-10 mt-6" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </main>
+    );
+  }
   return (
     <main className="w-full bg-background text-foreground">
-      <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
+      <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
         <header className="mb-6 md:mb-8">
-          <h1 className="text-balance text-3xl font-semibold md:text-4xl">Semua Blog</h1>
-          <p className="mt-2 text-muted-foreground">Cari artikel dan jelajahi arsip tulisan saya.</p>
+          <h1 className="text-3xl font-semibold text-balance md:text-4xl">
+            Semua Blog
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            Cari artikel dan jelajahi arsip tulisan saya.
+          </p>
         </header>
 
         <div className="mb-6">
           <SearchBar
             value={query}
             onChange={(v) => {
-              setQuery(v)
-              setPage(1)
+              setQuery(v);
             }}
             placeholder="Cari blog berdasarkan judul, ringkas, atau tag…"
           />
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">
-          {total} hasil • halaman {current}/{totalPages}
+          {total} hasil • halaman {page}/{totalPages}
         </p>
 
         <motion.div
           variants={container}
-          initial="hidden"
           animate="show"
           className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
-          {pageItems.map((post, idx) => (
+          {blogs.map((post, idx) => (
             <motion.article
               key={post.title + idx}
               variants={item}
               whileHover={prefersReduced ? undefined : { y: -4, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 250, damping: 24 }}
             >
-              <Card className="group h-full overflow-hidden border-border bg-card text-card-foreground transition hover:shadow-lg hover:border-foreground/20">
+              <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20">
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
                   <img
-                    src={post.image || "/placeholder.svg?height=360&width=640&query=blog%20cover"}
+                    src={
+                      post.thumbnail ||
+                      "/placeholder.svg?height=360&width=640&query=blog%20cover"
+                    }
                     alt={`Gambar untuk ${post.title}`}
-                    className="h-full w-full object-cover transition-transform duration-300 will-change-transform group-hover:scale-105"
+                    className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
                     loading="lazy"
                   />
                 </div>
                 <CardHeader className="space-y-1">
-                  <CardTitle className="text-pretty text-lg">{post.title}</CardTitle>
-                  {post.date ? (
-                    <p className="text-xs text-muted-foreground">{new Date(post.date).toLocaleDateString()}</p>
+                  <CardTitle className="text-lg text-pretty">
+                    {post.title}
+                  </CardTitle>
+                  {post.publishedAt ? (
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(post.publishedAt).toLocaleDateString()}
+                    </p>
                   ) : null}
-                  {post.tags && post.tags.length > 0 ? (
+                  {post.categories && post.categories.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {post.tags.slice(0, 6).map((t) => (
+                      {post.categories.slice(0, 6).map((t, i) => (
                         <span
-                          key={t}
-                          className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground"
+                          key={i}
+                          className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
                         >
-                          {t}
+                          {t.title}
                         </span>
                       ))}
                     </div>
                   ) : null}
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
-                  <CardDescription className="text-pretty">{post.excerpt}</CardDescription>
+                  <CardDescription className="text-pretty">
+                    {post.excerpt}
+                  </CardDescription>
                   <div>
-                    <Button asChild variant="default" className="bg-primary text-primary-foreground">
-                      <a
-                        href={
-                          post.href ||
-                          `/blog/${encodeURIComponent(
-                            post.title
-                              .toLowerCase()
-                              .replace(/[^a-z0-9]+/g, "-")
-                              .replace(/(^-|-$)/g, ""),
-                          )}`
-                        }
-                        target={post.href ? "_blank" : undefined}
-                        rel={post.href ? "noopener noreferrer" : undefined}
+                    <Button
+                      asChild
+                      variant="default"
+                      className="bg-primary text-primary-foreground"
+                    >
+                      <Link
+                        href={`/blog/${post.slug.current}`}
                         aria-label={`Baca selengkapnya: ${post.title}`}
                       >
                         Baca Selengkapnya
-                      </a>
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -235,8 +193,14 @@ export default function BlogIndexPage() {
           ))}
         </motion.div>
 
-        <Pagination total={total} page={current} perPage={perPage} onPageChange={setPage} className="mt-8" />
+        <Pagination
+          total={total}
+          page={page}
+          perPage={perPage}
+          onPageChange={setPage}
+          className="mt-8"
+        />
       </div>
     </main>
-  )
+  );
 }

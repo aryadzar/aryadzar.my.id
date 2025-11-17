@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "./ui/card";
 
 export function HeroSkeleton() {
   return (
@@ -110,5 +111,27 @@ export function CertificationSkeleton() {
         </div>
       </div>
     </section>
+  );
+}
+
+export function ProjectsShowcaseSkeleton() {
+  return (
+    <div className="container grid grid-cols-1 gap-6 mx-auto  md:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <Card key={index} className="h-full overflow-hidden">
+          <Skeleton className="relative aspect-[16/9] w-full rounded-t-lg" />
+          <div className="p-6 space-y-3">
+            <Skeleton className="w-3/4 h-6" />
+            <div className="flex flex-wrap gap-2">
+              <Skeleton className="w-1/4 h-5" />
+              <Skeleton className="w-1/5 h-5" />
+            </div>
+            <Skeleton className="w-full h-4" />
+            <Skeleton className="w-5/6 h-4" />
+            <Skeleton className="w-1/3 h-10 rounded-md" />
+          </div>
+        </Card>
+      ))}
+    </div>
   );
 }

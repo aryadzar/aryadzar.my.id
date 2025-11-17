@@ -9,7 +9,11 @@ export default function CvModal({ cvLink }: { cvLink: string }) {
 
   return (
     <>
-      <Button size="lg" onClick={() => setOpen(true)}>
+      <Button
+        size="lg"
+        className="cursor-pointer "
+        onClick={() => setOpen(true)}
+      >
         Lihat CV
       </Button>
 

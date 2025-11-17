@@ -40,7 +40,7 @@ export function NavbarView() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="relative w-full">
+    <div className="inset-x-0 w-full mb-10">
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>

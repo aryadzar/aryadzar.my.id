@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProjectOverview } from "@/lib/getHome";
 import Image from "next/image";
 import Link from "next/link";
+import { ProjectsShowcaseSkeleton } from "./skeleton";
 
 type Project = {
   title: string;
@@ -52,6 +53,8 @@ export function ProjectsShowcase({
     hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
   } as const;
+
+  if (isLoading) return <ProjectsShowcaseSkeleton />;
 
   return (
     <section
@@ -128,8 +131,6 @@ export function ProjectsShowcase({
                     >
                       <Link
                         href={`/projects/${p.slug.current}` || "#"}
-                        target={p.slug.current ? "_blank" : undefined}
-                        rel={p.slug.current ? "noopener noreferrer" : undefined}
                         aria-label={`Lihat detail proyek ${p.title}`}
                       >
                         Lihat Detail

@@ -4,20 +4,86 @@ import { useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { TableOfContents } from "@/components/table-of-contents";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getBlog } from "@/lib/getBlogs";
+import { PortableText } from "@portabletext/react";
+import Link from "next/link";
+import Image from "next/image";
 
-export default function BlogPostPage() {
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const articleRef = useRef<HTMLElement>(null);
   const prefersReduced = useReducedMotion();
+  const { slug } = params;
+
+  const {
+    data: result,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["blog", slug],
+    queryFn: () => getBlog(slug, "en"),
+    enabled: !!slug,
+  });
+
+  if (isLoading) {
+    return (
+      <main className="w-full bg-background text-foreground">
+        <div className="max-w-6xl px-4 py-10 mx-auto md:px-6 md:py-16">
+          <header className="mb-8 md:mb-10">
+            <Skeleton className="w-3/4 h-10" />
+            <Skeleton className="w-1/2 h-5 mt-3" />
+          </header>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
+            <section className="md:col-span-8 lg:col-span-9">
+              <Skeleton className="w-full rounded-lg aspect-video" />
+              <div className="mt-8 prose prose-neutral max-w-none dark:prose-invert">
+                <Skeleton className="w-1/3 h-8" />
+                <Skeleton className="w-full h-5 mt-4" />
+                <Skeleton className="w-5/6 h-5 mt-2" />
+                <Skeleton className="w-1/4 h-8 mt-8" />
+                <Skeleton className="w-full h-5 mt-4" />
+                <Skeleton className="w-full h-5 mt-2" />
+                <Skeleton className="w-3/4 h-5 mt-2" />
+              </div>
+            </section>
+            <aside className="md:col-span-4 lg:col-span-3">
+              <Skeleton className="w-full h-64" />
+            </aside>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (isError || !result) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Error loading project or project not found. Please try again later.
+      </div>
+    );
+  }
+
   return (
     <main className="w-full bg-background text-foreground">
       <div className="max-w-6xl px-4 py-10 mx-auto md:px-6 md:py-16">
         <header className="mb-8 md:mb-10">
           <h1 className="text-3xl font-semibold text-balance md:text-4xl">
-            Mendesain Hero Video yang Aksesibel
+            {result.blog.title}
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Panduan praktik terbaik untuk performa dan aksesibilitas.
-          </p>
+          <p className="mt-2 text-muted-foreground">{result.blog.title}</p>
+          {result.blog.categories && result.blog.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {result.blog.categories.map((tag, i) => (
+                <span
+                  key={i}
+                  className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
+                >
+                  {tag.title}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
@@ -29,64 +95,30 @@ export default function BlogPostPage() {
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="[&_*]:scroll-mt-24 prose prose-neutral max-w-none dark:prose-invert"
             >
-              <img
-                src="/hero-video-cover.jpg"
-                alt="Ilustrasi hero video"
+              <Image
+                src={(result.blog.thumbnail as string) || "/project-hero.jpg"}
+                alt={`Cover image for ${result.blog.title}`}
+                width={1200}
+                height={675}
                 className="w-full mb-6 border rounded-lg border-border"
+                priority
               />
 
-              <h2 id="pengantar">Pengantar</h2>
-              <p>
-                Hero video dapat meningkatkan kesan pertama, namun perlu
-                diperhatikan aspek aksesibilitas, kontras, dan performa agar
-                pengalaman tetap cepat dan nyaman.
-              </p>
+              <PortableText value={result.blog.content} />
 
-              <h2 id="praktik-terbaik">Praktik Terbaik</h2>
-              <h3 id="autoplay-muted-playsinline">
-                Autoplay, muted, dan playsInline
-              </h3>
-              <p>
-                Untuk kompatibilitas mobile, pastikan atribut <code>muted</code>{" "}
-                serta <code>playsInline</code> digunakan, dan sediakan{" "}
-                <em>poster</em> agar first-paint tetap cepat.
-              </p>
-
-              <h3 id="overlay-dan-kontras">Overlay dan kontras</h3>
-              <p>
-                Tambahkan overlay berbasis token tema agar teks tetap terbaca
-                pada berbagai footage. Uji rasio kontras untuk heading dan body
-                text.
-              </p>
-
-              <h2 id="performa">Performa</h2>
-              <p>
-                Kompresi video, batasi durasi, dan gunakan format modern.
-                Sediakan fallback gambar untuk koneksi lambat.
-              </p>
-
-              <h2 id="penutup">Penutup</h2>
-              <p>
-                Dengan pengaturan tepat, hero video bisa tampil memukau tanpa
-                mengorbankan aksesibilitas maupun performa.
-              </p>
-
-              <div className="flex gap-3 mt-8">
+              <div className="flex flex-wrap gap-3 mt-8">
                 <Button
                   variant="default"
                   className="bg-primary text-primary-foreground"
                   asChild
                 >
-                  <a href="/blog">Kembali ke Blog</a>
-                </Button>
-                <Button variant="outline" asChild>
-                  <a href="/projects">Lihat Proyek Terkait</a>
+                  <Link href="/blog">Kembali ke Blog</Link>
                 </Button>
               </div>
             </motion.article>
           </section>
 
-          <aside className="md:col-span-4 lg:col-span-3">
+          <aside className="sticky self-start hidden top-24 h-fit md:col-span-4 md:block lg:col-span-3">
             <TableOfContents contentRef={articleRef} title="Daftar Isi" />
           </aside>
         </div>
