@@ -59,7 +59,7 @@ export default function AboutPage() {
 
       {/* Certifications on About page */}
       <div id="certifications">
-        <CertificationsSection limit={6} title="Certifications" />
+        <CertificationsSection limit={6} />
       </div>
 
       {/* CTA */}

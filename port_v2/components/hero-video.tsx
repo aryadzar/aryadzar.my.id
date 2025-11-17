@@ -1,18 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { getHero } from "@/lib/getHome";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect } from "react";
 import { HeroSkeleton } from "./skeleton";
 import CvModal from "./cv/cvModal";
 
 export function HeroVideoBackground() {
   const prefersReduced = useReducedMotion();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["hero", "en"],
     queryFn: () => getHero("en"),
   });

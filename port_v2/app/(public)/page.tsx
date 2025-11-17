@@ -1,5 +1,3 @@
-"use client";
-
 import { HeroVideoBackground } from "@/components/hero-video";
 import { AboutBrief } from "@/components/about-brief";
 import { ProjectsShowcase } from "@/components/projects-showcase";

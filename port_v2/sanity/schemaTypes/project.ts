@@ -35,7 +35,11 @@ export default defineType({
       name: "description",
       title: "Deskripsi Lengkap / Full Description",
       type: "array",
-      of: [{ type: "block" }, { type: "image", options: { hotspot: true } }],
+      of: [
+        { type: "block" },
+        { type: "image", options: { hotspot: true } },
+        { type: "code" },
+      ],
     }),
     defineField({
       name: "categories",

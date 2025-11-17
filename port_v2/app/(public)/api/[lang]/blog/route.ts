@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { client } from "@/sanity/lib/client";
 
-export async function GET(req: Request, { params }: any) {
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ lang: string }> }
+) {
   const { lang } = await params;
   const { searchParams } = new URL(req.url);
 

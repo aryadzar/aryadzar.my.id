@@ -1,6 +1,10 @@
 import axios from "axios";
 
-axios.interceptors.request.use(
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+});
+
+api.interceptors.request.use(
   function (config) {
     // Do something before request is sent
     return config;
@@ -12,7 +16,7 @@ axios.interceptors.request.use(
 );
 
 // Add a response interceptor
-axios.interceptors.response.use(
+api.interceptors.response.use(
   function onFulfilled(response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
@@ -25,4 +29,4 @@ axios.interceptors.response.use(
   }
 );
 
-export { axios as api };
+export { api };

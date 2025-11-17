@@ -35,7 +35,11 @@ export default defineType({
       name: "content",
       title: "Konten / Content",
       type: "array",
-      of: [{ type: "block" }, { type: "image", options: { hotspot: true } }],
+      of: [
+        { type: "block" },
+        { type: "image", options: { hotspot: true } },
+        { type: "code" },
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({

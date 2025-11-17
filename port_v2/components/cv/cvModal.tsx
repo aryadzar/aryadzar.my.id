@@ -41,7 +41,7 @@ export default function CvModal({ cvLink }: { cvLink: string }) {
                 {/* Tombol Close */}
                 <button
                   onClick={() => setOpen(false)}
-                  className="absolute top-3 right-3 z-50 px-3 py-1.5 text-sm rounded-md bg-black/70 text-white hover:bg-black/90 transition"
+                  className="absolute top-3 right-3 z-50 px-3 py-1.5 text-sm rounded-md bg-black/70 text-white cursor-pointer hover:bg-black/90 transition"
                 >
                   ✕
                 </button>

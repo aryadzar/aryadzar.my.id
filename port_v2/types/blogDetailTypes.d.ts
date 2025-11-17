@@ -31,6 +31,7 @@ export interface Content {
   _type: string;
   children: Children[];
   markDefs: any[];
+  code?: string;
   style: string;
 }
 
