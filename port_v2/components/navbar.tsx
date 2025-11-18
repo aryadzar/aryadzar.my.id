@@ -14,29 +14,17 @@ import { useState } from "react";
 import { ModeToggle } from "./toogle-mode";
 import Link from "next/link";
 import LanguageSwitcher from "./language-switcher";
+import { useTranslations } from "next-intl";
 
 export function NavbarView() {
+  const t = useTranslations("nav");
+
   const navItems = [
-    {
-      name: "Home",
-      link: "/",
-    },
-    {
-      name: "Project",
-      link: "/projects",
-    },
-    {
-      name: "Blog",
-      link: "/blog",
-    },
-    {
-      name: "About",
-      link: "/about",
-    },
-    {
-      name: "Contact",
-      link: "#contact",
-    },
+    { name: t("home"), link: "/" },
+    { name: t("projects"), link: "/projects" },
+    { name: t("blog"), link: "/blog" },
+    { name: t("about"), link: "/about" },
+    { name: t("contact"), link: "#contact" },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

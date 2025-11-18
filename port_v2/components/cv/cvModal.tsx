@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export default function CvModal({ cvLink }: { cvLink: string }) {
   const [open, setOpen] = useState(false);
-
+  const t = useTranslations("home.hero");
   return (
     <>
       <Button
@@ -14,7 +15,7 @@ export default function CvModal({ cvLink }: { cvLink: string }) {
         className="cursor-pointer "
         onClick={() => setOpen(true)}
       >
-        Lihat CV
+        {t("buttonCv")}
       </Button>
 
       <AnimatePresence>

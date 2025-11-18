@@ -11,6 +11,7 @@ import { createMetadata } from "@/lib/metadata";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata({
   params,
@@ -18,10 +19,13 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-
+  const t = await getTranslations({
+    locale: locale,
+    namespace: "metadata.home",
+  });
   return createMetadata({
-    title: "Arya Dzaky's Portfolio",
-    description: "Arya Dzaky's Portfolio Fullstack Developer",
+    title: t("title"),
+    description: t("description"),
     url: `/`,
     locale: locale,
   });

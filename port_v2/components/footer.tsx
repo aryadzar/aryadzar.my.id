@@ -1,9 +1,13 @@
+"use client";
+
 import { socialMedia } from "@/constants/social-media-const";
 import { SpotifyNowPlaying } from "./spotify-now-playing";
-import { Github, Linkedin, Twitter, Instagram, X } from "lucide-react";
+import { Github, Linkedin, Twitter, Instagram } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
+  const t = useTranslations("footer");
   return (
     <footer
       className="border-t border-border bg-background text-foreground"
@@ -13,10 +17,9 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-3">
           {/* Brand + short bio */}
           <div className="space-y-3">
-            <h2 className="text-lg font-semibold">Portfolio</h2>
+            <h2 className="text-lg font-semibold">Arya Dzaky</h2>
             <p className="text-sm text-muted-foreground text-pretty">
-              Desainer/Developer yang fokus pada pengalaman antarmuka yang rapi,
-              cepat, dan dapat diakses.
+              {t("desc")}
             </p>
             <SpotifyNowPlaying className="mt-4" />
           </div>
@@ -29,7 +32,7 @@ export default function Footer() {
             <ul className="grid grid-cols-2 gap-2">
               <li>
                 <Link
-                  href="#about"
+                  href="/about"
                   className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Tentang
@@ -37,7 +40,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="#projects"
+                  href="/projects"
                   className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Proyek
@@ -45,20 +48,20 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="#blog"
+                  href="/blog"
                   className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Blog
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="#contact"
                   className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Kontak
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </nav>
 
@@ -75,7 +78,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <X className="w-4 h-4" aria-hidden="true" />
+                  <Twitter className="w-4 h-4" aria-hidden="true" />
                   <span className="sr-only">Twitter</span>
                 </a>
               </li>
@@ -114,13 +117,6 @@ export default function Footer() {
               </li>
             </ul>
           </nav>
-        </div>
-
-        <div className="flex items-center justify-between mt-10 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Your Name. All rights reserved.</p>
-          <p>
-            Dibangun dengan <span className="font-mono">Next.js + shadcn</span>
-          </p>
         </div>
       </div>
     </footer>

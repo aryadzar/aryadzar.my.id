@@ -4,11 +4,11 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { createMetadata } from "@/lib/metadata";
 
-export const metadata = createMetadata({
-  title: "Home",
-  description: "Selamat datang di portofolio resmi Arya Dzaky.",
-  url: "/",
-});
+// export const metadata = createMetadata({
+//   title: "Home",
+//   description: "Selamat datang di portofolio resmi Arya Dzaky.",
+//   url: "/",
+// });
 
 export default function RootLayout({
   children,

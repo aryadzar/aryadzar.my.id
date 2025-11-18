@@ -14,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProjectsShowcaseSkeleton } from "./skeleton";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type Project = {
   title: string;
@@ -42,6 +43,8 @@ export function ProjectsShowcase({
     queryFn: () => getProjectOverview(locale as string),
   });
 
+  const t = useTranslations("home.project");
+
   const container = {
     hidden: {},
     show: {
@@ -69,10 +72,10 @@ export function ProjectsShowcase({
             id="projects-title"
             className="text-2xl font-semibold text-balance md:text-3xl"
           >
-            {title}
+            {t("h1")}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground md:text-base">
-            {subtitle}
+            {t("desc")}
           </p>
         </header>
 
@@ -135,7 +138,7 @@ export function ProjectsShowcase({
                         href={`/projects/${p.slug.current}` || "#"}
                         aria-label={`Lihat detail proyek ${p.title}`}
                       >
-                        Lihat Detail
+                        {t("button")}
                       </Link>
                     </Button>
                   </div>

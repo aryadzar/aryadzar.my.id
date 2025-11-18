@@ -8,9 +8,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getCertificate } from "@/lib/getHome";
 import { useMemo } from "react";
 import { CertificationSkeleton } from "./skeleton";
+import { useTranslations } from "next-intl";
 
 export function CertificationsSection({ limit = 6 }: { limit?: number }) {
   const prefersReducedMotion = useReducedMotion();
+  const t = useTranslations("home.certificate");
 
   const { data: certificate, isLoading } = useQuery({
     queryKey: ["certificate"],
@@ -18,7 +20,6 @@ export function CertificationsSection({ limit = 6 }: { limit?: number }) {
   });
 
   if (isLoading) return <CertificationSkeleton />;
-
   return (
     <section
       aria-labelledby="certifications-heading"
@@ -34,7 +35,7 @@ export function CertificationsSection({ limit = 6 }: { limit?: number }) {
             id="certifications-heading"
             className="text-2xl font-semibold text-pretty text-foreground"
           >
-            Certification
+            {t("h1")}
           </h2>
         </div>
 
@@ -112,7 +113,7 @@ export function CertificationsSection({ limit = 6 }: { limit?: number }) {
                                 className="size-4"
                                 aria-hidden="true"
                               />
-                              <span>View Certificate</span>
+                              <span>{t("href")}</span>
                             </Link>
                           ) : (
                             <span className="inline-flex items-center gap-2 text-sm text-foreground/60">
@@ -120,7 +121,7 @@ export function CertificationsSection({ limit = 6 }: { limit?: number }) {
                                 className="size-4"
                                 aria-hidden="true"
                               />
-                              <span>View Certificate</span>
+                              <span>{t("href")}</span>
                             </span>
                           )}
                         </div>

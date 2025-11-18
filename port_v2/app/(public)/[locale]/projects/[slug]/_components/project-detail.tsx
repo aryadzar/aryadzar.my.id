@@ -29,7 +29,7 @@ function slugify(text: any) {
 }
 
 export default function ProjectDetail() {
-  const articleRef = useRef<HTMLElement>(null);
+  const articleRef = useRef<HTMLElement>(null!);
   const prefersReduced = useReducedMotion();
   const { locale, slug } = useParams();
 

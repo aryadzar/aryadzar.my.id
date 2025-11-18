@@ -30,7 +30,7 @@ function slugify(text: any) {
 }
 
 export default function BlogDetailView() {
-  const articleRef = useRef<HTMLElement>(null);
+  const articleRef = useRef<HTMLElement>(null!);
   const prefersReduced = useReducedMotion();
   const { locale, slug } = useParams<{ slug: string; locale: string }>();
 

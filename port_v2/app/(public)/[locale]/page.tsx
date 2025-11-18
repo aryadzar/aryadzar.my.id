@@ -13,7 +13,7 @@ export default function Page() {
       <ProjectsShowcase limit={3} />
       <CertificationsSection limit={6} />
       <BlogPreview limit={3} />
-      <ContactSection id="contact" />
+      {/* <ContactSection id="contact" /> */}
     </main>
   );
 }

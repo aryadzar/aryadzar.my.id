@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
 import { AboutSkeleton } from "./skeleton";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function AboutBrief() {
   const prefersReduced = useReducedMotion();
@@ -13,6 +14,8 @@ export function AboutBrief() {
     queryKey: ["about", locale],
     queryFn: () => getAbout(locale as string),
   });
+
+  const t = useTranslations("home.about");
 
   let name = data?.name;
   let title = data?.jobTitle;
@@ -32,7 +35,7 @@ export function AboutBrief() {
           id="about-heading"
           className="text-2xl font-semibold tracking-tight text-balance"
         >
-          Tentang Saya
+          {t("h1")}
         </h2>
         <div className="flex flex-col items-start gap-6 mt-6 md:mt-8 md:flex-row md:gap-8">
           <motion.img

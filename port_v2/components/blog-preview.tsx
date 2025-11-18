@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { ProjectsShowcaseSkeleton } from "./skeleton";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type BlogPost = {
   title: string;
@@ -42,6 +43,8 @@ export function BlogPreview({
     queryFn: () => getBlogOverview(locale as string),
   });
 
+  const t = useTranslations("home.blog");
+
   const container = {
     hidden: {},
     show: { transition: { staggerChildren: prefersReduced ? 0 : 0.08 } },
@@ -65,10 +68,10 @@ export function BlogPreview({
             id="blog-title"
             className="text-2xl font-semibold text-balance md:text-3xl"
           >
-            {title}
+            {t("h1")}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground md:text-base">
-            {subtitle}
+            {t("desc")}
           </p>
         </header>
 
@@ -135,7 +138,7 @@ export function BlogPreview({
                         href={`/blog/${post.slug.current}` || "#"}
                         aria-label={`Baca selengkapnya: ${post.title}`}
                       >
-                        Baca Selengkapnya
+                        {t("button")}
                       </Link>
                     </Button>
                   </div>

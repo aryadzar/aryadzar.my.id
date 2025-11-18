@@ -6,11 +6,7 @@ const {
   SPOTIFY_CLIENT_ID: client_id,
   SPOTIFY_CLIENT_SECRET: client_secret,
   SPOTIFY_REFRESH_TOKEN: refresh_token,
-} = process.env as {
-  SPOTIFY_CLIENT_ID: string;
-  SPOTIFY_CLIENT_SECRET: string;
-  SPOTIFY_REFRESH_TOKEN: string;
-};
+} = process.env as Record<string, string>;
 
 const basic = Buffer.from(`${client_id}:${client_secret}`).toString("base64");
 const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
