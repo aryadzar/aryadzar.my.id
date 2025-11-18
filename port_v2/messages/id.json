@@ -1,0 +1,41 @@
+{
+    "nav": {
+        "home": "Beranda",
+        "projects": "Proyek",
+        "blog": "Blog",
+        "about": "Tentang",
+        "contact": "Kontak"
+    },
+    "metadata": {
+        "home": {
+            "title": "Portofolio Arya Dzaky",
+            "description": "Portofolio Arya Dzaky - Fullstack Developer",
+            "keywords": "Arya Dzaky, Portofolio, Fullstack Developer, Web Developer, Software Engineer"
+        }
+    },
+    "home": {
+        "hero": {
+            "buttonCv": "Lihat CV"
+        },
+        "about": {
+            "h1": "Tentang Saya"
+        },
+        "project": {
+            "h1": "Proyek Terbaru",
+            "desc": "Beberapa proyek pilihan yang pernah saya kerjakan",
+            "button": "Lihat Detail"
+        },
+        "blog": {
+            "h1": "Blog Terbaru",
+            "desc": "Tiga tulisan terakhir yang saya publikasikan",
+            "button": "Baca Selengkapnya"
+        },
+        "certificate": {
+            "h1": "Sertifikasi",
+            "href": "Lihat Sertifikat"
+        }
+    },
+    "footer": {
+        "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses."
+    }
+}
