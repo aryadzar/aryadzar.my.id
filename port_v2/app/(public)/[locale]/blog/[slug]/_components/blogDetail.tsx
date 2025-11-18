@@ -17,6 +17,7 @@ import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-json";
 import "prismjs/components/prism-markup";
 import { useEffect } from "react";
+import { useParams } from "next/navigation";
 
 function slugify(text: any) {
   return String(text)
@@ -28,18 +29,19 @@ function slugify(text: any) {
     .replace(/-+$/, "");
 }
 
-export default function BlogDetailView({ slug }: { slug: string }) {
+export default function BlogDetailView() {
   const articleRef = useRef<HTMLElement>(null);
   const prefersReduced = useReducedMotion();
+  const { locale, slug } = useParams<{ slug: string; locale: string }>();
 
   const {
     data: result,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["blog", slug],
-    queryFn: () => getBlog(slug, "en"),
-    enabled: !!slug,
+    queryKey: ["blog", slug, locale],
+    queryFn: () => getBlog(slug, locale as string),
+    enabled: Boolean(locale && slug),
   });
 
   useEffect(() => {

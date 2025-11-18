@@ -12,11 +12,18 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 
-export async function generateMetadata() {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
   return createMetadata({
+    title: "Arya Dzaky's Portfolio",
     description: "Arya Dzaky's Portfolio Fullstack Developer",
     url: `/`,
-    locale: "en",
+    locale: locale,
   });
 }
 

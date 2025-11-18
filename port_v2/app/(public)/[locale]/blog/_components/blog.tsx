@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getBlogs } from "@/lib/getBlogs";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useParams } from "next/navigation";
 
 export default function BlogPage() {
   const prefersReduced = useReducedMotion();
@@ -23,7 +24,7 @@ export default function BlogPage() {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 6;
-
+  const { locale } = useParams();
   // ⏳ Debounce 400ms
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -35,8 +36,8 @@ export default function BlogPage() {
   }, [query]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["blogs", page, debouncedQuery],
-    queryFn: () => getBlogs("en", page, perPage, debouncedQuery),
+    queryKey: ["blogs", page, debouncedQuery, locale],
+    queryFn: () => getBlogs(locale as string, page, perPage, debouncedQuery),
   });
 
   const blogs = data?.blogs ?? [];

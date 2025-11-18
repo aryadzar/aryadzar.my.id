@@ -6,13 +6,14 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
 import { HeroSkeleton } from "./skeleton";
 import CvModal from "./cv/cvModal";
+import { useParams } from "next/navigation";
 
 export function HeroVideoBackground() {
   const prefersReduced = useReducedMotion();
-
+  const { locale } = useParams();
   const { data, isLoading } = useQuery({
-    queryKey: ["hero", "en"],
-    queryFn: () => getHero("en"),
+    queryKey: ["hero", locale],
+    queryFn: () => getHero(locale as string),
   });
 
   if (isLoading) {

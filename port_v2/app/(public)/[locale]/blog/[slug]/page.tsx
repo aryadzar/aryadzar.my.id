@@ -5,10 +5,10 @@ import { createMetadata } from "@/lib/metadata";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug: slugs } = await params;
-  const blog = await getBlog(slugs, "en");
+  const { slug: slugs, locale } = await params;
+  const blog = await getBlog(slugs, locale);
 
   if (!blog?.blog) {
     return createMetadata({
@@ -26,16 +26,14 @@ export async function generateMetadata({
     image: typeof thumbnail === "string" ? thumbnail : undefined,
     url: `/blog/${slug.current}`,
     keywords: blog.blog.categories?.map((c: any) => c.title) ?? [],
-    locale: "en",
+    locale: locale,
   });
 }
 
 export default async function BlogPostPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }) {
-  const { slug } = await params;
-
-  return <BlogDetailView slug={slug} />;
+  return <BlogDetailView />;
 }

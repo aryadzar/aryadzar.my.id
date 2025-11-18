@@ -13,6 +13,7 @@ import { getProjectOverview } from "@/lib/getHome";
 import Image from "next/image";
 import Link from "next/link";
 import { ProjectsShowcaseSkeleton } from "./skeleton";
+import { useParams } from "next/navigation";
 
 type Project = {
   title: string;
@@ -34,10 +35,11 @@ export function ProjectsShowcase({
   limit?: number;
 }) {
   const shouldReduceMotion = useReducedMotion();
+  const { locale } = useParams();
 
   const { data: result, isLoading } = useQuery({
-    queryKey: ["projectOver"],
-    queryFn: () => getProjectOverview("en"),
+    queryKey: ["projectOver", locale],
+    queryFn: () => getProjectOverview(locale as string),
   });
 
   const container = {

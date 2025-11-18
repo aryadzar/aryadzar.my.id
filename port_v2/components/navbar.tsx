@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { ModeToggle } from "./toogle-mode";
 import Link from "next/link";
+import LanguageSwitcher from "./language-switcher";
 
 export function NavbarView() {
   const navItems = [
@@ -51,6 +52,9 @@ export function NavbarView() {
             <NavbarButton className="bg-background">
               <ModeToggle />
             </NavbarButton>
+            <NavbarButton className="bg-background">
+              <LanguageSwitcher />
+            </NavbarButton>
           </div>
         </NavBody>
 
@@ -80,6 +84,7 @@ export function NavbarView() {
             ))}
             <div className="flex flex-col w-full gap-4">
               <ModeToggle />
+              <LanguageSwitcher />
             </div>
           </MobileNavMenu>
         </MobileNav>

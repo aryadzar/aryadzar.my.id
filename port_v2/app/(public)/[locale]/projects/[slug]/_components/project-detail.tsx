@@ -9,7 +9,7 @@ import { getProject } from "@/lib/getProject";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import "prism-themes/themes/prism-duotone-space.css";
 import Prism from "prismjs";
 import "prismjs/components/prism-javascript";
@@ -28,9 +28,10 @@ function slugify(text: any) {
     .replace(/-+$/, "");
 }
 
-export default function ProjectDetail({ slug }: { slug: string }) {
+export default function ProjectDetail() {
   const articleRef = useRef<HTMLElement>(null);
   const prefersReduced = useReducedMotion();
+  const { locale, slug } = useParams();
 
   const {
     data: result,
@@ -38,7 +39,7 @@ export default function ProjectDetail({ slug }: { slug: string }) {
     isError,
   } = useQuery({
     queryKey: ["project", slug],
-    queryFn: () => getProject(slug, "en"),
+    queryFn: () => getProject(slug as string, locale as string),
     enabled: !!slug,
   });
 

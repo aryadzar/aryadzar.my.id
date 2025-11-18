@@ -4,12 +4,14 @@ import { getAbout } from "@/lib/getHome";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
 import { AboutSkeleton } from "./skeleton";
+import { useParams } from "next/navigation";
 
 export function AboutBrief() {
   const prefersReduced = useReducedMotion();
+  const { locale } = useParams();
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["about", "en"],
-    queryFn: () => getAbout("en"),
+    queryKey: ["about", locale],
+    queryFn: () => getAbout(locale as string),
   });
 
   let name = data?.name;

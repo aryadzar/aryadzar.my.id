@@ -6,7 +6,7 @@ interface CreateMetadataProps {
   keywords?: string[];
   image?: string;
   url?: string;
-  locale?: "en" | "id";
+  locale?: string;
 }
 
 const defaultConfig = {

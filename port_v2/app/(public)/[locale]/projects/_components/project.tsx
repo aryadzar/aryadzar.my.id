@@ -17,6 +17,7 @@ import { getProjects } from "@/lib/getProject";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 
 export default function ProjectsPage() {
   const prefersReduced = useReducedMotion();
@@ -24,7 +25,7 @@ export default function ProjectsPage() {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 6;
-
+  const { locale } = useParams();
   // ⏳ Debounce 400ms
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -37,7 +38,7 @@ export default function ProjectsPage() {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["projects", page, debouncedQuery],
-    queryFn: () => getProjects("en", page, perPage, debouncedQuery),
+    queryFn: () => getProjects(locale as string, page, perPage, debouncedQuery),
   });
 
   const projects = data?.projects ?? [];

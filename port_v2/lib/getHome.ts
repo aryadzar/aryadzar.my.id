@@ -5,7 +5,7 @@ import { Certificate } from "@/types/certificateType";
 import { ProjectOverview } from "@/types/projectOverviewType";
 import { BlogOverview } from "@/types/blogOverviewTypes";
 
-export const getHero = async (lang: string): Promise<Hero> => {
+export const getHero = async (lang?: string): Promise<Hero> => {
   const { data } = await api.get(`/api/${lang}/hero`);
 
   return data;

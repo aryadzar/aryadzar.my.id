@@ -5,10 +5,10 @@ import { getProject } from "@/lib/getProject";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }) {
-  const { slug: slugs } = await params;
-  const project = await getProject(slugs, "en");
+  const { slug: slugs, locale } = await params;
+  const project = await getProject(slugs, locale);
 
   if (!project?.project) {
     return createMetadata({
@@ -26,7 +26,7 @@ export async function generateMetadata({
     image: typeof thumbnail === "string" ? thumbnail : undefined,
     url: `/projects/${slug.current}`,
     keywords: project.project.categories?.map((c: any) => c.title) ?? [],
-    locale: "en",
+    locale: locale,
   });
 }
 
@@ -35,7 +35,5 @@ export default async function ProjectDetailPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-
-  return <ProjectDetail slug={slug} />;
+  return <ProjectDetail />;
 }

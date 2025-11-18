@@ -12,6 +12,7 @@ import { getBlogOverview } from "@/lib/getHome";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { ProjectsShowcaseSkeleton } from "./skeleton";
+import { useParams } from "next/navigation";
 
 type BlogPost = {
   title: string;
@@ -34,10 +35,11 @@ export function BlogPreview({
   limit?: number;
 }) {
   const prefersReduced = useReducedMotion();
+  const { locale } = useParams();
 
   const { data: result, isLoading } = useQuery({
     queryKey: ["blogOver"],
-    queryFn: () => getBlogOverview("en"),
+    queryFn: () => getBlogOverview(locale as string),
   });
 
   const container = {
