@@ -17,16 +17,7 @@ import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-json";
 import "prismjs/components/prism-markup";
 import { PortableText, PortableTextComponents } from "next-sanity";
-
-function slugify(text: any) {
-  return String(text)
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "");
-}
+import { components } from "@/constants/components-portable-text-constant";
 
 export default function ProjectDetail() {
   const articleRef = useRef<HTMLElement>(null!);
@@ -46,44 +37,6 @@ export default function ProjectDetail() {
   useEffect(() => {
     Prism.highlightAll();
   }, [result?.project.description]);
-
-  const components: PortableTextComponents = {
-    types: {
-      code: ({ value }) => (
-        <pre className="p-4 overflow-x-auto text-white bg-black border rounded-lg">
-          <code className={`language-${value.language || "javascript"}`}>
-            {value.code}
-          </code>
-        </pre>
-      ),
-    },
-
-    block: {
-      // H1
-      h1: ({ children }) => {
-        const id = slugify(children?.toString() || "");
-        return <h1 id={id}>{children}</h1>;
-      },
-
-      // H2
-      h2: ({ children }) => {
-        const id = slugify(children?.toString() || "");
-        return <h2 id={id}>{children}</h2>;
-      },
-
-      // H3
-      h3: ({ children }) => {
-        const id = slugify(children?.toString() || "");
-        return <h3 id={id}>{children}</h3>;
-      },
-
-      // H4
-      h4: ({ children }) => {
-        const id = slugify(children?.toString() || "");
-        return <h4 id={id}>{children}</h4>;
-      },
-    },
-  };
 
   if (isLoading) {
     return (

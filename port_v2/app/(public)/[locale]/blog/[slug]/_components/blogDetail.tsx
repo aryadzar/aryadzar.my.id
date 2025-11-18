@@ -18,6 +18,8 @@ import "prismjs/components/prism-json";
 import "prismjs/components/prism-markup";
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
+import { urlFor } from "@/sanity/lib/image";
+import { components } from "@/constants/components-portable-text-constant";
 
 function slugify(text: any) {
   return String(text)
@@ -47,44 +49,6 @@ export default function BlogDetailView() {
   useEffect(() => {
     Prism.highlightAll();
   }, [result?.blog.content]);
-
-  const components: PortableTextComponents = {
-    types: {
-      code: ({ value }) => (
-        <pre className="p-4 overflow-x-auto text-white bg-black border rounded-lg">
-          <code className={`language-${value.language || "javascript"}`}>
-            {value.code}
-          </code>
-        </pre>
-      ),
-    },
-
-    block: {
-      // H1
-      h1: ({ children }) => {
-        const id = slugify(children?.toString() || "");
-        return <h1 id={id}>{children}</h1>;
-      },
-
-      // H2
-      h2: ({ children }) => {
-        const id = slugify(children?.toString() || "");
-        return <h2 id={id}>{children}</h2>;
-      },
-
-      // H3
-      h3: ({ children }) => {
-        const id = slugify(children?.toString() || "");
-        return <h3 id={id}>{children}</h3>;
-      },
-
-      // H4
-      h4: ({ children }) => {
-        const id = slugify(children?.toString() || "");
-        return <h4 id={id}>{children}</h4>;
-      },
-    },
-  };
 
   if (isLoading) {
     return (
