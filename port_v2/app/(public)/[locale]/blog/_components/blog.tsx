@@ -17,6 +17,7 @@ import { getBlogs } from "@/lib/getBlogs";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function BlogPage() {
   const prefersReduced = useReducedMotion();
@@ -44,8 +45,8 @@ export default function BlogPage() {
   const total = data?.total ?? 0;
   const totalPages = data?.totalPages ?? 1;
 
-  console.log(data);
-  console.log(blogs);
+  const t = useTranslations("blogPage");
+
   const container = {
     hidden: {},
     show: { transition: { staggerChildren: prefersReduced ? 0 : 0.06 } },
@@ -94,11 +95,9 @@ export default function BlogPage() {
       <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
         <header className="mb-6 md:mb-8">
           <h1 className="text-3xl font-semibold text-balance md:text-4xl">
-            Semua Blog
+            {t("title")}
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Cari artikel dan jelajahi arsip tulisan saya.
-          </p>
+          <p className="mt-2 text-muted-foreground">{t("description")}</p>
         </header>
 
         <div className="mb-6">
@@ -107,12 +106,12 @@ export default function BlogPage() {
             onChange={(v) => {
               setQuery(v);
             }}
-            placeholder="Cari blog berdasarkan judul, ringkas, atau tag…"
+            placeholder={t("searchPlaceholder")}
           />
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">
-          {total} hasil • halaman {page}/{totalPages}
+          {t("pagination.summary", { total, page, totalPages })}
         </p>
 
         <motion.div

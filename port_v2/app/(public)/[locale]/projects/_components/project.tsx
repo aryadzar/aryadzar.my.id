@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function ProjectsPage() {
   const prefersReduced = useReducedMotion();
@@ -44,6 +45,7 @@ export default function ProjectsPage() {
   const projects = data?.projects ?? [];
   const total = data?.total ?? 0;
   const totalPages = data?.totalPages ?? 1;
+  const t = useTranslations("projectPage");
 
   const container = {
     hidden: {},
@@ -106,11 +108,9 @@ export default function ProjectsPage() {
       <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
         <header className="mb-6 md:mb-8">
           <h1 className="text-3xl font-semibold text-balance md:text-4xl">
-            Semua Proyek
+            {t("title")}
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Pencarian dan pagination untuk menjelajah proyek saya.
-          </p>
+          <p className="mt-2 text-muted-foreground">{t("description")}</p>
         </header>
 
         <div className="mb-6">
@@ -119,12 +119,12 @@ export default function ProjectsPage() {
             onChange={(v) => {
               setQuery(v);
             }}
-            placeholder="Cari proyek berdasarkan judul, deskripsi, atau tag…"
+            placeholder={t("searchPlaceholder")}
           />
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">
-          {total} hasil • halaman {page}/{totalPages}
+          {t("pagination.summary", { total, page, totalPages })}
         </p>
 
         <motion.div

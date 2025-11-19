@@ -5,9 +5,12 @@ import { SpotifyNowPlaying } from "./spotify-now-playing";
 import { Github, Linkedin, Twitter, Instagram } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useNavItems } from "@/constants/nav-constant";
 
 export default function Footer() {
   const t = useTranslations("footer");
+  const navItems = useNavItems();
+
   return (
     <footer
       className="border-t border-border bg-background text-foreground"
@@ -27,48 +30,26 @@ export default function Footer() {
           {/* Quick Links */}
           <nav aria-label="Quick links" className="space-y-3">
             <h3 className="text-sm font-medium text-muted-foreground">
-              Quick Links
+              {t("links")}
             </h3>
             <ul className="grid grid-cols-2 gap-2">
-              <li>
-                <Link
-                  href="/about"
-                  className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  Tentang
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/projects"
-                  className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  Proyek
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  Blog
-                </Link>
-              </li>
-              {/* <li>
-                <Link
-                  href="#contact"
-                  className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  Kontak
-                </Link>
-              </li> */}
+              {navItems.map((nav, i) => (
+                <li>
+                  <Link
+                    href={nav.link}
+                    className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {nav.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
           {/* Socials */}
           <nav aria-label="Social media" className="space-y-3">
             <h3 className="text-sm font-medium text-muted-foreground">
-              Ikuti Saya
+              {t("follow")}
             </h3>
             <ul className="flex flex-wrap items-center gap-3">
               <li>
