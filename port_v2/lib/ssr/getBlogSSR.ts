@@ -2,20 +2,24 @@
 
 import { BlogDetail } from "@/types/blogDetailTypes";
 import { getBaseUrl } from "../getBaseUrl";
+import { client } from "@/sanity/lib/client";
 
 export async function getBlogSSR(
   slug: string,
   lang: string
 ): Promise<BlogDetail> {
-  const res = await fetch(`${getBaseUrl()}/api/${lang}/blog/${slug}`, {
-    method: "GET",
-    next: { revalidate: 60 }, // atau "no-store" jika mau selalu fresh
-  });
+  const query = `
+      *[_type == "blog" && slug.current == $slug && publishedAt <= now() && language == $lang ][0]{
+        _id,
+        title,
+        slug,
+        "thumbnail" : coverImage.asset->url,
+        excerpt,
+        content,
+        categories[]->{_id, title, slug},
+        publishedAt
+}
+  `;
 
-  if (!res.ok) {
-    console.error("SSR Fetch Error:", res.status, res.statusText);
-    throw new Error(`Failed to fetch blog: ${res.status}`);
-  }
-
-  return res.json();
+  return client.fetch(query, { slug, lang });
 }

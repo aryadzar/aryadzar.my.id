@@ -2,20 +2,26 @@
 
 import { ProjectDetail } from "@/types/projectDetailType";
 import { getBaseUrl } from "../getBaseUrl";
+import { client } from "@/sanity/lib/client";
 
 export async function getProjectSSR(
   slug: string,
   lang: string
 ): Promise<ProjectDetail> {
-  const res = await fetch(`${getBaseUrl()}/api/${lang}/project/${slug}`, {
-    method: "GET",
-    next: { revalidate: 60 },
-  });
+  const query = `
+      *[_type == "project" && slug.current == $slug && publishedAt <= now() && language == $lang ][0]{
+        _id,
+        title,
+        slug,
+        "thumbnail" : thumbnail.asset->url,
+        shortDesc,
+        description,
+        categories[]->{_id, title, slug},
+        liveUrl,
+        repoUrl,
+        publishedAt
+      }
+  `;
 
-  if (!res.ok) {
-    console.error("SSR Fetch Error:", res.status, res.statusText);
-    throw new Error(`Failed to fetch project: ${res.status}`);
-  }
-
-  return res.json();
+  return client.fetch(query, { slug, lang });
 }
