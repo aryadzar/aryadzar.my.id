@@ -1,6 +1,6 @@
 import { createMetadata } from "@/lib/metadata";
 import ProjectDetail from "./_components/project-detail";
-import { getProject } from "@/lib/getProject";
+import { getProjectSSR } from "@/lib/ssr/getProjectSSR";
 
 export async function generateMetadata({
   params,
@@ -8,7 +8,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string; locale: string }>;
 }) {
   const { slug: slugs, locale } = await params;
-  const project = await getProject(slugs, locale);
+  const project = await getProjectSSR(slugs, locale);
 
   if (!project?.project) {
     return createMetadata({

@@ -1,6 +1,7 @@
 import BlogDetailView from "./_components/blogDetail";
 import { getBlog } from "@/lib/getBlogs";
 import { createMetadata } from "@/lib/metadata";
+import { getBlogSSR } from "@/lib/ssr/getBlogSSR";
 
 export async function generateMetadata({
   params,
@@ -8,7 +9,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { slug: slugs, locale } = await params;
-  const blog = await getBlog(slugs, locale);
+  const blog = await getBlogSSR(slugs, locale);
 
   if (!blog?.blog) {
     return createMetadata({
