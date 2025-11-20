@@ -42,7 +42,7 @@ export function HeroVideoBackground() {
 
       {/* Overlay untuk keterbacaan teks */}
       <motion.div
-        className={cn("absolute inset-0 bg-background/70")}
+        className={cn("absolute inset-0 bg-background/60")}
         aria-hidden="true"
         initial={{ opacity: prefersReduced ? 1 : 0 }}
         animate={{ opacity: 1 }}
@@ -64,7 +64,7 @@ export function HeroVideoBackground() {
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl">
               {data?.title}
             </h1>
-            <p className="mt-4 text-lg text-pretty md:text-xl text-muted-foreground">
+            <p className="mt-4 text-lg text-black text-pretty md:text-xl dark:text-white">
               {data?.subtitle}
             </p>
 

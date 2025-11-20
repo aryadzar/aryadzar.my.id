@@ -4,6 +4,8 @@ import { About } from "@/types/aboutType";
 import { Certificate } from "@/types/certificateType";
 import { ProjectOverview } from "@/types/projectOverviewType";
 import { BlogOverview } from "@/types/blogOverviewTypes";
+import { ExperienceData } from "@/types/experienceType";
+import { EducationData } from "@/types/educationType";
 
 export const getHero = async (lang?: string): Promise<Hero> => {
   const { data } = await api.get(`/api/${lang}/hero`);
@@ -42,6 +44,17 @@ export const getBlogOverview = async (lang: string): Promise<BlogOverview> => {
       limit: 3,
     },
   });
+
+  return data;
+};
+
+export const getExperience = async (lang: string): Promise<ExperienceData> => {
+  const { data } = await api.get(`/api/${lang}/experience`);
+
+  return data;
+};
+export const getEducation = async (lang: string): Promise<EducationData> => {
+  const { data } = await api.get(`/api/${lang}/education`);
 
   return data;
 };

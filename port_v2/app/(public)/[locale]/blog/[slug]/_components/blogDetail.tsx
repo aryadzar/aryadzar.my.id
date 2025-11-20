@@ -17,7 +17,7 @@ import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-json";
 import "prismjs/components/prism-markup";
 import { useEffect } from "react";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { urlFor } from "@/sanity/lib/image";
 import { components } from "@/constants/components-portable-text-constant";
 
@@ -81,11 +81,7 @@ export default function BlogDetailView() {
   }
 
   if (isError || !result) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Error loading project or project not found. Please try again later.
-      </div>
-    );
+    notFound();
   }
 
   return (

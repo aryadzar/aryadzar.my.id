@@ -11,6 +11,21 @@
             "title": "Portofolio Arya Dzaky",
             "description": "Portofolio Arya Dzaky - Fullstack Developer",
             "keywords": "Arya Dzaky, Portofolio, Fullstack Developer, Web Developer, Software Engineer"
+        },
+        "about": {
+            "title": "Tentang Saya — Arya Dzaky",
+            "description": "Pelajari lebih lanjut tentang Arya Dzaky — latar belakang, pengalaman, keahlian, dan cara berkolaborasi.",
+            "keywords": "Tentang Arya Dzaky, Fullstack Developer, Profil Developer, Keahlian Software Engineer"
+        },
+        "projects": {
+            "title": "Proyek — Arya Dzaky",
+            "description": "Kumpulan proyek yang dibuat oleh Arya Dzaky yang menunjukkan kemampuan dalam web development dan software engineering.",
+            "keywords": "Proyek Arya Dzaky, Proyek Web Development, Portofolio Fullstack, Software Engineering"
+        },
+        "blog": {
+            "title": "Blog — Arya Dzaky",
+            "description": "Baca artikel, tulisan, dan tutorial dari Arya Dzaky tentang web development dan software engineering.",
+            "keywords": "Blog Arya Dzaky, Artikel Pemrograman, Tips Web Development, Tutorial Software Engineering"
         }
     },
     "home": {

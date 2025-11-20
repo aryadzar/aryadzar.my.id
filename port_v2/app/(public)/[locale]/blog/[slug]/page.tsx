@@ -11,7 +11,7 @@ export async function generateMetadata({
   const { slug: slugs, locale } = await params;
   const blog = await getBlogSSR(slugs, locale);
 
-  if (!blog?.blog) {
+  if (!blog) {
     return createMetadata({
       title: "Blog Not Found",
       description: "The requested blog post could not be found.",
@@ -19,14 +19,14 @@ export async function generateMetadata({
     });
   }
 
-  const { title, excerpt, thumbnail, slug } = blog.blog;
+  const { title, excerpt, thumbnail, slug } = blog;
 
   return createMetadata({
     title: title,
     description: excerpt ?? title,
     image: typeof thumbnail === "string" ? thumbnail : undefined,
     url: `/blog/${slug.current}`,
-    keywords: blog.blog.categories?.map((c: any) => c.title) ?? [],
+    keywords: blog.categories?.map((c: any) => c.title) ?? [],
     locale: locale,
   });
 }

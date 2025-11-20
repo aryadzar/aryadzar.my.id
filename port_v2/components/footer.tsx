@@ -36,6 +36,7 @@ export default function Footer() {
               {navItems.map((nav, i) => (
                 <li>
                   <Link
+                    key={i}
                     href={nav.link}
                     className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
                   >

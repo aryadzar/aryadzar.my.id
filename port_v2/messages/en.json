@@ -11,6 +11,21 @@
             "title": "Arya Dzaky's Portfolio",
             "description": "Arya Dzaky's Portfolio - Fullstack Developer",
             "keywords": "Arya Dzaky, Portfolio, Fullstack Developer, Web Developer, Software Engineer"
+        },
+        "about": {
+            "title": "About Me — Arya Dzaky",
+            "description": "Learn more about Arya Dzaky — background, experience, skills, and how to collaborate.",
+            "keywords": "About Arya Dzaky, Fullstack Developer, Developer Profile, Software Engineer Skills"
+        },
+        "projects": {
+            "title": "Projects — Arya Dzaky",
+            "description": "A collection of projects created by Arya Dzaky, showcasing skills in web development and software engineering.",
+            "keywords": "Arya Dzaky Projects, Web Development Projects, Fullstack Portfolio, Software Engineering"
+        },
+        "blog": {
+            "title": "Blog — Arya Dzaky",
+            "description": "Read articles, insights, and tutorials written by Arya Dzaky on web development and software engineering.",
+            "keywords": "Arya Dzaky Blog, Programming Articles, Web Development Tips, Software Engineering Tutorials"
         }
     },
     "home": {

@@ -1,13 +1,10 @@
 "use server";
 
-import { BlogDetail } from "@/types/blogDetailTypes";
+import { Blog } from "@/types/blogDetailTypes";
 import { getBaseUrl } from "../getBaseUrl";
 import { client } from "@/sanity/lib/client";
 
-export async function getBlogSSR(
-  slug: string,
-  lang: string
-): Promise<BlogDetail> {
+export async function getBlogSSR(slug: string, lang: string): Promise<Blog> {
   const query = `
       *[_type == "blog" && slug.current == $slug && publishedAt <= now() && language == $lang ][0]{
         _id,
