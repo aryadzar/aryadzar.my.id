@@ -11,6 +11,21 @@
             "title": "Arya Dzaky's Portfolio",
             "description": "Arya Dzaky's Portfolio - Fullstack Developer",
             "keywords": "Arya Dzaky, Portfolio, Fullstack Developer, Web Developer, Software Engineer"
+        },
+        "about": {
+            "title": "About Me — Arya Dzaky",
+            "description": "Learn more about Arya Dzaky — background, experience, skills, and how to collaborate.",
+            "keywords": "About Arya Dzaky, Fullstack Developer, Developer Profile, Software Engineer Skills"
+        },
+        "projects": {
+            "title": "Projects — Arya Dzaky",
+            "description": "A collection of projects created by Arya Dzaky, showcasing skills in web development and software engineering.",
+            "keywords": "Arya Dzaky Projects, Web Development Projects, Fullstack Portfolio, Software Engineering"
+        },
+        "blog": {
+            "title": "Blog — Arya Dzaky",
+            "description": "Read articles, insights, and tutorials written by Arya Dzaky on web development and software engineering.",
+            "keywords": "Arya Dzaky Blog, Programming Articles, Web Development Tips, Software Engineering Tutorials"
         }
     },
     "home": {
@@ -35,7 +50,33 @@
             "href": "View Certificate"
         }
     },
+    "blogPage": {
+        "title": "All Blogs",
+        "description": "Search articles and explore my writing archive.",
+        "searchPlaceholder": "Search blogs by title, excerpt, or tags…",
+        "pagination": {
+            "summary": "{total} results • page {page} of {totalPages}"
+        }
+    },
+    "projectPage": {
+        "title": "All Projects",
+        "description": "Search and paginate to explore my projects.",
+        "searchPlaceholder": "Search projects by title, description, or tags…",
+        "pagination": {
+            "summary": "{total} results • page {page} of {totalPages}"
+        }
+    },
+    "aboutPage": {
+        "title": "About Me",
+        "description": "A summary of my profile, core skills, and the best ways to collaborate with me.",
+        "skillsTitle": "Skills",
+        "headingAction": "Actions",
+        "contact": "Contact Me",
+        "viewProjects": "View All Projects"
+    },
     "footer": {
-        "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses."
+        "desc": "Developers who focus on clean, fast, and accessible interface experiences.",
+        "links": "Quick Links",
+        "follow": "Follow Me"
     }
 }

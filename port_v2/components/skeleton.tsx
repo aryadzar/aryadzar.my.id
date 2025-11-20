@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card } from "./ui/card";
+import { Card, CardContent, CardHeader } from "./ui/card";
 
 export function HeroSkeleton() {
   return (
@@ -116,7 +116,7 @@ export function CertificationSkeleton() {
 
 export function ProjectsShowcaseSkeleton() {
   return (
-    <div className="container grid grid-cols-1 gap-6 mx-auto  md:grid-cols-2 lg:grid-cols-3">
+    <div className="container grid grid-cols-1 gap-6 mx-auto md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 3 }).map((_, index) => (
         <Card key={index} className="h-full overflow-hidden">
           <Skeleton className="relative aspect-[16/9] w-full rounded-t-lg" />
@@ -134,4 +134,67 @@ export function ProjectsShowcaseSkeleton() {
       ))}
     </div>
   );
+}
+
+export function ExEdSkeleton({ count = 2 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-1 gap-4">
+      {Array.from({ length: count }).map((_, idx) => (
+        <Card
+          key={idx}
+          className="relative p-5 overflow-hidden rounded-xl border-border bg-card"
+        >
+          <div className="flex items-start gap-4">
+            {/* Logo */}
+            <Skeleton className="w-12 h-12 rounded-md" />
+
+            <div className="flex-1 min-w-0 space-y-2">
+              {/* Title */}
+              <Skeleton className="w-40 h-4" />
+
+              {/* Company */}
+              <Skeleton className="w-24 h-3" />
+
+              {/* Duration */}
+              <div className="flex items-center gap-2 mt-2">
+                <Skeleton className="w-4 h-4 rounded-sm" />
+                <Skeleton className="w-20 h-3" />
+              </div>
+
+              {/* Description */}
+              <Skeleton className="w-full h-3 mt-2" />
+              <Skeleton className="w-5/6 h-3" />
+
+              {/* Skills */}
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Skeleton className="w-16 h-5 rounded-full" />
+                <Skeleton className="h-5 rounded-full w-14" />
+                <Skeleton className="w-20 h-5 rounded-full" />
+              </div>
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+export function BlogSkeleton() {
+  return Array.from({ length: 6 }).map((_, i) => (
+    <Card key={i}>
+      <Skeleton className="aspect-[16/9] w-full" />
+      <CardHeader>
+        <Skeleton className="w-3/4 h-6" />
+        <div className="flex flex-wrap gap-2 pt-2">
+          <Skeleton className="w-16 h-5" />
+          <Skeleton className="w-20 h-5" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="w-full h-4" />
+        <Skeleton className="w-5/6 h-4 mt-2" />
+        <Skeleton className="w-32 h-10 mt-6" />
+      </CardContent>
+    </Card>
+  ));
 }

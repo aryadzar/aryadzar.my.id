@@ -14,20 +14,11 @@ import { useState } from "react";
 import { ModeToggle } from "./toogle-mode";
 import Link from "next/link";
 import LanguageSwitcher from "./language-switcher";
-import { useTranslations } from "next-intl";
+import { useNavItems } from "@/constants/nav-constant";
 
 export function NavbarView() {
-  const t = useTranslations("nav");
-
-  const navItems = [
-    { name: t("home"), link: "/" },
-    { name: t("projects"), link: "/projects" },
-    { name: t("blog"), link: "/blog" },
-    { name: t("about"), link: "/about" },
-    { name: t("contact"), link: "#contact" },
-  ];
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navItems = useNavItems();
 
   return (
     <div className="inset-x-0 w-full mb-10">

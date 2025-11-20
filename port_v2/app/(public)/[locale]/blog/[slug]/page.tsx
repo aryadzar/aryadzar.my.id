@@ -1,6 +1,7 @@
 import BlogDetailView from "./_components/blogDetail";
 import { getBlog } from "@/lib/getBlogs";
 import { createMetadata } from "@/lib/metadata";
+import { getBlogSSR } from "@/lib/ssr/getBlogSSR";
 
 export async function generateMetadata({
   params,
@@ -8,9 +9,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { slug: slugs, locale } = await params;
-  const blog = await getBlog(slugs, locale);
+  const blog = await getBlogSSR(slugs, locale);
 
-  if (!blog?.blog) {
+  if (!blog) {
     return createMetadata({
       title: "Blog Not Found",
       description: "The requested blog post could not be found.",
@@ -18,14 +19,14 @@ export async function generateMetadata({
     });
   }
 
-  const { title, excerpt, thumbnail, slug } = blog.blog;
+  const { title, excerpt, thumbnail, slug } = blog;
 
   return createMetadata({
     title: title,
     description: excerpt ?? title,
     image: typeof thumbnail === "string" ? thumbnail : undefined,
     url: `/blog/${slug.current}`,
-    keywords: blog.blog.categories?.map((c: any) => c.title) ?? [],
+    keywords: blog.categories?.map((c: any) => c.title) ?? [],
     locale: locale,
   });
 }

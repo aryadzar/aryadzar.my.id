@@ -1,6 +1,6 @@
 import { createMetadata } from "@/lib/metadata";
 import ProjectDetail from "./_components/project-detail";
-import { getProject } from "@/lib/getProject";
+import { getProjectSSR } from "@/lib/ssr/getProjectSSR";
 
 export async function generateMetadata({
   params,
@@ -8,24 +8,24 @@ export async function generateMetadata({
   params: Promise<{ slug: string; locale: string }>;
 }) {
   const { slug: slugs, locale } = await params;
-  const project = await getProject(slugs, locale);
+  const project = await getProjectSSR(slugs, locale);
 
-  if (!project?.project) {
+  if (!project) {
     return createMetadata({
-      title: "Blog Not Found",
-      description: "The requested blog post could not be found.",
+      title: "Project Not Found",
+      description: "The requested Project post could not be found.",
       url: `/projects/${slugs}`,
     });
   }
 
-  const { title, shortDesc, thumbnail, slug } = project.project;
+  const { title, shortDesc, thumbnail, slug } = project;
 
   return createMetadata({
     title: title,
     description: shortDesc ?? title,
     image: typeof thumbnail === "string" ? thumbnail : undefined,
     url: `/projects/${slug.current}`,
-    keywords: project.project.categories?.map((c: any) => c.title) ?? [],
+    keywords: project.categories?.map((c: any) => c.title) ?? [],
     locale: locale,
   });
 }

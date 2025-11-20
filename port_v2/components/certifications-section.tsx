@@ -23,7 +23,7 @@ export function CertificationsSection({ limit = 6 }: { limit?: number }) {
   return (
     <section
       aria-labelledby="certifications-heading"
-      className="py-10 md:py-12"
+      className="py-12 md:py-16"
     >
       <div className="max-w-6xl px-4 mx-auto">
         <div className="flex items-center gap-2 mb-6">

@@ -19,9 +19,15 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
   const locale = useLocale(); // 'en', 'id', etc.
   const changeLocale = (locale: string) => {
-    router.replace({ pathname }, { locale });
-  };
+    const currentPath = window.location.pathname.split("/");
 
+    // currentPath[1] adalah locale sekarang
+    currentPath[1] = locale;
+
+    const newUrl = currentPath.join("/") + window.location.search;
+
+    window.location.href = newUrl; // Full reload  };
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

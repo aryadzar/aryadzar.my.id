@@ -11,6 +11,21 @@
             "title": "Portofolio Arya Dzaky",
             "description": "Portofolio Arya Dzaky - Fullstack Developer",
             "keywords": "Arya Dzaky, Portofolio, Fullstack Developer, Web Developer, Software Engineer"
+        },
+        "about": {
+            "title": "Tentang Saya — Arya Dzaky",
+            "description": "Pelajari lebih lanjut tentang Arya Dzaky — latar belakang, pengalaman, keahlian, dan cara berkolaborasi.",
+            "keywords": "Tentang Arya Dzaky, Fullstack Developer, Profil Developer, Keahlian Software Engineer"
+        },
+        "projects": {
+            "title": "Proyek — Arya Dzaky",
+            "description": "Kumpulan proyek yang dibuat oleh Arya Dzaky yang menunjukkan kemampuan dalam web development dan software engineering.",
+            "keywords": "Proyek Arya Dzaky, Proyek Web Development, Portofolio Fullstack, Software Engineering"
+        },
+        "blog": {
+            "title": "Blog — Arya Dzaky",
+            "description": "Baca artikel, tulisan, dan tutorial dari Arya Dzaky tentang web development dan software engineering.",
+            "keywords": "Blog Arya Dzaky, Artikel Pemrograman, Tips Web Development, Tutorial Software Engineering"
         }
     },
     "home": {
@@ -35,7 +50,33 @@
             "href": "Lihat Sertifikat"
         }
     },
+    "blogPage": {
+        "title": "Semua Blog",
+        "description": "Cari artikel dan jelajahi arsip tulisan saya.",
+        "searchPlaceholder": "Cari blog berdasarkan judul, ringkas, atau tag…",
+        "pagination": {
+            "summary": "{total} hasil • halaman {page} dari {totalPages}"
+        }
+    },
+    "projectPage": {
+        "title": "Semua Proyek",
+        "description": "Pencarian dan pagination untuk menjelajahi proyek saya.",
+        "searchPlaceholder": "Cari proyek berdasarkan judul, deskripsi, atau tag…",
+        "pagination": {
+            "summary": "{total} hasil • halaman {page} dari {totalPages}"
+        }
+    },
+    "aboutPage": {
+        "title": "Tentang Saya",
+        "description": "Ringkasan profil, keahlian utama, dan cara terbaik untuk berkolaborasi dengan saya.",
+        "skillsTitle": "Keahlian",
+        "headingAction": "Aksi",
+        "contact": "Hubungi Saya",
+        "viewProjects": "Lihat Semua Proyek"
+    },
     "footer": {
-        "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses."
+        "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses.",
+        "links": "Link Cepat",
+        "follow": "Ikuti Saya"
     }
 }

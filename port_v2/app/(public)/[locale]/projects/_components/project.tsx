@@ -18,6 +18,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { BlogSkeleton } from "@/components/skeleton";
 
 export default function ProjectsPage() {
   const prefersReduced = useReducedMotion();
@@ -44,6 +46,7 @@ export default function ProjectsPage() {
   const projects = data?.projects ?? [];
   const total = data?.total ?? 0;
   const totalPages = data?.totalPages ?? 1;
+  const t = useTranslations("projectPage");
 
   const container = {
     hidden: {},
@@ -58,41 +61,6 @@ export default function ProjectsPage() {
     },
   } as const;
 
-  if (isLoading) {
-    return (
-      <main className="w-full bg-background text-foreground">
-        <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
-          <header className="mb-6 md:mb-8">
-            <Skeleton className="w-1/2 h-10" />
-            <Skeleton className="w-3/4 h-5 mt-2" />
-          </header>
-          <div className="mb-6">
-            <Skeleton className="w-full h-12" />
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i}>
-                <Skeleton className="aspect-[16/9] w-full" />
-                <CardHeader>
-                  <Skeleton className="w-3/4 h-6" />
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    <Skeleton className="w-16 h-5" />
-                    <Skeleton className="w-20 h-5" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="w-full h-4" />
-                  <Skeleton className="w-5/6 h-4 mt-2" />
-                  <Skeleton className="w-32 h-10 mt-6" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </main>
-    );
-  }
-
   if (isError) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -106,11 +74,9 @@ export default function ProjectsPage() {
       <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
         <header className="mb-6 md:mb-8">
           <h1 className="text-3xl font-semibold text-balance md:text-4xl">
-            Semua Proyek
+            {t("title")}
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Pencarian dan pagination untuk menjelajah proyek saya.
-          </p>
+          <p className="mt-2 text-muted-foreground">{t("description")}</p>
         </header>
 
         <div className="mb-6">
@@ -119,12 +85,12 @@ export default function ProjectsPage() {
             onChange={(v) => {
               setQuery(v);
             }}
-            placeholder="Cari proyek berdasarkan judul, deskripsi, atau tag…"
+            placeholder={t("searchPlaceholder")}
           />
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">
-          {total} hasil • halaman {page}/{totalPages}
+          {t("pagination.summary", { total, page, totalPages })}
         </p>
 
         <motion.div
@@ -133,63 +99,67 @@ export default function ProjectsPage() {
           animate="show"
           className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
-          {projects.map((p, idx) => (
-            <motion.div
-              key={idx}
-              variants={item}
-              whileHover={prefersReduced ? undefined : { y: -4, scale: 1.01 }}
-              transition={{ type: "spring", stiffness: 250, damping: 24 }}
-            >
-              <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20">
-                <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <Image
-                    src={p.thumbnail}
-                    alt={`Gambar proyek ${p.title}`}
-                    width={640}
-                    height={360}
-                    className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-lg text-pretty">
-                    {p.title}
-                  </CardTitle>
-                  {p.categories && p.categories.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {p.categories.slice(0, 6).map((t, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
-                        >
-                          {t.title}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4">
-                  <CardDescription className="text-pretty">
-                    {p.shortDesc}
-                  </CardDescription>
-                  <div>
-                    <Button
-                      asChild
-                      variant="default"
-                      className="bg-primary text-primary-foreground"
-                    >
-                      <Link
-                        href={`/projects/${p.slug.current}`}
-                        aria-label={`Lihat detail proyek ${p.title}`}
-                      >
-                        Lihat Detail
-                      </Link>
-                    </Button>
+          {isLoading ? (
+            <BlogSkeleton />
+          ) : (
+            projects.map((p, idx) => (
+              <motion.div
+                key={idx}
+                variants={item}
+                whileHover={prefersReduced ? undefined : { y: -4, scale: 1.01 }}
+                transition={{ type: "spring", stiffness: 250, damping: 24 }}
+              >
+                <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden">
+                    <Image
+                      src={p.thumbnail}
+                      alt={`Gambar proyek ${p.title}`}
+                      width={640}
+                      height={360}
+                      className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
+                      loading="lazy"
+                    />
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  <CardHeader className="space-y-1">
+                    <CardTitle className="text-lg text-pretty">
+                      {p.title}
+                    </CardTitle>
+                    {p.categories && p.categories.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {p.categories.slice(0, 6).map((t, i) => (
+                          <span
+                            key={i}
+                            className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
+                          >
+                            {t.title}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4">
+                    <CardDescription className="text-pretty">
+                      {p.shortDesc}
+                    </CardDescription>
+                    <div>
+                      <Button
+                        asChild
+                        variant="default"
+                        className="bg-primary text-primary-foreground"
+                      >
+                        <Link
+                          href={`/projects/${p.slug.current}`}
+                          aria-label={`Lihat detail proyek ${p.title}`}
+                        >
+                          Lihat Detail
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))
+          )}
         </motion.div>
 
         <Pagination

@@ -5,7 +5,18 @@ import certiType from "./certification";
 import categoryType from "./category";
 import blogType from "./blog";
 import projectType from "./project";
+import educationType from "./education";
+import experienceType from "./experience";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [heroType, aboutType, certiType, categoryType, blogType, projectType],
+  types: [
+    heroType,
+    aboutType,
+    certiType,
+    categoryType,
+    blogType,
+    projectType,
+    educationType,
+    experienceType,
+  ],
 };

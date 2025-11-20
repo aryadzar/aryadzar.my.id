@@ -49,8 +49,8 @@ export function createMetadata({
     alternates: {
       canonical: url,
       languages: {
-        "en-US": `/en${url}`,
-        "id-ID": `/id${url}`,
+        en: `/en${url}`,
+        id: `/id${url}`,
       },
     },
 

@@ -17,6 +17,8 @@ import { getBlogs } from "@/lib/getBlogs";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { BlogSkeleton } from "@/components/skeleton";
 
 export default function BlogPage() {
   const prefersReduced = useReducedMotion();
@@ -44,8 +46,8 @@ export default function BlogPage() {
   const total = data?.total ?? 0;
   const totalPages = data?.totalPages ?? 1;
 
-  console.log(data);
-  console.log(blogs);
+  const t = useTranslations("blogPage");
+
   const container = {
     hidden: {},
     show: { transition: { staggerChildren: prefersReduced ? 0 : 0.06 } },
@@ -55,50 +57,48 @@ export default function BlogPage() {
     show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
   } as const;
 
-  if (isLoading) {
-    return (
-      <main className="w-full bg-background text-foreground">
-        <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
-          <header className="mb-6 md:mb-8">
-            <Skeleton className="w-1/2 h-10" />
-            <Skeleton className="w-3/4 h-5 mt-2" />
-          </header>
-          <div className="mb-6">
-            <Skeleton className="w-full h-12" />
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i}>
-                <Skeleton className="aspect-[16/9] w-full" />
-                <CardHeader>
-                  <Skeleton className="w-3/4 h-6" />
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    <Skeleton className="w-16 h-5" />
-                    <Skeleton className="w-20 h-5" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="w-full h-4" />
-                  <Skeleton className="w-5/6 h-4 mt-2" />
-                  <Skeleton className="w-32 h-10 mt-6" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </main>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <main className="w-full bg-background text-foreground">
+  //       <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
+  //         <header className="mb-6 md:mb-8">
+  //           <Skeleton className="w-1/2 h-10" />
+  //           <Skeleton className="w-3/4 h-5 mt-2" />
+  //         </header>
+  //         <div className="mb-6">
+  //           <Skeleton className="w-full h-12" />
+  //         </div>
+  //         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  //           {Array.from({ length: 6 }).map((_, i) => (
+  //             <Card key={i}>
+  //               <Skeleton className="aspect-[16/9] w-full" />
+  //               <CardHeader>
+  //                 <Skeleton className="w-3/4 h-6" />
+  //                 <div className="flex flex-wrap gap-2 pt-2">
+  //                   <Skeleton className="w-16 h-5" />
+  //                   <Skeleton className="w-20 h-5" />
+  //                 </div>
+  //               </CardHeader>
+  //               <CardContent>
+  //                 <Skeleton className="w-full h-4" />
+  //                 <Skeleton className="w-5/6 h-4 mt-2" />
+  //                 <Skeleton className="w-32 h-10 mt-6" />
+  //               </CardContent>
+  //             </Card>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     </main>
+  //   );
+  // }
   return (
     <main className="w-full bg-background text-foreground">
       <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
         <header className="mb-6 md:mb-8">
           <h1 className="text-3xl font-semibold text-balance md:text-4xl">
-            Semua Blog
+            {t("title")}
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Cari artikel dan jelajahi arsip tulisan saya.
-          </p>
+          <p className="mt-2 text-muted-foreground">{t("description")}</p>
         </header>
 
         <div className="mb-6">
@@ -107,12 +107,12 @@ export default function BlogPage() {
             onChange={(v) => {
               setQuery(v);
             }}
-            placeholder="Cari blog berdasarkan judul, ringkas, atau tag…"
+            placeholder={t("searchPlaceholder")}
           />
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">
-          {total} hasil • halaman {page}/{totalPages}
+          {t("pagination.summary", { total, page, totalPages })}
         </p>
 
         <motion.div
@@ -120,69 +120,73 @@ export default function BlogPage() {
           animate="show"
           className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
-          {blogs.map((post, idx) => (
-            <motion.article
-              key={post.title + idx}
-              variants={item}
-              whileHover={prefersReduced ? undefined : { y: -4, scale: 1.01 }}
-              transition={{ type: "spring", stiffness: 250, damping: 24 }}
-            >
-              <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20">
-                <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <img
-                    src={
-                      post.thumbnail ||
-                      "/placeholder.svg?height=360&width=640&query=blog%20cover"
-                    }
-                    alt={`Gambar untuk ${post.title}`}
-                    className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-lg text-pretty">
-                    {post.title}
-                  </CardTitle>
-                  {post.publishedAt ? (
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(post.publishedAt).toLocaleDateString()}
-                    </p>
-                  ) : null}
-                  {post.categories && post.categories.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {post.categories.slice(0, 6).map((t, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
-                        >
-                          {t.title}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4">
-                  <CardDescription className="text-pretty">
-                    {post.excerpt}
-                  </CardDescription>
-                  <div>
-                    <Button
-                      asChild
-                      variant="default"
-                      className="bg-primary text-primary-foreground"
-                    >
-                      <Link
-                        href={`/blog/${post.slug.current}`}
-                        aria-label={`Baca selengkapnya: ${post.title}`}
-                      >
-                        Baca Selengkapnya
-                      </Link>
-                    </Button>
+          {isLoading ? (
+            <BlogSkeleton />
+          ) : (
+            blogs.map((post, idx) => (
+              <motion.article
+                key={post.title + idx}
+                variants={item}
+                whileHover={prefersReduced ? undefined : { y: -4, scale: 1.01 }}
+                transition={{ type: "spring", stiffness: 250, damping: 24 }}
+              >
+                <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden">
+                    <img
+                      src={
+                        post.thumbnail ||
+                        "/placeholder.svg?height=360&width=640&query=blog%20cover"
+                      }
+                      alt={`Gambar untuk ${post.title}`}
+                      className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
+                      loading="lazy"
+                    />
                   </div>
-                </CardContent>
-              </Card>
-            </motion.article>
-          ))}
+                  <CardHeader className="space-y-1">
+                    <CardTitle className="text-lg text-pretty">
+                      {post.title}
+                    </CardTitle>
+                    {post.publishedAt ? (
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(post.publishedAt).toLocaleDateString()}
+                      </p>
+                    ) : null}
+                    {post.categories && post.categories.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {post.categories.slice(0, 6).map((t, i) => (
+                          <span
+                            key={i}
+                            className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
+                          >
+                            {t.title}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4">
+                    <CardDescription className="text-pretty">
+                      {post.excerpt}
+                    </CardDescription>
+                    <div>
+                      <Button
+                        asChild
+                        variant="default"
+                        className="bg-primary text-primary-foreground"
+                      >
+                        <Link
+                          href={`/blog/${post.slug.current}`}
+                          aria-label={`Baca selengkapnya: ${post.title}`}
+                        >
+                          Baca Selengkapnya
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.article>
+            ))
+          )}
         </motion.div>
 
         <Pagination
