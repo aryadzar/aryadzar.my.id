@@ -73,6 +73,8 @@ async function getNowPlaying(access_token: string): Promise<Response> {
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
+    next: { revalidate: 0 }, // ⬅️ disable RSC cache
+    cache: "no-store", // ⬅️ disable fetch cache
   });
 }
 
