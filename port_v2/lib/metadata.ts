@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getBaseUrl } from "./getBaseUrl";
 
 interface CreateMetadataProps {
   title?: string;
@@ -11,7 +12,7 @@ interface CreateMetadataProps {
 
 const defaultConfig = {
   siteName: "Arya Dzaky’s Portfolio",
-  baseUrl: "https://your-domain.com",
+  baseUrl: getBaseUrl(),
   defaultImage: "/og-image.jpg",
   creator: "Arya Dzaky",
 };
