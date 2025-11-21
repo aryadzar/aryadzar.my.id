@@ -88,7 +88,10 @@ export default function BlogDetailView() {
     <main className="w-full bg-background text-foreground">
       <div className="max-w-6xl px-4 py-10 mx-auto md:px-6 md:py-16">
         <header className="mb-8 md:mb-10">
-          <h1 className="text-3xl font-semibold text-balance md:text-4xl">
+          <h1
+            id={result.blog._id}
+            className="text-3xl font-semibold text-balance md:text-4xl"
+          >
             {result.blog.title}
           </h1>
           <p className="mt-2 text-muted-foreground">{result.blog.title}</p>

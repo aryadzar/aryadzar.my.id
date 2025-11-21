@@ -10,7 +10,8 @@ import { structureTool } from "sanity/structure";
 import { documentInternationalization } from "@sanity/document-internationalization";
 import { unsplashImageAsset } from "sanity-plugin-asset-source-unsplash";
 import { codeInput } from "@sanity/code-input";
-
+import { presentationTool } from "sanity/presentation";
+import * as resolve from "@/sanity/plugins/resolve";
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import { apiVersion, dataset, projectId } from "./sanity/env";
 import { schema } from "./sanity/schemaTypes";
@@ -27,6 +28,10 @@ export default defineConfig({
     // Vision is for querying with GROQ from inside the Studio
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: apiVersion }),
+    presentationTool({
+      resolve,
+      previewUrl: { previewMode: { enable: "/api/draft-mode/enable" } },
+    }),
     documentInternationalization({
       // Required configuration
       supportedLanguages: [
