@@ -39,6 +39,8 @@ export default defineType({
         { type: "block" },
         { type: "image", options: { hotspot: true } },
         { type: "code" },
+        { type: "embed" },
+        { type: "videoBlock" },
       ],
     }),
     defineField({

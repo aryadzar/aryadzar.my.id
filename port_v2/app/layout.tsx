@@ -9,6 +9,8 @@ import { createMetadata } from "@/lib/metadata";
 //   description: "Selamat datang di portofolio resmi Arya Dzaky.",
 //   url: "/",
 // });
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default function RootLayout({
   children,

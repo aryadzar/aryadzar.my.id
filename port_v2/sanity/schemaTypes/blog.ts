@@ -1,5 +1,5 @@
 import { defineType, defineField } from "sanity";
-
+import "./objects/embed-block";
 export default defineType({
   name: "blog",
   title: "Blog",
@@ -39,6 +39,8 @@ export default defineType({
         { type: "block" },
         { type: "image", options: { hotspot: true } },
         { type: "code" },
+        { type: "embed" },
+        { type: "videoBlock" },
       ],
       validation: (Rule) => Rule.required(),
     }),

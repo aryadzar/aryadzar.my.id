@@ -56,6 +56,8 @@ async function getAccessToken(): Promise<SpotifyTokenResponse | null> {
       grant_type: "refresh_token",
       refresh_token,
     }),
+    next: { revalidate: 0 }, // ⬅️ disable RSC cache
+    cache: "no-store", // ⬅️ disable fetch cache
   });
 
   if (!response.ok) {

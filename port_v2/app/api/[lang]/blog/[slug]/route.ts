@@ -16,8 +16,13 @@ export async function GET(
         slug,
         "thumbnail" : coverImage.asset->url,
         excerpt,
-        content,
-        categories[]->{_id, title, slug},
+    content[]{
+      ...,
+      _type == "videoBlock" => {
+        "url": video.asset->url,
+        caption
+      }
+    },        categories[]->{_id, title, slug},
         publishedAt
       }
     `;

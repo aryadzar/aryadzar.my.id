@@ -113,7 +113,7 @@ export default function BlogDetailView() {
               initial={prefersReduced ? undefined : { opacity: 0, y: 16 }}
               animate={prefersReduced ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="[&_*]:scroll-mt-24 prose prose-neutral max-w-none dark:prose-invert"
+              className="[&_*]:scroll-mt-24 prose prose-neutral prose-video:mx-auto max-w-none dark:prose-invert"
             >
               <Image
                 src={(result.blog.thumbnail as string) || "/project-hero.jpg"}
