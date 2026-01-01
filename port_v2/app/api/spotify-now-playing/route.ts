@@ -1,6 +1,8 @@
 // app/api/spotify/route.ts
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 // ENV TYPES
 const {
   SPOTIFY_CLIENT_ID: client_id,
