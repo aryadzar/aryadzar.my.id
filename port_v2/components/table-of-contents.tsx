@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type TOCItem = { id: string; text: string; level: number };
 
@@ -58,7 +59,7 @@ function renderTocTree(nodes: any[], activeId: string | null) {
 export function TableOfContents({
   contentRef,
   className,
-  title = "On this page",
+  title = "Daftar Isi", // default title in Indonesian
 }: {
   contentRef: RefObject<HTMLElement>;
   className?: string;
@@ -146,13 +147,19 @@ export function TableOfContents({
       aria-label="Table of contents"
       className={cn(
         "rounded-lg border border-border bg-card p-4",
-        "sticky top-24 h-max",
+        "sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col", // added sticky and max-height for scrolling
         className
       )}
     >
-      <p className="mb-3 text-sm font-medium text-foreground">{title}</p>
+      <p className="mb-3 text-sm font-medium text-foreground shrink-0">
+        {title}
+      </p>
 
-      <nav>{renderTocTree(tocTree, activeId)}</nav>
+      <ScrollArea className="flex-1 px-2 -mx-2">
+        {" "}
+        {/* Added ScrollArea to make it scrollable if long */}
+        <nav className="pb-2">{renderTocTree(tocTree, activeId)}</nav>
+      </ScrollArea>
     </aside>
   );
 }
