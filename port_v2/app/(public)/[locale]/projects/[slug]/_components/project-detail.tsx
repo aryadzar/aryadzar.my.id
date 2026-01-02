@@ -155,7 +155,7 @@ export default function ProjectDetail() {
             </motion.article>
           </section>
 
-          <aside className="sticky self-start hidden top-24 h-fit md:col-span-4 md:block lg:col-span-3">
+          <aside className="sticky top-24 hidden md:block md:col-span-4 lg:col-span-3 h-[calc(100vh-6rem)] overflow-hidden">
             <TableOfContents contentRef={articleRef} title={t("tocTitle")} />
           </aside>
         </div>

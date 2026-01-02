@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 type TOCItem = { id: string; text: string; level: number };
 
@@ -32,23 +32,39 @@ function buildTocTree(items: TOCItem[]) {
 
 function renderTocTree(nodes: any[], activeId: string | null) {
   return (
-    <ul className="space-y-1">
+    <ul className="ml-1 space-y-1 border-l border-border/40">
       {nodes.map((node) => (
-        <li key={node.id}>
+        <li key={node.id} className="relative">
+          {activeId === node.id && (
+            <div className="absolute -left-px top-1 h-[calc(100%-8px)] w-[2px] bg-primary z-10 rounded-full" />
+          )}
           <a
             href={`#${node.id}`}
             className={cn(
-              "block rounded-md px-2 py-1.5 text-sm transition-colors",
+              "block py-1 pl-4 pr-2 text-[13px] leading-tight transition-all duration-200 ease-in-out",
               activeId === node.id
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                ? "text-primary font-medium bg-primary/5"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
+            onClick={(e) => {
+              e.preventDefault();
+              const el = document.getElementById(node.id);
+              if (!el) return;
+
+              // update URL hash
+              history.pushState(null, "", `#${node.id}`);
+
+              el.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
           >
             {node.text}
           </a>
 
           {node.children.length > 0 && (
-            <div className="ml-4">{renderTocTree(node.children, activeId)}</div>
+            <div className="mt-1">{renderTocTree(node.children, activeId)}</div>
           )}
         </li>
       ))}
@@ -59,9 +75,9 @@ function renderTocTree(nodes: any[], activeId: string | null) {
 export function TableOfContents({
   contentRef,
   className,
-  title = "Daftar Isi", // default title in Indonesian
+  title = "Daftar Isi",
 }: {
-  contentRef: RefObject<HTMLElement>;
+  contentRef: RefObject<HTMLElement | null>; // Updated type to handle null
   className?: string;
   title?: string;
 }) {
@@ -70,11 +86,15 @@ export function TableOfContents({
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
+    if (!contentRef || !contentRef.current) return;
+
     const timeout = setTimeout(() => {
       if (!contentRef.current) return;
 
       const headings = Array.from(
-        contentRef.current.querySelectorAll<HTMLElement>("h1, h2, h3, h4")
+        contentRef.current.querySelectorAll<HTMLElement>(
+          "h1, h2, h3, h4, h5, h6"
+        )
       );
 
       const mapped = headings.map((el) => {
@@ -95,7 +115,6 @@ export function TableOfContents({
 
       setItems(mapped);
 
-      // Intersection Observer
       observerRef.current?.disconnect();
       observerRef.current = new IntersectionObserver(
         (entries) => {
@@ -113,13 +132,13 @@ export function TableOfContents({
           }
         },
         {
-          rootMargin: "0px 0px -60% 0px",
-          threshold: 0.1,
+          rootMargin: "-100px 0px -66% 0px",
+          threshold: 0,
         }
       );
 
       headings.forEach((h) => observerRef.current?.observe(h));
-    }, 0);
+    }, 100);
 
     return () => {
       clearTimeout(timeout);
@@ -127,39 +146,24 @@ export function TableOfContents({
     };
   }, [contentRef]);
 
-  if (!items.length) {
-    return (
-      <aside
-        aria-label="Table of contents"
-        className={cn(
-          "rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground",
-          className
-        )}
-      >
-        <p className="m-0">Tidak ada heading pada halaman ini.</p>
-      </aside>
-    );
-  }
+  if (!items.length) return null;
+
   const tocTree = buildTocTree(items);
 
   return (
-    <aside
+    <nav
       aria-label="Table of contents"
-      className={cn(
-        "rounded-lg border border-border bg-card p-4",
-        "sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col", // added sticky and max-height for scrolling
-        className
-      )}
+      className={cn("flex flex-col gap-4 py-2", "h-[500px] min-h-0", className)}
     >
-      <p className="mb-3 text-sm font-medium text-foreground shrink-0">
-        {title}
-      </p>
+      <div className="flex items-center gap-2 px-1">
+        <h2 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60">
+          {title}
+        </h2>
+      </div>
 
-      <ScrollArea className="flex-1 px-2 -mx-2">
-        {" "}
-        {/* Added ScrollArea to make it scrollable if long */}
-        <nav className="pb-2">{renderTocTree(tocTree, activeId)}</nav>
+      <ScrollArea className="flex-1 min-h-0 pr-4">
+        <div className="py-2">{renderTocTree(tocTree, activeId)}</div>
       </ScrollArea>
-    </aside>
+    </nav>
   );
 }
