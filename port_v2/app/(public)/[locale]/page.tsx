@@ -17,7 +17,7 @@ export default function Page() {
       <ExperienceSection />
       <CertificationsSection limit={6} />
       <BlogPreview limit={3} />
-      <ContactSection id="contact" />
+      {/* <ContactSection id="contact" /> */}
     </main>
   );
 }
