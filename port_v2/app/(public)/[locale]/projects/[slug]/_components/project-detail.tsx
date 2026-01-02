@@ -18,11 +18,13 @@ import "prismjs/components/prism-json";
 import "prismjs/components/prism-markup";
 import { PortableText, PortableTextComponents } from "next-sanity";
 import { components } from "@/constants/components-portable-text-constant";
+import { useTranslations } from "next-intl";
 
 export default function ProjectDetail() {
   const articleRef = useRef<HTMLElement>(null!);
   const prefersReduced = useReducedMotion();
   const { locale, slug } = useParams();
+  const t = useTranslations("projectDetail");
 
   const {
     data: result,
@@ -108,7 +110,7 @@ export default function ProjectDetail() {
             >
               <Image
                 src={result.project.thumbnail || "/project-hero.jpg"}
-                alt={`Cover image for ${result.project.title}`}
+                alt={t("altImage", { title: result.project.title })}
                 width={1200}
                 height={675}
                 className="w-full mb-6 border rounded-lg border-border"
@@ -126,7 +128,7 @@ export default function ProjectDetail() {
                   className="bg-primary text-primary-foreground"
                   asChild
                 >
-                  <Link href="/projects">Kembali ke Proyek</Link>
+                  <Link href="/projects">{t("backButton")}</Link>
                 </Button>
                 {result.project.repoUrl && (
                   <Button variant="outline" asChild>
@@ -135,7 +137,7 @@ export default function ProjectDetail() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Lihat di GitHub
+                      {t("githubButton")}
                     </a>
                   </Button>
                 )}
@@ -146,7 +148,7 @@ export default function ProjectDetail() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Lihat Demo
+                      {t("demoButton")}
                     </a>
                   </Button>
                 )}
@@ -155,7 +157,7 @@ export default function ProjectDetail() {
           </section>
 
           <aside className="sticky self-start hidden top-24 h-fit md:col-span-4 md:block lg:col-span-3">
-            <TableOfContents contentRef={articleRef} title="Daftar Isi" />
+            <TableOfContents contentRef={articleRef} title={t("tocTitle")} />
           </aside>
         </div>
       </div>

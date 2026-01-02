@@ -2,6 +2,7 @@ import BlogDetailView from "./_components/blogDetail";
 import { getBlog } from "@/lib/getBlogs";
 import { createMetadata } from "@/lib/metadata";
 import { getBlogSSR } from "@/lib/ssr/getBlogSSR";
+import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata({
   params,
@@ -10,11 +11,15 @@ export async function generateMetadata({
 }) {
   const { slug: slugs, locale } = await params;
   const blog = await getBlogSSR(slugs, locale);
+  const t = await getTranslations({
+    locale,
+    namespace: "metadata.blogNotFound",
+  });
 
   if (!blog) {
     return createMetadata({
-      title: "Blog Not Found",
-      description: "The requested blog post could not be found.",
+      title: t("title"),
+      description: t("description"),
       url: `/blog/${slugs}`,
     });
   }

@@ -176,9 +176,9 @@ export default function BlogPage() {
                       >
                         <Link
                           href={`/blog/${post.slug.current}`}
-                          aria-label={`Baca selengkapnya: ${post.title}`}
+                          aria-label={t("ariaLabel", { title: post.title })}
                         >
-                          Baca Selengkapnya
+                          {t("button")}
                         </Link>
                       </Button>
                     </div>

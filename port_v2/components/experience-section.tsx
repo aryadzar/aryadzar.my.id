@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getExperience } from "@/lib/getHome";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { id } from "date-fns/locale";
+import { useTranslations } from "next-intl";
 import { ExEdSkeleton } from "./skeleton";
 
 type Experience = {
@@ -23,14 +23,13 @@ type Experience = {
 export function ExperienceSection({
   experiences,
   limit = 6,
-  title = "Experience",
 }: {
   experiences?: Experience[];
   limit?: number;
-  title?: string;
 }) {
   const prefersReducedMotion = useReducedMotion();
   const { locale } = useParams<{ locale: string }>();
+  const t = useTranslations("home.experience");
 
   const { data: items, isLoading } = useQuery({
     queryKey: ["experience"],
@@ -46,7 +45,7 @@ export function ExperienceSection({
             id="experience-heading"
             className="text-2xl font-semibold text-pretty text-foreground"
           >
-            {title}
+            {t("h1")}
           </h2>
         </div>
 

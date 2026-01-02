@@ -6,11 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
 import { HeroSkeleton } from "./skeleton";
 import CvModal from "./cv/cvModal";
+import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 
 export function HeroVideoBackground() {
   const prefersReduced = useReducedMotion();
   const { locale } = useParams();
+  const t = useTranslations("home.hero");
   const { data, isLoading } = useQuery({
     queryKey: ["hero", locale],
     queryFn: () => getHero(locale as string),
@@ -22,7 +24,7 @@ export function HeroVideoBackground() {
 
   return (
     <section
-      aria-label="Hero dengan video latar belakang"
+      aria-label={t("ariaLabel")}
       className={cn(
         "relative isolate min-h-[80vh] overflow-hidden bg-background"
       )}

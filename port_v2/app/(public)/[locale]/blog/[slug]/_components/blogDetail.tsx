@@ -10,16 +10,14 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getBlog } from "@/lib/getBlogs";
 import { PortableText, PortableTextComponents } from "next-sanity";
-import "prism-themes/themes/prism-duotone-space.css";
-import Prism from "prismjs";
-import "prismjs/components/prism-javascript";
-import "prismjs/components/prism-typescript";
-import "prismjs/components/prism-json";
-import "prismjs/components/prism-markup";
+import Prism from "@/lib/prism";
+// theme (boleh global atau di sini)
+
 import { useEffect } from "react";
 import { notFound, useParams } from "next/navigation";
 import { urlFor } from "@/sanity/lib/image";
 import { components } from "@/constants/components-portable-text-constant";
+import { useTranslations } from "next-intl";
 
 function slugify(text: any) {
   return String(text)
@@ -35,6 +33,7 @@ export default function BlogDetailView() {
   const articleRef = useRef<HTMLElement>(null!);
   const prefersReduced = useReducedMotion();
   const { locale, slug } = useParams<{ slug: string; locale: string }>();
+  const t = useTranslations("blogDetail");
 
   const {
     data: result,
@@ -117,7 +116,7 @@ export default function BlogDetailView() {
             >
               <Image
                 src={(result.blog.thumbnail as string) || "/project-hero.jpg"}
-                alt={`Cover image for ${result.blog.title}`}
+                alt={t("altImage", { title: result.blog.title })}
                 width={1200}
                 height={675}
                 className="w-full mb-6 border rounded-lg border-border"
@@ -135,14 +134,14 @@ export default function BlogDetailView() {
                   className="bg-primary text-primary-foreground"
                   asChild
                 >
-                  <Link href="/blog">Kembali ke Blog</Link>
+                  <Link href="/blog">{t("backButton")}</Link>
                 </Button>
               </div>
             </motion.article>
           </section>
 
           <aside className="sticky self-start hidden top-24 h-fit md:col-span-4 md:block lg:col-span-3">
-            <TableOfContents contentRef={articleRef} title="Daftar Isi" />
+            <TableOfContents contentRef={articleRef} title={t("tocTitle")} />
           </aside>
         </div>
       </div>
