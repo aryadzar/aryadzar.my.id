@@ -1,9 +1,12 @@
 import { defineType, defineField } from "sanity";
 import "./objects/embed-block";
+import { Notebook } from "lucide-react";
+
 export default defineType({
   name: "blog",
   title: "Blog",
   type: "document",
+  icon: Notebook,
   fields: [
     defineField({
       name: "title",

@@ -3,6 +3,7 @@ import { getBlog } from "@/lib/getBlogs";
 import { createMetadata } from "@/lib/metadata";
 import { getBlogSSR } from "@/lib/ssr/getBlogSSR";
 import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({
   params,
@@ -41,5 +42,11 @@ export default async function BlogPostPage({
 }: {
   params: Promise<{ slug: string; locale: string }>;
 }) {
-  return <BlogDetailView />;
+  const { slug: slugs, locale } = await params;
+  const blog = await getBlogSSR(slugs, locale);
+
+  if (!blog) {
+    notFound();
+  }
+  return <BlogDetailView result={blog} />;
 }

@@ -1,10 +1,12 @@
 // /sanity/schema/about.ts
 import { defineType, defineField } from "sanity";
+import { FileUser } from "lucide-react";
 
 export default defineType({
   name: "about",
   title: "About Section",
   type: "document",
+  icon: FileUser,
   fields: [
     defineField({
       name: "profileImage",

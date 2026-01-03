@@ -1,9 +1,11 @@
 import { defineType, defineField } from "sanity";
+import { Newspaper } from "lucide-react";
 
 export default defineType({
   name: "certification",
   title: "Certification",
   type: "document",
+  icon: Newspaper,
   fields: [
     defineField({
       name: "title",
