@@ -1,0 +1,128 @@
+{
+    "nav": {
+        "home": "Startseite",
+        "projects": "Projekte",
+        "blog": "Blog",
+        "about": "Über mich",
+        "contact": "Kontakt"
+    },
+    "metadata": {
+        "home": {
+            "title": "Portfolio von Arya Dzaky",
+            "description": "Portfolio von Arya Dzaky – Fullstack-Entwickler",
+            "keywords": "Arya Dzaky, Portfolio, Fullstack-Entwickler, Webentwickler, Softwareentwickler"
+        },
+        "about": {
+            "title": "Über mich — Arya Dzaky",
+            "description": "Erfahren Sie mehr über Arya Dzaky – Hintergrund, Erfahrung, Fähigkeiten und Möglichkeiten zur Zusammenarbeit.",
+            "keywords": "Über Arya Dzaky, Fullstack-Entwickler, Entwicklerprofil, Softwareentwickler Fähigkeiten"
+        },
+        "projects": {
+            "title": "Projekte — Arya Dzaky",
+            "description": "Eine Sammlung von Projekten von Arya Dzaky, die Fähigkeiten in Webentwicklung und Software Engineering zeigen.",
+            "keywords": "Arya Dzaky Projekte, Webentwicklungsprojekte, Fullstack-Portfolio, Software Engineering"
+        },
+        "blog": {
+            "title": "Blog — Arya Dzaky",
+            "description": "Lesen Sie Artikel, Einblicke und Tutorials von Arya Dzaky über Webentwicklung und Software Engineering.",
+            "keywords": "Arya Dzaky Blog, Programmierartikel, Webentwicklung Tipps, Software Engineering Tutorials"
+        },
+        "projectNotFound": {
+            "title": "Projekt nicht gefunden",
+            "description": "Das angeforderte Projekt konnte nicht gefunden werden."
+        },
+        "blogNotFound": {
+            "title": "Blog nicht gefunden",
+            "description": "Der angeforderte Blogbeitrag konnte nicht gefunden werden."
+        }
+    },
+    "home": {
+        "hero": {
+            "buttonCv": "Lebenslauf ansehen",
+            "ariaLabel": "Hero-Bereich mit Hintergrundvideo"
+        },
+        "about": {
+            "h1": "Über mich"
+        },
+        "project": {
+            "h1": "Projektübersicht",
+            "desc": "Einige ausgewählte Projekte, an denen ich gearbeitet habe",
+            "button": "Details"
+        },
+        "education": {
+            "h1": "Ausbildung"
+        },
+        "experience": {
+            "h1": "Erfahrung"
+        },
+        "blog": {
+            "h1": "Blogübersicht",
+            "desc": "Die letzten drei veröffentlichten Blogbeiträge",
+            "button": "Mehr lesen"
+        },
+        "certificate": {
+            "h1": "Zertifikate",
+            "href": "Zertifikat ansehen"
+        },
+        "contact": {
+            "h1": "Kontaktieren Sie mich",
+            "desc": "Haben Sie ein Projekt oder Interesse an einer Zusammenarbeit? Senden Sie eine kurze Nachricht – ich melde mich so schnell wie möglich.",
+            "preferEmail": "Lieber direkt per E-Mail? ",
+            "name": "Name",
+            "namePlaceholder": "Ihr Name",
+            "email": "E-Mail",
+            "emailPlaceholder": "sie@email.de",
+            "message": "Nachricht",
+            "messagePlaceholder": "Schreiben Sie Ihre Nachricht...",
+            "button": "Nachricht senden",
+            "helper": "Die Daten werden nicht auf dem Server gespeichert. Dieses Formular öffnet Ihr E-Mail-Programm mit vorausgefülltem Nachrichteninhalt.",
+            "subject": "Neue Nachricht von {name}"
+        }
+    },
+    "blogPage": {
+        "title": "Alle Blogbeiträge",
+        "description": "Durchsuchen Sie Artikel und entdecken Sie mein Schreibarchiv.",
+        "searchPlaceholder": "Blogs nach Titel, Auszug oder Tags suchen…",
+        "pagination": {
+            "summary": "{total} Ergebnisse • Seite {page} von {totalPages}"
+        },
+        "button": "Mehr lesen",
+        "ariaLabel": "Mehr lesen: {title}"
+    },
+    "projectPage": {
+        "title": "Alle Projekte",
+        "description": "Durchsuchen und blättern Sie, um meine Projekte zu entdecken.",
+        "searchPlaceholder": "Projekte nach Titel, Beschreibung oder Tags suchen…",
+        "pagination": {
+            "summary": "{total} Ergebnisse • Seite {page} von {totalPages}"
+        },
+        "button": "Details ansehen",
+        "ariaLabel": "Projektdetails ansehen: {title}",
+        "error": "Fehler beim Laden der Projekte. Bitte versuchen Sie es später erneut."
+    },
+    "aboutPage": {
+        "title": "Über mich",
+        "description": "Eine Zusammenfassung meines Profils, meiner Kernkompetenzen und der besten Möglichkeiten zur Zusammenarbeit.",
+        "skillsTitle": "Fähigkeiten",
+        "headingAction": "Aktionen",
+        "contact": "Kontakt aufnehmen",
+        "viewProjects": "Alle Projekte ansehen"
+    },
+    "projectDetail": {
+        "altImage": "Titelbild für {title}",
+        "backButton": "Zurück zu den Projekten",
+        "githubButton": "Auf GitHub ansehen",
+        "demoButton": "Demo ansehen",
+        "tocTitle": "Inhaltsverzeichnis"
+    },
+    "blogDetail": {
+        "altImage": "Titelbild für {title}",
+        "backButton": "Zurück zum Blog",
+        "tocTitle": "Inhaltsverzeichnis"
+    },
+    "footer": {
+        "desc": "Entwickler mit Fokus auf saubere, schnelle und barrierefreie Benutzeroberflächen.",
+        "links": "Schnellzugriff",
+        "follow": "Folgen Sie mir"
+    }
+}

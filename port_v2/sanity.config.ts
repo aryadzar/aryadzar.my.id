@@ -32,6 +32,7 @@ export default defineConfig({
       supportedLanguages: [
         { id: "id", title: "Indonesia" },
         { id: "en", title: "English" },
+        { id: "de", title: "Deutsch" },
       ],
       schemaTypes: [
         "hero",
