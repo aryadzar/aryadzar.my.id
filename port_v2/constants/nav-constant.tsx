@@ -10,6 +10,6 @@ export function useNavItems() {
     { name: t("projects"), link: "/projects" },
     { name: t("blog"), link: "/blog" },
     { name: t("about"), link: "/about" },
-    { name: t("contact"), link: "#contact" },
+    // { name: t("contact"), link: "#contact" },
   ];
 }
