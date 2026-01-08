@@ -64,7 +64,7 @@ export default function ProjectsPage() {
   if (isError) {
     return (
       <div className="flex items-center justify-center h-screen">
-        Error loading projects. Please try again later.
+        {t("error")}
       </div>
     );
   }
@@ -149,9 +149,9 @@ export default function ProjectsPage() {
                       >
                         <Link
                           href={`/projects/${p.slug.current}`}
-                          aria-label={`Lihat detail proyek ${p.title}`}
+                          aria-label={t("ariaLabel", { title: p.title })}
                         >
-                          Lihat Detail
+                          {t("button")}
                         </Link>
                       </Button>
                     </div>

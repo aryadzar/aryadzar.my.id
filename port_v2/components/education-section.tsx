@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getEducation } from "@/lib/getHome";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { ExEdSkeleton } from "./skeleton";
 
 type Education = {
@@ -22,39 +23,14 @@ type Education = {
 export function EducationSection({
   educations,
   limit = 6,
-  title = "Education",
 }: {
   educations?: Education[];
   limit?: number;
-  title?: string;
 }) {
   const prefersReducedMotion = useReducedMotion();
+  const t = useTranslations("home.education");
 
   const { locale } = useParams<{ locale: string }>();
-  // const defaultEducations: Education[] = [
-  //   {
-  //     degree: "Bachelor of Science",
-  //     school: "University Name",
-  //     field: "Computer Science",
-  //     date: "2020 - 2024",
-  //     id: "ID123",
-  //     logoAlt: "University Logo",
-  //     logoSrc: "/generic-university-logo.png",
-  //   },
-  //   // {
-  //   //   degree: "Senior High School",
-  //   //   school: "High School Name",
-  //   //   field: "Science Program",
-  //   //   date: "2017 - 2020",
-  //   //   logoAlt: "School Logo",
-  //   //   logoSrc: "/generic-school-logo.png",
-  //   // },
-  // ];
-
-  // const items = (educations?.length ? educations : defaultEducations).slice(
-  //   0,
-  //   limit
-  // );
 
   const { data: items, isLoading } = useQuery({
     queryKey: ["education"],
@@ -73,7 +49,7 @@ export function EducationSection({
             id="education-heading"
             className="text-2xl font-semibold text-pretty text-foreground"
           >
-            {title}
+            {t("h1")}
           </h2>
         </div>
 

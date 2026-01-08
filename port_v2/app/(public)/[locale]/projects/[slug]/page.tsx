@@ -1,6 +1,8 @@
 import { createMetadata } from "@/lib/metadata";
 import ProjectDetail from "./_components/project-detail";
 import { getProjectSSR } from "@/lib/ssr/getProjectSSR";
+import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({
   params,
@@ -9,11 +11,15 @@ export async function generateMetadata({
 }) {
   const { slug: slugs, locale } = await params;
   const project = await getProjectSSR(slugs, locale);
+  const t = await getTranslations({
+    locale,
+    namespace: "metadata.projectNotFound",
+  });
 
   if (!project) {
     return createMetadata({
-      title: "Project Not Found",
-      description: "The requested Project post could not be found.",
+      title: t("title"),
+      description: t("description"),
       url: `/projects/${slugs}`,
     });
   }
@@ -33,7 +39,14 @@ export async function generateMetadata({
 export default async function ProjectDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }) {
-  return <ProjectDetail />;
+  const { slug: slugs, locale } = await params;
+  const project = await getProjectSSR(slugs, locale);
+
+  if (!project) {
+    notFound();
+  }
+
+  return <ProjectDetail result={project} />;
 }

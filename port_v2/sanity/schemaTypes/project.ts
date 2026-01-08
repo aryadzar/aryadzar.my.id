@@ -1,9 +1,11 @@
 import { defineType, defineField } from "sanity";
+import { GitPullRequestCreate } from "lucide-react";
 
 export default defineType({
   name: "project",
   title: "Project",
   type: "document",
+  icon: GitPullRequestCreate,
   fields: [
     defineField({
       name: "title",
@@ -39,6 +41,8 @@ export default defineType({
         { type: "block" },
         { type: "image", options: { hotspot: true } },
         { type: "code" },
+        { type: "embed" },
+        { type: "videoBlock" },
       ],
     }),
     defineField({

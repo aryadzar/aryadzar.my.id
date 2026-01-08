@@ -97,12 +97,11 @@ export function ProjectsShowcase({
             >
               <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20 focus-within:shadow-lg">
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <img
-                    src={
-                      p.thumbnail ||
-                      "/placeholder.svg?height=360&width=640&query=project cover"
-                    }
+                  <Image
+                    src={p.thumbnail}
                     alt={`Gambar proyek ${p.title}`}
+                    width={640}
+                    height={360}
                     className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
                     loading="lazy"
                   />

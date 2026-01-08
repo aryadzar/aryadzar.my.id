@@ -7,21 +7,19 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { useTranslations } from "next-intl";
 
 type ContactSectionProps = {
   id?: string;
   email?: string;
-  heading?: string;
-  subheading?: string;
 };
 
 export function ContactSection({
   id = "contact",
   email = "you@example.com",
-  heading = "Contact Me",
-  subheading = "Punya proyek atau kolaborasi? Kirim pesan singkat—saya akan membalas secepatnya.",
 }: ContactSectionProps) {
   const prefersReducedMotion = useReducedMotion();
+  const t = useTranslations("home.contact");
 
   const fadeUp = useMemo(
     () =>
@@ -41,7 +39,7 @@ export function ContactSection({
     const name = String(formData.get("name") || "");
     const replyTo = String(formData.get("email") || "");
     const message = String(formData.get("message") || "");
-    const subject = encodeURIComponent(`New message from ${name}`);
+    const subject = encodeURIComponent(t("subject", { name }));
     const body = encodeURIComponent(
       `From: ${name}\nEmail: ${replyTo}\n\n${message}`
     );
@@ -67,15 +65,15 @@ export function ContactSection({
               id={`${id}-title`}
               className="text-2xl font-semibold tracking-tight text-balance md:text-3xl"
             >
-              {heading}
+              {t("h1")}
             </h2>
             <p className="text-sm text-pretty text-muted-foreground md:text-base">
-              {subheading}
+              {t("desc")}
             </p>
 
             <div className="p-4 mt-4 border rounded-lg border-border">
               <p className="text-xs text-muted-foreground">
-                Prefer email langsung?{" "}
+                {t("preferEmail")}{" "}
                 <a
                   href={`mailto:${email}`}
                   className="underline rounded underline-offset-4 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -95,27 +93,27 @@ export function ContactSection({
             <div className="grid gap-4">
               <div className="grid gap-1.5">
                 <label htmlFor={`${id}-name`} className="text-sm font-medium">
-                  Nama
+                  {t("name")}
                 </label>
                 <Input
                   id={`${id}-name`}
                   name="name"
                   required
-                  placeholder="Nama Anda"
+                  placeholder={t("namePlaceholder")}
                   className="w-full h-10 px-3 text-sm border rounded-md outline-none border-border bg-background text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
               <div className="grid gap-1.5">
                 <label htmlFor={`${id}-email`} className="text-sm font-medium">
-                  Email
+                  {t("email")}
                 </label>
                 <Input
                   id={`${id}-email`}
                   name="email"
                   type="email"
                   required
-                  placeholder="you@email.com"
+                  placeholder={t("emailPlaceholder")}
                   className="w-full h-10 px-3 text-sm border rounded-md outline-none border-border bg-background text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
@@ -125,27 +123,26 @@ export function ContactSection({
                   htmlFor={`${id}-message`}
                   className="text-sm font-medium"
                 >
-                  Pesan
+                  {t("message")}
                 </label>
                 <Textarea
                   id={`${id}-message`}
                   name="message"
                   required
                   rows={5}
-                  placeholder="Tulis pesan Anda..."
+                  placeholder={t("messagePlaceholder")}
                   className="w-full p-3 text-sm border rounded-md outline-none border-border bg-background text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
               <div className="pt-1">
                 <Button type="submit" className="w-full md:w-auto">
-                  Kirim Pesan
+                  {t("button")}
                 </Button>
               </div>
 
               <p id={`${id}-helper`} className="text-xs text-muted-foreground">
-                Data tidak disimpan di server. Form ini akan membuka aplikasi
-                email Anda dengan isi pesan yang sudah terisi.
+                {t("helper")}
               </p>
             </div>
           </motion.form>

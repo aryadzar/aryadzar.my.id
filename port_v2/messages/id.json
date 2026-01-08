@@ -26,11 +26,20 @@
             "title": "Blog — Arya Dzaky",
             "description": "Baca artikel, tulisan, dan tutorial dari Arya Dzaky tentang web development dan software engineering.",
             "keywords": "Blog Arya Dzaky, Artikel Pemrograman, Tips Web Development, Tutorial Software Engineering"
+        },
+        "projectNotFound": {
+            "title": "Proyek Tidak Ditemukan",
+            "description": "Proyek yang diminta tidak dapat ditemukan."
+        },
+        "blogNotFound": {
+            "title": "Blog Tidak Ditemukan",
+            "description": "Postingan blog yang diminta tidak dapat ditemukan."
         }
     },
     "home": {
         "hero": {
-            "buttonCv": "Lihat CV"
+            "buttonCv": "Lihat CV",
+            "ariaLabel": "Hero dengan video latar belakang"
         },
         "about": {
             "h1": "Tentang Saya"
@@ -40,6 +49,12 @@
             "desc": "Beberapa proyek pilihan yang pernah saya kerjakan",
             "button": "Lihat Detail"
         },
+        "education": {
+            "h1": "Pendidikan"
+        },
+        "experience": {
+            "h1": "Pengalaman"
+        },
         "blog": {
             "h1": "Blog Terbaru",
             "desc": "Tiga tulisan terakhir yang saya publikasikan",
@@ -48,6 +63,20 @@
         "certificate": {
             "h1": "Sertifikasi",
             "href": "Lihat Sertifikat"
+        },
+        "contact": {
+            "h1": "Hubungi Saya",
+            "desc": "Punya proyek atau kolaborasi? Kirim pesan singkat—saya akan membalas secepatnya.",
+            "preferEmail": "Lebih suka email langsung? ",
+            "name": "Nama",
+            "namePlaceholder": "Nama Anda",
+            "email": "Email",
+            "emailPlaceholder": "anda@email.com",
+            "message": "Pesan",
+            "messagePlaceholder": "Tulis pesan Anda...",
+            "button": "Kirim Pesan",
+            "helper": "Data tidak disimpan di server. Form ini akan membuka aplikasi email Anda dengan isi pesan yang sudah terisi.",
+            "subject": "Pesan baru dari {name}"
         }
     },
     "blogPage": {
@@ -56,7 +85,9 @@
         "searchPlaceholder": "Cari blog berdasarkan judul, ringkas, atau tag…",
         "pagination": {
             "summary": "{total} hasil • halaman {page} dari {totalPages}"
-        }
+        },
+        "button": "Baca Selengkapnya",
+        "ariaLabel": "Baca selengkapnya: {title}"
     },
     "projectPage": {
         "title": "Semua Proyek",
@@ -64,7 +95,10 @@
         "searchPlaceholder": "Cari proyek berdasarkan judul, deskripsi, atau tag…",
         "pagination": {
             "summary": "{total} hasil • halaman {page} dari {totalPages}"
-        }
+        },
+        "button": "Lihat Detail",
+        "ariaLabel": "Lihat detail proyek {title}",
+        "error": "Gagal memuat proyek. Silakan coba lagi nanti."
     },
     "aboutPage": {
         "title": "Tentang Saya",
@@ -73,6 +107,18 @@
         "headingAction": "Aksi",
         "contact": "Hubungi Saya",
         "viewProjects": "Lihat Semua Proyek"
+    },
+    "projectDetail": {
+        "altImage": "Gambar sampul untuk {title}",
+        "backButton": "Kembali ke Proyek",
+        "githubButton": "Lihat di GitHub",
+        "demoButton": "Lihat Demo",
+        "tocTitle": "Daftar Isi"
+    },
+    "blogDetail": {
+        "altImage": "Gambar sampul untuk {title}",
+        "backButton": "Kembali ke Blog",
+        "tocTitle": "Daftar Isi"
     },
     "footer": {
         "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses.",

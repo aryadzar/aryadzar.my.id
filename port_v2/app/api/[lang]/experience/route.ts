@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { groq } from "next-sanity";
 import { client } from "@/sanity/lib/client";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ lang: string }> }

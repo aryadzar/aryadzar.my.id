@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BlogSkeleton } from "@/components/skeleton";
+import Image from "next/image";
 
 export default function BlogPage() {
   const prefersReduced = useReducedMotion();
@@ -132,12 +133,11 @@ export default function BlogPage() {
               >
                 <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20">
                   <div className="relative aspect-[16/9] w-full overflow-hidden">
-                    <img
-                      src={
-                        post.thumbnail ||
-                        "/placeholder.svg?height=360&width=640&query=blog%20cover"
-                      }
-                      alt={`Gambar untuk ${post.title}`}
+                    <Image
+                      src={post.thumbnail}
+                      alt={`Gambar proyek ${post.title}`}
+                      width={640}
+                      height={360}
                       className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
                       loading="lazy"
                     />
@@ -176,9 +176,9 @@ export default function BlogPage() {
                       >
                         <Link
                           href={`/blog/${post.slug.current}`}
-                          aria-label={`Baca selengkapnya: ${post.title}`}
+                          aria-label={t("ariaLabel", { title: post.title })}
                         >
-                          Baca Selengkapnya
+                          {t("button")}
                         </Link>
                       </Button>
                     </div>

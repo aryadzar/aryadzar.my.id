@@ -1,6 +1,8 @@
 import { client } from "@/sanity/lib/client";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ slug: string; lang: string }> }
@@ -16,8 +18,13 @@ export async function GET(
         slug,
         "thumbnail" : coverImage.asset->url,
         excerpt,
-        content,
-        categories[]->{_id, title, slug},
+    content[]{
+      ...,
+      _type == "videoBlock" => {
+        "url": video.asset->url,
+        caption
+      }
+    },        categories[]->{_id, title, slug},
         publishedAt
       }
     `;

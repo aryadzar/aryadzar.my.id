@@ -1,5 +1,6 @@
 import { urlFor } from "@/sanity/lib/image";
 import { PortableTextComponents } from "next-sanity";
+import { useState } from "react";
 
 function slugify(text: any) {
   return String(text)
@@ -25,17 +26,64 @@ export const components: PortableTextComponents = {
       </pre>
     ),
     image: ({ value }) => {
-      const imageUrl = urlFor(value).width(1200).url();
+      const [open, setOpen] = useState(false);
+
+      // Gambar kecil (thumbnail)
+      const small = urlFor(value).width(500).url();
+
+      // Gambar besar (full)
+      const full = urlFor(value).width(1600).url();
+
+      return (
+        <>
+          {/* Thumbnail */}
+          <div className="flex justify-center my-6">
+            <img
+              src={small}
+              alt={value.alt || "Blog Image"}
+              className="object-cover rounded-lg cursor-zoom-in max-h-lvw"
+              onClick={() => setOpen(true)}
+              loading="lazy"
+            />
+          </div>
+
+          {/* Modal fullscreen */}
+          {open && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            >
+              <img
+                src={full}
+                alt={value.alt || "Full Image"}
+                className="max-w-full max-h-full rounded-lg cursor-zoom-out"
+              />
+            </div>
+          )}
+        </>
+      );
+    },
+    embed: ({ value }) => (
+      <div
+        className="w-full mx-auto aspect-video"
+        dangerouslySetInnerHTML={{ __html: value?.html }}
+      />
+    ),
+    videoBlock: ({ value }) => {
+      if (!value.url) return null;
 
       return (
         <div className="my-6">
-          <img
-            src={imageUrl}
-            data-sanity={value._key}
-            alt={value.alt || "Blog image"}
-            className="w-full h-auto rounded-lg"
-            loading="lazy"
+          <video
+            src={value.url}
+            controls
+            className="w-full border rounded-lg border-border"
           />
+          {value.caption && (
+            <p className="mt-2 text-sm text-center text-muted-foreground">
+              {value.caption}
+            </p>
+          )}
         </div>
       );
     },

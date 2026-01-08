@@ -26,11 +26,20 @@
             "title": "Blog — Arya Dzaky",
             "description": "Read articles, insights, and tutorials written by Arya Dzaky on web development and software engineering.",
             "keywords": "Arya Dzaky Blog, Programming Articles, Web Development Tips, Software Engineering Tutorials"
+        },
+        "projectNotFound": {
+            "title": "Project Not Found",
+            "description": "The requested project could not be found."
+        },
+        "blogNotFound": {
+            "title": "Blog Not Found",
+            "description": "The requested blog post could not be found."
         }
     },
     "home": {
         "hero": {
-            "buttonCv": "View CV"
+            "buttonCv": "View CV",
+            "ariaLabel": "Hero with background video"
         },
         "about": {
             "h1": "About Me"
@@ -40,6 +49,12 @@
             "desc": "Some selected projects I have worked on",
             "button": "Detail"
         },
+        "education": {
+            "h1": "Education"
+        },
+        "experience": {
+            "h1": "Experience"
+        },
         "blog": {
             "h1": "Blog Overview",
             "desc": "The last three blogs I published",
@@ -48,6 +63,20 @@
         "certificate": {
             "h1": "Certification",
             "href": "View Certificate"
+        },
+        "contact": {
+            "h1": "Contact Me",
+            "desc": "Have a project or collaboration? Send a short message—I'll get back to you as soon as possible.",
+            "preferEmail": "Prefer direct email? ",
+            "name": "Name",
+            "namePlaceholder": "Your name",
+            "email": "Email",
+            "emailPlaceholder": "you@email.com",
+            "message": "Message",
+            "messagePlaceholder": "Write your message...",
+            "button": "Send Message",
+            "helper": "Data is not stored on the server. This form will open your email application with the message content pre-filled.",
+            "subject": "New message from {name}"
         }
     },
     "blogPage": {
@@ -56,7 +85,9 @@
         "searchPlaceholder": "Search blogs by title, excerpt, or tags…",
         "pagination": {
             "summary": "{total} results • page {page} of {totalPages}"
-        }
+        },
+        "button": "Read More",
+        "ariaLabel": "Read more: {title}"
     },
     "projectPage": {
         "title": "All Projects",
@@ -64,7 +95,10 @@
         "searchPlaceholder": "Search projects by title, description, or tags…",
         "pagination": {
             "summary": "{total} results • page {page} of {totalPages}"
-        }
+        },
+        "button": "View Detail",
+        "ariaLabel": "View project detail: {title}",
+        "error": "Error loading projects. Please try again later."
     },
     "aboutPage": {
         "title": "About Me",
@@ -73,6 +107,18 @@
         "headingAction": "Actions",
         "contact": "Contact Me",
         "viewProjects": "View All Projects"
+    },
+    "projectDetail": {
+        "altImage": "Cover image for {title}",
+        "backButton": "Back to Projects",
+        "githubButton": "View on GitHub",
+        "demoButton": "View Demo",
+        "tocTitle": "Table of Contents"
+    },
+    "blogDetail": {
+        "altImage": "Cover image for {title}",
+        "backButton": "Back to Blog",
+        "tocTitle": "Table of Contents"
     },
     "footer": {
         "desc": "Developers who focus on clean, fast, and accessible interface experiences.",

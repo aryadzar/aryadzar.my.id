@@ -10,91 +10,46 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import "prism-themes/themes/prism-duotone-space.css";
-import Prism from "prismjs";
+import Prism from "@/lib/prism";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-json";
 import "prismjs/components/prism-markup";
 import { PortableText, PortableTextComponents } from "next-sanity";
 import { components } from "@/constants/components-portable-text-constant";
+import { useTranslations } from "next-intl";
+import { Project } from "@/types/projectDetailType";
 
-export default function ProjectDetail() {
+export default function ProjectDetail({ result }: { result: Project }) {
   const articleRef = useRef<HTMLElement>(null!);
   const prefersReduced = useReducedMotion();
   const { locale, slug } = useParams();
-
-  const {
-    data: result,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["project", slug],
-    queryFn: () => getProject(slug as string, locale as string),
-    enabled: !!slug,
-  });
+  const t = useTranslations("projectDetail");
 
   useEffect(() => {
     Prism.highlightAll();
-  }, [result?.project.description]);
-
-  if (isLoading) {
-    return (
-      <main className="w-full bg-background text-foreground">
-        <div className="max-w-6xl px-4 py-10 mx-auto md:px-6 md:py-16">
-          <header className="mb-8 md:mb-10">
-            <Skeleton className="w-3/4 h-10" />
-            <Skeleton className="w-1/2 h-5 mt-3" />
-          </header>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
-            <section className="md:col-span-8 lg:col-span-9">
-              <Skeleton className="w-full rounded-lg aspect-video" />
-              <div className="mt-8 prose prose-neutral max-w-none dark:prose-invert">
-                <Skeleton className="w-1/3 h-8" />
-                <Skeleton className="w-full h-5 mt-4" />
-                <Skeleton className="w-5/6 h-5 mt-2" />
-                <Skeleton className="w-1/4 h-8 mt-8" />
-                <Skeleton className="w-full h-5 mt-4" />
-                <Skeleton className="w-full h-5 mt-2" />
-                <Skeleton className="w-3/4 h-5 mt-2" />
-              </div>
-            </section>
-            <aside className="md:col-span-4 lg:col-span-3">
-              <Skeleton className="w-full h-64" />
-            </aside>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  if (isError || !result) {
-    notFound();
-  }
+  }, [result?.description]);
 
   return (
     <main className="w-full bg-background text-foreground">
       <div className="max-w-6xl px-4 py-10 mx-auto md:px-6 md:py-16">
         <header className="mb-8 md:mb-10">
           <h1 className="text-3xl font-semibold text-balance md:text-4xl">
-            {result.project.title}
+            {result.title}
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            {result.project.shortDesc}
-          </p>
-          {result.project.categories &&
-            result.project.categories.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {result.project.categories.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
-                  >
-                    {tag.title}
-                  </span>
-                ))}
-              </div>
-            )}
+          <p className="mt-2 text-muted-foreground">{result.shortDesc}</p>
+          {result.categories && result.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {result.categories.map((tag, i) => (
+                <span
+                  key={i}
+                  className="px-2 py-1 text-xs border rounded-md border-border text-muted-foreground"
+                >
+                  {tag.title}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
@@ -107,8 +62,8 @@ export default function ProjectDetail() {
               className="[&_*]:scroll-mt-24 prose prose-neutral max-w-none dark:prose-invert"
             >
               <Image
-                src={result.project.thumbnail || "/project-hero.jpg"}
-                alt={`Cover image for ${result.project.title}`}
+                src={result.thumbnail || "/project-hero.jpg"}
+                alt={t("altImage", { title: result.title })}
                 width={1200}
                 height={675}
                 className="w-full mb-6 border rounded-lg border-border"
@@ -117,7 +72,7 @@ export default function ProjectDetail() {
 
               <PortableText
                 components={components}
-                value={result.project.description}
+                value={result.description}
               />
 
               <div className="flex flex-wrap gap-3 mt-8">
@@ -126,27 +81,27 @@ export default function ProjectDetail() {
                   className="bg-primary text-primary-foreground"
                   asChild
                 >
-                  <Link href="/projects">Kembali ke Proyek</Link>
+                  <Link href="/projects">{t("backButton")}</Link>
                 </Button>
-                {result.project.repoUrl && (
+                {result.repoUrl && (
                   <Button variant="outline" asChild>
                     <a
-                      href={result.project.repoUrl}
+                      href={result.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Lihat di GitHub
+                      {t("githubButton")}
                     </a>
                   </Button>
                 )}
-                {result.project.liveUrl && (
+                {result.liveUrl && (
                   <Button variant="outline" asChild>
                     <a
-                      href={result.project.liveUrl}
+                      href={result.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Lihat Demo
+                      {t("demoButton")}
                     </a>
                   </Button>
                 )}
@@ -154,8 +109,8 @@ export default function ProjectDetail() {
             </motion.article>
           </section>
 
-          <aside className="sticky self-start hidden top-24 h-fit md:col-span-4 md:block lg:col-span-3">
-            <TableOfContents contentRef={articleRef} title="Daftar Isi" />
+          <aside className="sticky top-24 hidden md:block md:col-span-4 lg:col-span-3 h-[calc(100vh-6rem)] overflow-hidden">
+            <TableOfContents contentRef={articleRef} title={t("tocTitle")} />
           </aside>
         </div>
       </div>

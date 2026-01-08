@@ -1,6 +1,8 @@
 // app/api/spotify/route.ts
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 // ENV TYPES
 const {
   SPOTIFY_CLIENT_ID: client_id,
@@ -56,6 +58,8 @@ async function getAccessToken(): Promise<SpotifyTokenResponse | null> {
       grant_type: "refresh_token",
       refresh_token,
     }),
+    next: { revalidate: 0 }, // ⬅️ disable RSC cache
+    cache: "no-store", // ⬅️ disable fetch cache
   });
 
   if (!response.ok) {
@@ -71,6 +75,8 @@ async function getNowPlaying(access_token: string): Promise<Response> {
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
+    next: { revalidate: 0 }, // ⬅️ disable RSC cache
+    cache: "no-store", // ⬅️ disable fetch cache
   });
 }
 

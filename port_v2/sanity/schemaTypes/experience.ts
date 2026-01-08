@@ -1,11 +1,13 @@
 // /schemas/experience.ts
 
 import { defineField, defineType } from "sanity";
+import { Notebook } from "lucide-react";
 
 export default defineType({
   name: "experience",
   title: "Experience",
   type: "document",
+  icon: Notebook,
   fields: [
     defineField({
       name: "title",

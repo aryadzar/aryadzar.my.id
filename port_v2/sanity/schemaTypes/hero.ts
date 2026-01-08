@@ -1,10 +1,11 @@
 import { defineType, defineField } from "sanity";
+import { Store } from "lucide-react";
 
 export default defineType({
   name: "hero",
   title: "Hero Section",
   type: "document",
-
+  icon: Store,
   fields: [
     // Title
     defineField({

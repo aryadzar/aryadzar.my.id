@@ -6,6 +6,8 @@ import { Github, Linkedin, Twitter, Instagram } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useNavItems } from "@/constants/nav-constant";
+import { cn } from "@/lib/utils";
+import { use } from "react";
 
 export default function Footer() {
   const t = useTranslations("footer");
@@ -13,33 +15,48 @@ export default function Footer() {
 
   return (
     <footer
-      className="border-t border-border bg-background text-foreground"
+      className="relative mt-20 overflow-hidden border-t border-border bg-background"
       role="contentinfo"
     >
-      <div className="w-full max-w-6xl px-4 py-10 mx-auto md:py-12">
-        <div className="grid gap-8 md:grid-cols-3">
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-32 opacity-[0.03] dark:opacity-[0.05]">
+        <svg
+          className="w-full h-full"
+          preserveAspectRatio="none"
+          viewBox="0 0 1440 320"
+        >
+          <path
+            fill="currentColor"
+            d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          />
+        </svg>
+      </div>
+
+      <div className="w-full max-w-6xl px-6 py-12 mx-auto">
+        <div className="grid gap-12 md:grid-cols-3 lg:gap-16">
           {/* Brand + short bio */}
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold">Arya Dzaky</h2>
-            <p className="text-sm text-muted-foreground text-pretty">
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
+              Arya Dzaky
+            </h2>
+            <p className="max-w-xs text-sm leading-relaxed text-muted-foreground text-pretty">
               {t("desc")}
             </p>
-            <SpotifyNowPlaying className="mt-4" />
+            <SpotifyNowPlaying className="mt-6" />
           </div>
 
           {/* Quick Links */}
-          <nav aria-label="Quick links" className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">
+          <nav aria-label="Quick links" className="space-y-4">
+            <h3 className="text-sm font-semibold tracking-wider uppercase text-foreground/70">
               {t("links")}
             </h3>
-            <ul className="grid grid-cols-2 gap-2">
+            <ul className="grid grid-cols-2 gap-y-3 gap-x-4">
               {navItems.map((nav, i) => (
-                <li>
+                <li key={i}>
                   <Link
-                    key={i}
                     href={nav.link}
-                    className="px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex items-center text-sm transition-colors group text-muted-foreground hover:text-green-500"
                   >
+                    <span className="w-0 h-px mr-2 transition-all bg-green-500 group-hover:w-3" />
                     {nav.name}
                   </Link>
                 </li>
@@ -48,57 +65,46 @@ export default function Footer() {
           </nav>
 
           {/* Socials */}
-          <nav aria-label="Social media" className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">
+          <nav aria-label="Social media" className="space-y-4">
+            <h3 className="text-sm font-semibold tracking-wider uppercase text-foreground/70">
               {t("follow")}
             </h3>
-            <ul className="flex flex-wrap items-center gap-3">
-              <li>
-                <a
-                  href={socialMedia.x}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <Twitter className="w-4 h-4" aria-hidden="true" />
-                  <span className="sr-only">Twitter</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={socialMedia.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <Github className="w-4 h-4" aria-hidden="true" />
-                  <span className="sr-only">GitHub</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={socialMedia.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <Linkedin className="w-4 h-4" aria-hidden="true" />
-                  <span className="sr-only">LinkedIn</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={socialMedia.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-2 py-1 text-sm rounded-md hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <Instagram className="w-4 h-4" aria-hidden="true" />
-                  <span className="sr-only">Instagram</span>
-                </a>
-              </li>
+            <ul className="flex flex-wrap items-center gap-4">
+              {[
+                { icon: Twitter, href: socialMedia.x, label: "Twitter" },
+                { icon: Github, href: socialMedia.github, label: "GitHub" },
+                {
+                  icon: Linkedin,
+                  href: socialMedia.linkedin,
+                  label: "LinkedIn",
+                },
+                {
+                  icon: Instagram,
+                  href: socialMedia.instagram,
+                  label: "Instagram",
+                },
+              ].map((social, i) => (
+                <li key={i}>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-all duration-300",
+                      "hover:border-green-500/50 hover:bg-green-500/10 hover:text-green-500 hover:shadow-[0_0_15px_rgba(34,197,94,0.2)]"
+                    )}
+                  >
+                    <social.icon className="w-5 h-5" aria-hidden="true" />
+                    <span className="sr-only">{social.label}</span>
+                  </a>
+                </li>
+              ))}
             </ul>
           </nav>
+        </div>
+
+        <div className="flex flex-col items-center justify-between gap-4 pt-8 mt-16 text-xs border-t border-border md:flex-row text-muted-foreground">
+          <p>© {new Date().getFullYear()} Arya Dzaky. All rights reserved.</p>
         </div>
       </div>
     </footer>

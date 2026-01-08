@@ -14,6 +14,7 @@ import Link from "next/link";
 import { ProjectsShowcaseSkeleton } from "./skeleton";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 type BlogPost = {
   title: string;
@@ -92,12 +93,11 @@ export function BlogPreview({
             >
               <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20 focus-within:shadow-lg">
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <img
-                    src={
-                      post.thumbnail ||
-                      "/placeholder.svg?height=360&width=640&query=blog%20cover"
-                    }
-                    alt={`Gambar untuk ${post.title}`}
+                  <Image
+                    src={post.thumbnail}
+                    alt={`Gambar proyek ${post.title}`}
+                    width={640}
+                    height={360}
                     className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
                     loading="lazy"
                   />
