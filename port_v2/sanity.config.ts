@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * This configuration is used to for the Sanity Studio that’s mounted on the `/app/studio/[[...tool]]/page.tsx` route
+ * This configuration is used to for the Sanity Studio that's mounted on the `/app/studio/[[...tool]]/page.tsx` route
  */
 
 import { visionTool } from "@sanity/vision";
@@ -30,7 +30,11 @@ export default defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
     presentationTool({
       resolve,
-      previewUrl: { previewMode: { enable: "/api/draft-mode/enable" } },
+      previewUrl: {
+        previewMode: {
+          enable: "/api/draft-mode/enable",
+        },
+      },
     }),
     documentInternationalization({
       // Required configuration
@@ -46,6 +50,8 @@ export default defineConfig({
         "education",
         "experience",
       ],
+      // Make language field available as "language" instead of "__i18n_lang"
+      languageField: "language",
     }),
     unsplashImageAsset(),
     codeInput(),

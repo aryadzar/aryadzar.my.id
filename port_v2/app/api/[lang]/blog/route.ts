@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { client } from "@/sanity/lib/client";
+import { sanityFetch } from "@/sanity/lib/live";
 
 export const dynamic = "force-dynamic";
 
@@ -51,8 +52,9 @@ export async function GET(
     }
   `;
 
-  const { blogs, total } = await client.fetch(query);
+  const { data } = await sanityFetch({ query });
 
+  const { blogs, total } = data;
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return NextResponse.json({

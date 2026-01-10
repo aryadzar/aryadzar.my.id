@@ -1,4 +1,6 @@
 export interface About {
+  _id?: string;
+  _type?: string;
   certificateUrl: any;
   cvUrl: string;
   description: string;

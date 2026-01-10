@@ -3,6 +3,7 @@
 import { Project, ProjectDetail } from "@/types/projectDetailType";
 import { getBaseUrl } from "../getBaseUrl";
 import { client } from "@/sanity/lib/client";
+import { sanityFetch } from "@/sanity/lib/live";
 
 export async function getProjectSSR(
   slug: string,
@@ -23,5 +24,10 @@ export async function getProjectSSR(
       }
   `;
 
-  return client.fetch(query, { slug, lang });
+  const { data } = await sanityFetch({
+    query,
+    params: { slug, lang },
+  });
+
+  return data;
 }

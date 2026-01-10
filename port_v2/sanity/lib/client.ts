@@ -1,7 +1,6 @@
 import { createClient } from "next-sanity";
 
 import { apiVersion, dataset, projectId } from "../env";
-import { getBaseUrl } from "@/lib/getBaseUrl";
 
 export const client = createClient({
   projectId,
@@ -9,6 +8,6 @@ export const client = createClient({
   apiVersion,
   useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
   stega: {
-    studioUrl: getBaseUrl(),
+    studioUrl: process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || "/studio",
   },
 });

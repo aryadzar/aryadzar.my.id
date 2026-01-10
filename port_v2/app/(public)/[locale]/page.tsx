@@ -3,7 +3,6 @@ import { AboutBrief } from "@/components/about-brief";
 import { ProjectsShowcase } from "@/components/projects-showcase";
 import { BlogPreview } from "@/components/blog-preview";
 import { CertificationsSection } from "@/components/certifications-section";
-import { ContactSection } from "@/components/contact-section";
 import { EducationSection } from "@/components/education-section";
 import { ExperienceSection } from "@/components/experience-section";
 import {
@@ -23,7 +22,7 @@ export default async function Page({
 }) {
   const { locale } = await params;
 
-  // Fetch all data server-side for SEO
+  // Fetch all data server-side for SEO or live preview
   const [
     heroData,
     aboutData,
