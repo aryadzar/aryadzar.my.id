@@ -4,22 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, BadgeCheck, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { getCertificate } from "@/lib/getHome";
-import { useMemo } from "react";
-import { CertificationSkeleton } from "./skeleton";
 import { useTranslations } from "next-intl";
+import { Certificate } from "@/types/certificateType";
 
-export function CertificationsSection({ limit = 6 }: { limit?: number }) {
+export function CertificationsSection({ data, limit = 6 }: { data: Certificate[]; limit?: number }) {
   const prefersReducedMotion = useReducedMotion();
   const t = useTranslations("home.certificate");
 
-  const { data: certificate, isLoading } = useQuery({
-    queryKey: ["certificate"],
-    queryFn: () => getCertificate(),
-  });
-
-  if (isLoading) return <CertificationSkeleton />;
   return (
     <section
       aria-labelledby="certifications-heading"
@@ -40,7 +31,7 @@ export function CertificationsSection({ limit = 6 }: { limit?: number }) {
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {certificate?.map((item, idx) => {
+          {data?.map((item, idx) => {
             const MotionDiv = prefersReducedMotion ? "div" : motion.div;
             return (
               <MotionDiv

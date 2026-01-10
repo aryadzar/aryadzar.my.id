@@ -4,6 +4,8 @@ import { AboutBrief } from "@/components/about-brief";
 import { CertificationsSection } from "@/components/certifications-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { About } from "@/types/aboutType";
+import { Certificate } from "@/types/certificateType";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 const skills: string[] = [
@@ -17,7 +19,13 @@ const skills: string[] = [
   "REST/GraphQL",
 ];
 
-export default function AboutPage() {
+export default function AboutPage({
+  certificateData,
+  aboutData,
+}: {
+  certificateData: Certificate[];
+  aboutData: About;
+}) {
   const t = useTranslations("aboutPage");
 
   return (
@@ -33,7 +41,7 @@ export default function AboutPage() {
       </header>
 
       {/* About Brief */}
-      <AboutBrief />
+      <AboutBrief data={aboutData} />
 
       {/* Keahlian */}
       <section aria-labelledby="skills-heading" className="py-10 md:py-14">
@@ -56,7 +64,7 @@ export default function AboutPage() {
 
       {/* Certifications on About page */}
       <div id="certifications">
-        <CertificationsSection limit={6} />
+        <CertificationsSection data={certificateData} limit={6} />
       </div>
 
       {/* CTA */}

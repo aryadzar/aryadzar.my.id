@@ -1,26 +1,14 @@
 "use client";
 
-import { getHero } from "@/lib/getHome";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
-import { HeroSkeleton } from "./skeleton";
 import CvModal from "./cv/cvModal";
 import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
+import { Hero } from "@/types/homeType";
 
-export function HeroVideoBackground() {
+export function HeroVideoBackground({ data }: { data: Hero }) {
   const prefersReduced = useReducedMotion();
-  const { locale } = useParams();
   const t = useTranslations("home.hero");
-  const { data, isLoading } = useQuery({
-    queryKey: ["hero", locale],
-    queryFn: () => getHero(locale as string),
-  });
-
-  if (isLoading) {
-    return <HeroSkeleton />;
-  }
 
   return (
     <section
@@ -72,10 +60,6 @@ export function HeroVideoBackground() {
 
             <div className="flex flex-wrap items-center gap-3 mt-8">
               <CvModal cvLink={data?.cvUrl as string} />
-
-              {/* <Button asChild size="lg" variant="secondary">
-                <a href="">Coba</a>
-              </Button> */}
             </div>
           </motion.div>
         </div>
