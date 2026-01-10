@@ -12,6 +12,12 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
+import { Toaster } from "sonner";
+import { SanityLive } from "@/sanity/lib/live";
+import { handleError } from "./client-function";
+import { draftMode } from "next/headers";
+import { DraftModeToast } from "./DraftModeToast";
+import { VisualEditing } from "next-sanity/visual-editing";
 
 export async function generateMetadata({
   params,
@@ -67,6 +73,14 @@ export default async function RootLayout({
           </BProgressProvider>
         </NextIntlClientProvider>
       </body>
+      <Toaster />
+      <SanityLive onError={handleError} />
+      {(await draftMode()).isEnabled && (
+        <>
+          <DraftModeToast />
+          <VisualEditing />
+        </>
+      )}
     </html>
   );
 }

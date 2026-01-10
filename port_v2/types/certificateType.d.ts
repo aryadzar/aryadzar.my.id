@@ -1,4 +1,6 @@
 export interface Certificate {
+  _id?: string;
+  _type?: string;
   date: string;
   href: string;
   id: string;

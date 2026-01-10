@@ -4,6 +4,7 @@ export interface EducationData {
 
 export interface Education {
   _id: string;
+  _type?: string;
   date: string;
   degree: string;
   field: string;

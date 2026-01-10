@@ -5,11 +5,20 @@ import { motion, useReducedMotion } from "framer-motion";
 import CvModal from "./cv/cvModal";
 import { useTranslations } from "next-intl";
 import { Hero } from "@/types/homeType";
+import { createDataAttribute } from "next-sanity";
+import { STUDIO_SANITY_URL } from "@/constants/studio-constant";
 
 export function HeroVideoBackground({ data }: { data: Hero }) {
   const prefersReduced = useReducedMotion();
   const t = useTranslations("home.hero");
-
+  const dataAttribute =
+    data?._id && data._type
+      ? createDataAttribute({
+          baseUrl: STUDIO_SANITY_URL,
+          id: data._id,
+          type: data._type,
+        })
+      : null;
   return (
     <section
       aria-label={t("ariaLabel")}
@@ -26,7 +35,11 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
         playsInline
         aria-hidden="true"
       >
-        <source src={data?.videoUrl} type="video/mp4" />
+        <source
+          src={data?.videoUrl}
+          data-sanity={dataAttribute?.("videoUrl")}
+          type="video/mp4"
+        />
         Your browser does not support the video tag.
       </video>
 
@@ -51,15 +64,24 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl">
+            <h1
+              className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl"
+              data-sanity={data._id}
+            >
               {data?.title}
             </h1>
-            <p className="mt-4 text-lg text-black text-pretty md:text-xl dark:text-white">
+            <p
+              className="mt-4 text-lg text-black text-pretty md:text-xl dark:text-white"
+              data-sanity={dataAttribute?.("subtitle")}
+            >
               {data?.subtitle}
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mt-8">
-              <CvModal cvLink={data?.cvUrl as string} />
+              <CvModal
+                cvLink={data?.cvUrl as string}
+                data-sanity={dataAttribute?.("cvUrl")}
+              />
             </div>
           </motion.div>
         </div>

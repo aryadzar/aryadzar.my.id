@@ -3,6 +3,7 @@
 import { Blog } from "@/types/blogDetailTypes";
 import { getBaseUrl } from "../getBaseUrl";
 import { client } from "@/sanity/lib/client";
+import { sanityFetch } from "@/sanity/lib/live";
 
 export async function getBlogSSR(slug: string, lang: string): Promise<Blog> {
   const query = `
@@ -18,5 +19,10 @@ export async function getBlogSSR(slug: string, lang: string): Promise<Blog> {
 }
   `;
 
-  return client.fetch(query, { slug, lang });
+  const { data } = await sanityFetch({
+    query,
+    params: { slug, lang },
+  });
+
+  return data;
 }

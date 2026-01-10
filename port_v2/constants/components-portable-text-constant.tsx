@@ -16,7 +16,11 @@ export const components: PortableTextComponents = {
   types: {
     code: ({ value }) => (
       <pre className="p-4 overflow-x-auto text-white bg-black border rounded-lg">
-        <code className={`language-${value.language || "javascript"}`}>
+        <code
+          data-sanity={value._key}
+          key={value._key}
+          className={`language-${value.language || "javascript"}`}
+        >
           {value.code}
         </code>
       </pre>
@@ -87,27 +91,43 @@ export const components: PortableTextComponents = {
 
   block: {
     // H1
-    h1: ({ children }) => {
+    h1: ({ children, value }) => {
       const id = slugify(children?.toString() || "");
-      return <h1 id={id}>{children}</h1>;
+      return (
+        <h1 data-sanity={value._key} id={id}>
+          {children}
+        </h1>
+      );
     },
 
     // H2
-    h2: ({ children }) => {
+    h2: ({ children, value }) => {
       const id = slugify(children?.toString() || "");
-      return <h2 id={id}>{children}</h2>;
+      return (
+        <h2 data-sanity={value._key} id={id}>
+          {children}
+        </h2>
+      );
     },
 
     // H3
-    h3: ({ children }) => {
+    h3: ({ children, value }) => {
       const id = slugify(children?.toString() || "");
-      return <h3 id={id}>{children}</h3>;
+      return (
+        <h3 data-sanity={value._key} id={id}>
+          {children}
+        </h3>
+      );
     },
 
     // H4
-    h4: ({ children }) => {
+    h4: ({ children, value }) => {
       const id = slugify(children?.toString() || "");
-      return <h4 id={id}>{children}</h4>;
+      return (
+        <h4 data-sanity={value._key} id={id}>
+          {children}
+        </h4>
+      );
     },
   },
 };
