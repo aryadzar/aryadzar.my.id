@@ -1,28 +1,17 @@
 "use client";
 
-import { getAbout } from "@/lib/getHome";
-import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
-import { AboutSkeleton } from "./skeleton";
-import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { About } from "@/types/aboutType";
 
-export function AboutBrief() {
+export function AboutBrief({ data }: { data: About }) {
   const prefersReduced = useReducedMotion();
-  const { locale } = useParams();
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["about", locale],
-    queryFn: () => getAbout(locale as string),
-  });
-
   const t = useTranslations("home.about");
 
-  let name = data?.name;
-  let title = data?.jobTitle;
-  let description = data?.description;
-  let photo = data?.imageUrl;
-
-  if (isLoading) return <AboutSkeleton />;
+  const name = data?.name;
+  const title = data?.jobTitle;
+  const description = data?.description;
+  const photo = data?.imageUrl;
 
   return (
     <section
@@ -75,7 +64,6 @@ export function AboutBrief() {
             <p className="leading-relaxed text-pretty text-foreground/90">
               {description}
             </p>
-            {/* {actions ? <div className="flex flex-wrap gap-3 mt-4">{actions}</div> : null} */}
           </motion.div>
         </div>
       </div>

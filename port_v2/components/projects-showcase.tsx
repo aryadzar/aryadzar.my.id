@@ -8,41 +8,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { getProjectOverview } from "@/lib/getHome";
 import Image from "next/image";
 import Link from "next/link";
-import { ProjectsShowcaseSkeleton } from "./skeleton";
-import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { ProjectOverview } from "@/types/projectOverviewType";
 
-type Project = {
-  title: string;
-  description: string;
-  image: string;
-  href?: string;
-  tags?: string[];
-};
-
-export function ProjectsShowcase({
-  projects,
-  title = "Proyek Terbaru",
-  subtitle = "Beberapa proyek pilihan yang pernah saya kerjakan",
-  limit = 3,
-}: {
-  projects?: Project[];
-  title?: string;
-  subtitle?: string;
-  limit?: number;
-}) {
+export function ProjectsShowcase({ data, limit = 3 }: { data: ProjectOverview; limit?: number }) {
   const shouldReduceMotion = useReducedMotion();
-  const { locale } = useParams();
-
-  const { data: result, isLoading } = useQuery({
-    queryKey: ["projectOver", locale],
-    queryFn: () => getProjectOverview(locale as string),
-  });
-
   const t = useTranslations("home.project");
 
   const container = {
@@ -58,8 +30,6 @@ export function ProjectsShowcase({
     hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
   } as const;
-
-  if (isLoading) return <ProjectsShowcaseSkeleton />;
 
   return (
     <section
@@ -81,12 +51,11 @@ export function ProjectsShowcase({
 
         <motion.div
           variants={container}
-          // initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
           className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
-          {result?.projects.map((p, idx) => (
+          {data?.projects.map((p, idx) => (
             <motion.div
               key={p.title + idx}
               variants={item}
