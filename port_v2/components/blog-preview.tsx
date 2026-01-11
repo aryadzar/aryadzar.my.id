@@ -8,54 +8,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getBlogOverview } from "@/lib/getHome";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { ProjectsShowcaseSkeleton } from "./skeleton";
-import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { BlogOverview } from "@/types/blogOverviewTypes";
 
-type BlogPost = {
-  title: string;
-  excerpt: string;
-  image?: string;
-  date?: string;
-  href?: string;
-  tags?: string[];
-};
-
-export function BlogPreview({
-  posts,
-  title = "Blog Terbaru",
-  subtitle = "Tiga tulisan terakhir yang saya publikasikan",
-  limit = 3,
-}: {
-  posts?: BlogPost[];
-  title?: string;
-  subtitle?: string;
-  limit?: number;
-}) {
-  const prefersReduced = useReducedMotion();
-  const { locale } = useParams();
-
-  const { data: result, isLoading } = useQuery({
-    queryKey: ["blogOver"],
-    queryFn: () => getBlogOverview(locale as string),
-  });
-
+export function BlogPreview({ data, limit = 3 }: { data: BlogOverview; limit?: number }) {
+  const prefersReducedMotion = useReducedMotion();
   const t = useTranslations("home.blog");
 
   const container = {
     hidden: {},
-    show: { transition: { staggerChildren: prefersReduced ? 0 : 0.08 } },
+    show: { transition: { staggerChildren: prefersReducedMotion ? 0 : 0.08 } },
   };
 
   const item = {
-    hidden: { opacity: 0, y: prefersReduced ? 0 : 20 },
+    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
   } as const;
-
-  if (isLoading) return <ProjectsShowcaseSkeleton />;
 
   return (
     <section
@@ -82,22 +52,21 @@ export function BlogPreview({
           viewport={{ once: true, amount: 0.2 }}
           className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
-          {result?.blogs.map((post, idx) => (
+          {data?.blogs.map((post, idx) => (
             <motion.article
               key={post.title + idx}
               variants={item}
-              whileHover={prefersReduced ? undefined : { y: -4, scale: 1.01 }}
+              whileHover={prefersReducedMotion ? undefined : { y: -4, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 250, damping: 24 }}
               className="h-full"
             >
               <Card className="h-full overflow-hidden transition group border-border bg-card text-card-foreground hover:shadow-lg hover:border-foreground/20 focus-within:shadow-lg">
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <img
-                    src={
-                      post.thumbnail ||
-                      "/placeholder.svg?height=360&width=640&query=blog%20cover"
-                    }
-                    alt={`Gambar untuk ${post.title}`}
+                  <Image
+                    src={post.thumbnail}
+                    alt={`Gambar blog ${post.title}`}
+                    width={640}
+                    height={360}
                     className="object-cover w-full h-full transition-transform duration-300 will-change-transform group-hover:scale-105"
                     loading="lazy"
                   />

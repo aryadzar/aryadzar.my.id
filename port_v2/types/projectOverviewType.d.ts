@@ -9,6 +9,7 @@ export interface ProjectOverview {
 
 export interface Project {
   _id: string;
+  _type?: string;
   categories?: Category[];
   publishedAt: string;
   shortDesc?: string;

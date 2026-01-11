@@ -9,6 +9,7 @@ export interface BlogOverview {
 
 export interface Blog {
   _id: string;
+  _type?: string;
   categories: Category[];
   excerpt?: string;
   publishedAt: string;

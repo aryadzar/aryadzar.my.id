@@ -4,6 +4,7 @@ export interface ExperienceData {
 
 export interface Experience {
   _id: string;
+  _type?: string;
   company: string;
   description: string;
   duration: string;
