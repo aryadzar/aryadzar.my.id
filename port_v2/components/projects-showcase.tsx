@@ -13,7 +13,13 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ProjectOverview } from "@/types/projectOverviewType";
 
-export function ProjectsShowcase({ data, limit = 3 }: { data: ProjectOverview; limit?: number }) {
+export function ProjectsShowcase({
+  data,
+  limit = 3,
+}: {
+  data: ProjectOverview;
+  limit?: number;
+}) {
   const shouldReduceMotion = useReducedMotion();
   const t = useTranslations("home.project");
 
@@ -34,7 +40,7 @@ export function ProjectsShowcase({ data, limit = 3 }: { data: ProjectOverview; l
   return (
     <section
       aria-labelledby="projects-title"
-      className="w-full bg-background text-foreground"
+      className="w-full text-foreground"
     >
       <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
         <header className="mb-8 md:mb-10">

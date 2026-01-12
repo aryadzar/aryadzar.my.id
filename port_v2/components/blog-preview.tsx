@@ -13,7 +13,13 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { BlogOverview } from "@/types/blogOverviewTypes";
 
-export function BlogPreview({ data, limit = 3 }: { data: BlogOverview; limit?: number }) {
+export function BlogPreview({
+  data,
+  limit = 3,
+}: {
+  data: BlogOverview;
+  limit?: number;
+}) {
   const prefersReducedMotion = useReducedMotion();
   const t = useTranslations("home.blog");
 
@@ -28,10 +34,7 @@ export function BlogPreview({ data, limit = 3 }: { data: BlogOverview; limit?: n
   } as const;
 
   return (
-    <section
-      aria-labelledby="blog-title"
-      className="w-full bg-background text-foreground"
-    >
+    <section aria-labelledby="blog-title" className="w-full text-foreground">
       <div className="max-w-6xl px-4 py-12 mx-auto md:px-6 md:py-16">
         <header className="mb-8 md:mb-10">
           <h2
@@ -56,7 +59,9 @@ export function BlogPreview({ data, limit = 3 }: { data: BlogOverview; limit?: n
             <motion.article
               key={post.title + idx}
               variants={item}
-              whileHover={prefersReducedMotion ? undefined : { y: -4, scale: 1.01 }}
+              whileHover={
+                prefersReducedMotion ? undefined : { y: -4, scale: 1.01 }
+              }
               transition={{ type: "spring", stiffness: 250, damping: 24 }}
               className="h-full"
             >

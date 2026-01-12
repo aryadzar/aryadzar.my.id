@@ -18,6 +18,7 @@ import { handleError } from "./client-function";
 import { draftMode } from "next/headers";
 import { DraftModeToast } from "./DraftModeToast";
 import { VisualEditing } from "next-sanity/visual-editing";
+import Script from "next/script";
 
 export async function generateMetadata({
   params,
@@ -40,6 +41,12 @@ export async function generateMetadata({
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+const TALLY_FORMS: Record<string, string> = {
+  en: "yP4NB0",
+  id: "447JXo",
+  // de: "kL82P1",
+};
+
 export default async function RootLayout({
   children,
   params,
@@ -51,6 +58,8 @@ export default async function RootLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+
+  const formId = TALLY_FORMS[locale] ?? TALLY_FORMS.en;
 
   return (
     <html lang={locale}>
@@ -66,6 +75,25 @@ export default async function RootLayout({
               >
                 <NavbarView />
                 {children}
+                <Script id="tally-config" strategy="afterInteractive">
+                  {`
+              window.TallyConfig = {
+                "formId": "${formId}",
+                "popup": {
+                  "width": 380,
+                  "emoji": {
+                    "text": "👋",
+                    "animation": "wave"
+                  },
+                  "formEventsForwarding": true
+                }
+              };
+            `}
+                </Script>
+                <Script
+                  src="https://tally.so/widgets/embed.js"
+                  strategy="afterInteractive"
+                />
                 <Footer />
               </ThemeProvider>
               <Analytics />
