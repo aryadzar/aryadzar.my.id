@@ -1,7 +1,4 @@
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
 import { Analytics } from "@vercel/analytics/next";
-import "../../globals.css";
 import Footer from "@/components/footer";
 import { NavbarView } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -62,21 +59,20 @@ export default async function RootLayout({
   const formId = TALLY_FORMS[locale] ?? TALLY_FORMS.en;
 
   return (
-    <html lang={locale}>
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <NextIntlClientProvider>
-          <BProgressProvider>
-            <ReactQueryProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <NavbarView />
-                {children}
-                <Script id="tally-config" strategy="afterInteractive">
-                  {`
+    <>
+      <NextIntlClientProvider>
+        <BProgressProvider>
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <NavbarView />
+              {children}
+              <Script id="tally-config" strategy="afterInteractive">
+                {`
               window.TallyConfig = {
                 "formId": "${formId}",
                 "popup": {
@@ -89,18 +85,17 @@ export default async function RootLayout({
                 }
               };
             `}
-                </Script>
-                <Script
-                  src="https://tally.so/widgets/embed.js"
-                  strategy="afterInteractive"
-                />
-                <Footer />
-              </ThemeProvider>
-              <Analytics />
-            </ReactQueryProvider>
-          </BProgressProvider>
-        </NextIntlClientProvider>
-      </body>
+              </Script>
+              <Script
+                src="https://tally.so/widgets/embed.js"
+                strategy="afterInteractive"
+              />
+              <Footer />
+            </ThemeProvider>
+            <Analytics />
+          </ReactQueryProvider>
+        </BProgressProvider>
+      </NextIntlClientProvider>
       <Toaster />
       <SanityLive onError={handleError} />
       {(await draftMode()).isEnabled && (
@@ -109,6 +104,6 @@ export default async function RootLayout({
           <VisualEditing />
         </>
       )}
-    </html>
+    </>
   );
 }
