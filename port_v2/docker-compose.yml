@@ -1,0 +1,40 @@
+# Docker Compose for Production
+version: '3.8'
+
+services:
+  # Next.js Production Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portfolio-prod
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      # Add your production environment variables here
+      # - NEXT_PUBLIC_SANITY_PROJECT_ID=${NEXT_PUBLIC_SANITY_PROJECT_ID}
+      # - NEXT_PUBLIC_SANITY_DATASET=${NEXT_PUBLIC_SANITY_DATASET}
+      # - SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+      # - SENTRY_DSN=${SENTRY_DSN}
+    env_file:
+      - .env.production
+    networks:
+      - portfolio-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  portfolio-network:
+    driver: bridge

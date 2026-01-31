@@ -39,30 +39,50 @@
     "home": {
         "hero": {
             "buttonCv": "View CV",
-            "ariaLabel": "Hero with background video"
+            "ariaLabel": "Hero with background video",
+            "availableForWork": "Available for work",
+            "scrollDown": "Scroll Down"
         },
         "about": {
-            "h1": "About Me"
+            "h1": "About Me",
+            "aboutMe": "About Me",
+            "getInTouch": "Get In Touch",
+            "poweredBy": "Powered by",
+            "coffeeAndCode": "Coffee & Code",
+            "coreExpertise": "Core Expertise",
+            "myPhilosophy": "My Philosophy",
+            "philosophyText": "Technology is best when it brings people together and makes impossible things possible.",
+            "locationLabel": "Location"
         },
         "project": {
             "h1": "Project Overview",
             "desc": "Some selected projects I have worked on",
-            "button": "Detail"
+            "button": "Detail",
+            "portfolio": "Portfolio",
+            "viewDetail": "View Detail",
+            "launched": "Launched:",
+            "ariaLabel": "View project detail: {title}"
         },
         "education": {
-            "h1": "Education"
+            "h1": "Education",
+            "description": "My academic background and qualifications"
         },
         "experience": {
-            "h1": "Experience"
+            "h1": "Experience",
+            "description": "My professional journey and career milestones",
+            "viewAll": "View All Experiences"
         },
         "blog": {
             "h1": "Blog Overview",
             "desc": "The last three blogs I published",
-            "button": "Read More"
+            "button": "Read More",
+            "featured": "Featured",
+            "ariaLabel": "Read more: {title}"
         },
         "certificate": {
             "h1": "Certification",
-            "href": "View Certificate"
+            "href": "View Certificate",
+            "description": "Professional certifications and credentials"
         },
         "contact": {
             "h1": "Contact Me",
@@ -87,7 +107,9 @@
             "summary": "{total} results • page {page} of {totalPages}"
         },
         "button": "Read More",
-        "ariaLabel": "Read more: {title}"
+        "ariaLabel": "Read more: {title}",
+        "featured": "Featured",
+        "altImage": "Blog image for {title}"
     },
     "projectPage": {
         "title": "All Projects",
@@ -98,7 +120,11 @@
         },
         "button": "View Detail",
         "ariaLabel": "View project detail: {title}",
-        "error": "Error loading projects. Please try again later."
+        "error": "Error loading projects. Please try again later.",
+        "portfolio": "Portfolio",
+        "viewDetail": "View Detail",
+        "launched": "Launched:",
+        "altImage": "Project image for {title}"
     },
     "aboutPage": {
         "title": "About Me",
@@ -113,7 +139,10 @@
         "backButton": "Back to Projects",
         "githubButton": "View on GitHub",
         "demoButton": "View Demo",
-        "tocTitle": "Table of Contents"
+        "tocTitle": "Table of Contents",
+        "quickLinks": "Quick Links",
+        "viewSource": "View Source Code",
+        "liveDemo": "Live Demo"
     },
     "blogDetail": {
         "altImage": "Cover image for {title}",

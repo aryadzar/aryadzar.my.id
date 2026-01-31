@@ -39,30 +39,50 @@
     "home": {
         "hero": {
             "buttonCv": "Lihat CV",
-            "ariaLabel": "Hero dengan video latar belakang"
+            "ariaLabel": "Hero dengan video latar belakang",
+            "availableForWork": "Tersedia untuk bekerja",
+            "scrollDown": "Scroll ke Bawah"
         },
         "about": {
-            "h1": "Tentang Saya"
+            "h1": "Tentang Saya",
+            "aboutMe": "Tentang Saya",
+            "getInTouch": "Hubungi Saya",
+            "poweredBy": "Dipersembahkan oleh",
+            "coffeeAndCode": "Kopi & Kode",
+            "coreExpertise": "Keahlian Utama",
+            "myPhilosophy": "Filosofi Saya",
+            "philosophyText": "Teknologi paling bermanfaat ketika dapat mempersatukan orang dan membuat hal yang tidak mungkin menjadi mungkin.",
+            "locationLabel": "Lokasi"
         },
         "project": {
             "h1": "Proyek Terbaru",
             "desc": "Beberapa proyek pilihan yang pernah saya kerjakan",
-            "button": "Lihat Detail"
+            "button": "Lihat Detail",
+            "portfolio": "Portofolio",
+            "viewDetail": "Lihat Detail",
+            "launched": "Dirilis:",
+            "ariaLabel": "Lihat detail proyek: {title}"
         },
         "education": {
-            "h1": "Pendidikan"
+            "h1": "Pendidikan",
+            "description": "Latar belakang akademis dan kualifikasi saya"
         },
         "experience": {
-            "h1": "Pengalaman"
+            "h1": "Pengalaman",
+            "description": "Perjalanan profesional dan pencapaian karir saya",
+            "viewAll": "Lihat Semua Pengalaman"
         },
         "blog": {
             "h1": "Blog Terbaru",
             "desc": "Tiga tulisan terakhir yang saya publikasikan",
-            "button": "Baca Selengkapnya"
+            "button": "Baca Selengkapnya",
+            "featured": "Unggulan",
+            "ariaLabel": "Baca selengkapnya: {title}"
         },
         "certificate": {
             "h1": "Sertifikasi",
-            "href": "Lihat Sertifikat"
+            "href": "Lihat Sertifikat",
+            "description": "Sertifikasi dan kredensial profesional"
         },
         "contact": {
             "h1": "Hubungi Saya",
@@ -87,7 +107,9 @@
             "summary": "{total} hasil • halaman {page} dari {totalPages}"
         },
         "button": "Baca Selengkapnya",
-        "ariaLabel": "Baca selengkapnya: {title}"
+        "ariaLabel": "Baca selengkapnya: {title}",
+        "featured": "Unggulan",
+        "altImage": "Gambar blog untuk {title}"
     },
     "projectPage": {
         "title": "Semua Proyek",
@@ -98,7 +120,11 @@
         },
         "button": "Lihat Detail",
         "ariaLabel": "Lihat detail proyek {title}",
-        "error": "Gagal memuat proyek. Silakan coba lagi nanti."
+        "error": "Gagal memuat proyek. Silakan coba lagi nanti.",
+        "portfolio": "Portofolio",
+        "viewDetail": "Lihat Detail",
+        "launched": "Dirilis:",
+        "altImage": "Gambar proyek untuk {title}"
     },
     "aboutPage": {
         "title": "Tentang Saya",
@@ -113,7 +139,10 @@
         "backButton": "Kembali ke Proyek",
         "githubButton": "Lihat di GitHub",
         "demoButton": "Lihat Demo",
-        "tocTitle": "Daftar Isi"
+        "tocTitle": "Daftar Isi",
+        "quickLinks": "Tautan Cepat",
+        "viewSource": "Lihat Source Code",
+        "liveDemo": "Lihat Demo"
     },
     "blogDetail": {
         "altImage": "Gambar sampul untuk {title}",
@@ -122,7 +151,7 @@
     },
     "footer": {
         "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses.",
-        "links": "Link Cepat",
+        "links": "Tautan Cepat",
         "follow": "Ikuti Saya"
     }
 }
