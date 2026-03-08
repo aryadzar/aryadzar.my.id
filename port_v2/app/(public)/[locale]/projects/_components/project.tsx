@@ -257,14 +257,19 @@ export default function ProjectsPage() {
                       {p.categories && p.categories.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                           {p.categories.slice(0, 4).map((category) => (
-                            <Badge
-                              variant="outline"
+                            <Link
                               key={category._id}
-                              className="text-xs font-normal transition-colors cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
+                              href={`/category/${category.slug.current}`}
+                              className="inline-block"
                             >
-                              <Tag className="w-3 h-3 mr-1" />
-                              {category.title}
-                            </Badge>
+                              <Badge
+                                variant="outline"
+                                className="text-xs font-normal transition-colors cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
+                              >
+                                <Tag className="w-3 h-3 mr-1" />
+                                {category.title}
+                              </Badge>
+                            </Link>
                           ))}
                         </div>
                       )}

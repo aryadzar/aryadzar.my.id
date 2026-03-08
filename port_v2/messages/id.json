@@ -27,6 +27,10 @@
             "description": "Baca artikel, tulisan, dan tutorial dari Arya Dzaky tentang web development dan software engineering.",
             "keywords": "Blog Arya Dzaky, Artikel Pemrograman, Tips Web Development, Tutorial Software Engineering"
         },
+        "category": {
+            "title": "Kategori — Arya Dzaky",
+            "description": "Jelajahi blog dan proyek berdasarkan kategori."
+        },
         "projectNotFound": {
             "title": "Proyek Tidak Ditemukan",
             "description": "Proyek yang diminta tidak dapat ditemukan."
@@ -148,6 +152,24 @@
         "altImage": "Gambar sampul untuk {title}",
         "backButton": "Kembali ke Blog",
         "tocTitle": "Daftar Isi"
+    },
+    "categoryPage": {
+        "categoryLabel": "Kategori",
+        "blogs": "Blog",
+        "projects": "Proyek",
+        "blog": "Blog",
+        "project": "Proyek",
+        "readMore": "Baca Selengkapnya",
+        "viewProject": "Lihat Proyek",
+        "launched": "Dirilis:",
+        "notFound": "Kategori tidak ditemukan",
+        "noContent": "Tidak ada konten",
+        "noContentDescription": "Belum ada blog atau proyek dalam kategori ini.",
+        "backToBlogs": "Kembali ke Blog",
+        "backToProjects": "Kembali ke Proyek",
+        "pagination": {
+            "summary": "{total} hasil • halaman {page} dari {totalPages}"
+        }
     },
     "footer": {
         "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses.",

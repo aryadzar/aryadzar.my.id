@@ -115,12 +115,12 @@ export default function Footer() {
 
             {/* Contact email */}
             <a
-              href="mailto:contact@aryadzaky.com"
+              href="mailto:aryadzaky8494@gmail.com"
               className="inline-flex items-center gap-2 text-sm transition-colors text-muted-foreground hover:text-green-500 group"
             >
               <Mail className="w-4 h-4" />
               <span className="group-hover:underline">
-                contact@aryadzaky.com
+                aryadzaky8494@gmail.com
               </span>
               <ExternalLink className="w-3 h-3 transition-opacity opacity-0 group-hover:opacity-100" />
             </a>

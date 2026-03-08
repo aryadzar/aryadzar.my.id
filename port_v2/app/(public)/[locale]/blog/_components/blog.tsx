@@ -225,13 +225,19 @@ export default function BlogPage() {
                       {post.categories && post.categories.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                           {post.categories.slice(0, 3).map((category) => (
-                            <Badge
+                            <Link
                               key={category._id}
-                              className="text-xs font-normal transition-colors cursor-pointer hover:bg-primary/10"
+                              href={`/category/${category.slug.current}`}
+                              className="inline-block"
                             >
-                              <Tag className="w-3 h-3 mr-1" />
-                              {category.title}
-                            </Badge>
+                              <Badge
+                                variant="secondary"
+                                className="text-xs font-normal transition-colors cursor-pointer hover:bg-primary/10"
+                              >
+                                <Tag className="w-3 h-3 mr-1" />
+                                {category.title}
+                              </Badge>
+                            </Link>
                           ))}
                           {post.categories.length > 3 && (
                             <Badge className="text-xs">

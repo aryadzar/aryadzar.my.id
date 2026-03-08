@@ -125,14 +125,19 @@ export default function BlogDetailView({ result }: { result: Blog }) {
             {result.categories && result.categories.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-6">
                 {result.categories.map((tag, i) => (
-                  <Badge
+                  <Link
                     key={i}
-                    variant="secondary"
-                    className="transition-colors rounded-full cursor-pointer bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                    href={`/category/${tag.slug.current}`}
+                    className="inline-block"
                   >
-                    <Tag className="w-3 h-3 mr-1" />
-                    {tag.title}
-                  </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="transition-colors rounded-full cursor-pointer bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                    >
+                      <Tag className="w-3 h-3 mr-1" />
+                      {tag.title}
+                    </Badge>
+                  </Link>
                 ))}
               </div>
             )}

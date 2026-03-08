@@ -27,6 +27,10 @@
             "description": "Read articles, insights, and tutorials written by Arya Dzaky on web development and software engineering.",
             "keywords": "Arya Dzaky Blog, Programming Articles, Web Development Tips, Software Engineering Tutorials"
         },
+        "category": {
+            "title": "Category — Arya Dzaky",
+            "description": "Browse blogs and projects by category."
+        },
         "projectNotFound": {
             "title": "Project Not Found",
             "description": "The requested project could not be found."
@@ -148,6 +152,24 @@
         "altImage": "Cover image for {title}",
         "backButton": "Back to Blog",
         "tocTitle": "Table of Contents"
+    },
+    "categoryPage": {
+        "categoryLabel": "Category",
+        "blogs": "Blogs",
+        "projects": "Projects",
+        "blog": "Blog",
+        "project": "Project",
+        "readMore": "Read More",
+        "viewProject": "View Project",
+        "launched": "Launched:",
+        "notFound": "Category not found",
+        "noContent": "No content found",
+        "noContentDescription": "There are no blogs or projects in this category yet.",
+        "backToBlogs": "Back to Blogs",
+        "backToProjects": "Back to Projects",
+        "pagination": {
+            "summary": "{total} results • page {page} of {totalPages}"
+        }
     },
     "footer": {
         "desc": "Developers who focus on clean, fast, and accessible interface experiences.",
