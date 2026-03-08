@@ -9,6 +9,7 @@ import educationType from "./education";
 import experienceType from "./experience";
 import embedType from "./objects/embed-block";
 import videoBlockType from "./objects/video-block";
+import commentType from "./comment";
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     heroType,
@@ -21,5 +22,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     experienceType,
     embedType,
     videoBlockType,
+    commentType,
   ],
 };

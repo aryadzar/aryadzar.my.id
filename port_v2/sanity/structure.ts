@@ -67,6 +67,7 @@ export const structure: StructureResolver = (S) =>
                 .title("Certification")
                 .child(globalList(S, "certification")),
               S.listItem().title("Category").child(globalList(S, "category")),
+              S.listItem().title("Comment").child(globalList(S, "comment")),
             ])
         ),
     ]);

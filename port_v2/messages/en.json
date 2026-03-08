@@ -153,5 +153,35 @@
         "desc": "Developers who focus on clean, fast, and accessible interface experiences.",
         "links": "Quick Links",
         "follow": "Follow Me"
+    },
+    "comments": {
+        "title": "Comments",
+        "count": "{count, plural, =0 {comments} =1 {comment} other {comments}}",
+        "writeComment": "Write a comment...",
+        "post": "Post Comment",
+        "posting": "Posting...",
+        "cancel": "Cancel",
+        "reply": "Reply",
+        "replyPlaceholder": "Write a reply...",
+        "postReply": "Post Reply",
+        "edit": "Edit",
+        "update": "Update Comment",
+        "delete": "Delete",
+        "edited": "edited",
+        "deleting": "Deleting...",
+        "deleteConfirmTitle": "Delete this comment?",
+        "deleteConfirmDescription": "This action cannot be undone. This will permanently delete your comment.",
+        "noCommentsTitle": "No comments yet",
+        "noCommentsDescription": "Be the first to share your thoughts about this post.",
+        "approachingLimit": "Approaching character limit",
+        "loginRequired": {
+            "title": "Login to Comment",
+            "description": "You need to login to leave a comment on this post.",
+            "googleButton": "Continue with Google",
+            "githubButton": "Continue with GitHub"
+        },
+        "loginToReply": "Login to Reply",
+        "logout": "Logout",
+        "loggedInAs": "Logged in as {email}"
     }
 }

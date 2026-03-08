@@ -26,6 +26,7 @@ import { useTranslations } from "next-intl";
 import { Project } from "@/types/projectDetailType";
 import { ArrowLeft, Calendar, ExternalLink, Github, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { CommentSection } from "@/components/comments/CommentSection";
 
 export default function ProjectDetail({ result }: { result: Project }) {
   const articleRef = useRef<HTMLElement>(null!);
@@ -319,6 +320,9 @@ export default function ProjectDetail({ result }: { result: Project }) {
           </aside>
         </div>
       </div>
+
+      {/* Comments Section */}
+      {result._id && <CommentSection postId={result._id} />}
     </main>
   );
 }

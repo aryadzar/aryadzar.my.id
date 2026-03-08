@@ -28,6 +28,7 @@ import {
   Tag,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { CommentSection } from "@/components/comments/CommentSection";
 
 function slugify(text: any) {
   return String(text)
@@ -261,6 +262,9 @@ export default function BlogDetailView({ result }: { result: Blog }) {
           </aside>
         </div>
       </div>
+
+      {/* Comments Section */}
+      {result._id && <CommentSection postId={result._id} />}
     </main>
   );
 }

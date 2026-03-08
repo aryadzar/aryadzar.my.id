@@ -153,5 +153,35 @@
         "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses.",
         "links": "Tautan Cepat",
         "follow": "Ikuti Saya"
+    },
+    "comments": {
+        "title": "Komentar",
+        "count": "{count, plural, =0 {komentar} =1 {komentar} other {komentar}}",
+        "writeComment": "Tulis komentar...",
+        "post": "Kirim Komentar",
+        "posting": "Mengirim...",
+        "cancel": "Batal",
+        "reply": "Balas",
+        "replyPlaceholder": "Tulis balasan...",
+        "postReply": "Kirim Balasan",
+        "edit": "Edit",
+        "update": "Update Komentar",
+        "delete": "Hapus",
+        "edited": "diedit",
+        "deleting": "Menghapus...",
+        "deleteConfirmTitle": "Hapus komentar ini?",
+        "deleteConfirmDescription": "Tindakan ini tidak dapat dibatalkan. Ini akan menghapus komentar Anda secara permanen.",
+        "noCommentsTitle": "Belum ada komentar",
+        "noCommentsDescription": "Jadilah yang pertama berbagi pemikiran Anda tentang postingan ini.",
+        "approachingLimit": "Mendekati batas karakter",
+        "loginRequired": {
+            "title": "Login untuk Berkomentar",
+            "description": "Anda perlu login untuk meninggalkan komentar pada postingan ini.",
+            "googleButton": "Lanjutkan dengan Google",
+            "githubButton": "Lanjutkan dengan GitHub"
+        },
+        "loginToReply": "Login untuk Membalas",
+        "logout": "Keluar",
+        "loggedInAs": "Masuk sebagai {email}"
     }
 }
