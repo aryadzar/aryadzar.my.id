@@ -15,7 +15,12 @@ export async function getBlogSSR(slug: string, lang: string): Promise<Blog> {
         excerpt,
         content,
         categories[]->{_id, title, slug},
-        publishedAt
+        publishedAt,
+        "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{
+      title,
+      slug,
+      language
+    }
 }
   `;
 

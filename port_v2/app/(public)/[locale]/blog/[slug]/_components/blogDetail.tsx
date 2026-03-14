@@ -28,6 +28,7 @@ import {
   Tag,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AvailableLanguagesBanner } from "@/components/available-language-banner";
 
 function slugify(text: any) {
   return String(text)
@@ -152,6 +153,14 @@ export default function BlogDetailView({ result }: { result: Blog }) {
               <p className="mb-8 text-xl leading-relaxed md:text-2xl text-muted-foreground">
                 {result.excerpt}
               </p>
+            )}
+
+            {result._translations && result._translations.length > 0 && (
+              <AvailableLanguagesBanner
+                translations={result._translations}
+                currentLocale={locale}
+                route="blog"
+              />
             )}
 
             {/* Meta Information */}

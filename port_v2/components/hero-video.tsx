@@ -116,7 +116,6 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
                   "bg-clip-text text-transparent",
                   "dark:from-white dark:via-white dark:to-white/70",
                 )}
-                data-sanity={data._id}
                 initial={{
                   opacity: prefersReduced ? 1 : 0,
                   y: prefersReduced ? 0 : 30,

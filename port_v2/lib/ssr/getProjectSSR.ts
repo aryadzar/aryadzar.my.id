@@ -7,7 +7,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 
 export async function getProjectSSR(
   slug: string,
-  lang: string
+  lang: string,
 ): Promise<Project> {
   const query = `
       *[_type == "project" && slug.current == $slug && publishedAt <= now() && language == $lang ][0]{
@@ -20,7 +20,12 @@ export async function getProjectSSR(
         categories[]->{_id, title, slug},
         liveUrl,
         repoUrl,
-        publishedAt
+        publishedAt,
+        "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{
+          title,
+          slug,
+          language
+        }
       }
   `;
 
