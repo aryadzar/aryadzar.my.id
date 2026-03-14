@@ -155,13 +155,16 @@ export default function BlogDetailView({ result }: { result: Blog }) {
               </p>
             )}
 
-            {result._translations && result._translations.length > 0 && (
-              <AvailableLanguagesBanner
-                translations={result._translations}
-                currentLocale={locale}
-                route="blog"
-              />
-            )}
+            {result._translations &&
+              result._translations.some(
+                (tr) => tr !== null && tr.language !== locale,
+              ) && (
+                <AvailableLanguagesBanner
+                  translations={result._translations}
+                  currentLocale={locale}
+                  route="blog"
+                />
+              )}
 
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-6 pb-8 text-sm border-b text-muted-foreground border-border">

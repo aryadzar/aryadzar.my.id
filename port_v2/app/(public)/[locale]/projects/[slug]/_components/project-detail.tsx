@@ -117,13 +117,16 @@ export default function ProjectDetail({ result }: { result: Project }) {
             <p className="mb-8 text-xl leading-relaxed md:text-2xl text-muted-foreground">
               {result.shortDesc}
             </p>
-            {result._translations && result._translations.length > 0 && (
-              <AvailableLanguagesBanner
-                translations={result._translations}
-                currentLocale={locale as string}
-                route="projects"
-              />
-            )}
+            {result._translations &&
+              result._translations.some(
+                (tr) => tr !== null && tr.language !== locale,
+              ) && (
+                <AvailableLanguagesBanner
+                  translations={result._translations}
+                  currentLocale={locale as string}
+                  route="projects"
+                />
+              )}
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
               {result.publishedAt && (
