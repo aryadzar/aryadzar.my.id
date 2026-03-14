@@ -1,0 +1,181 @@
+{
+    "nav": {
+        "home": "Startseite",
+        "projects": "Projekte",
+        "blog": "Blog",
+        "about": "Über mich",
+        "contact": "Kontakt"
+    },
+    "metadata": {
+        "home": {
+            "title": "Portfolio von Arya Dzaky",
+            "description": "Portfolio von Arya Dzaky – Fullstack-Entwickler",
+            "keywords": "Arya Dzaky, Portfolio, Fullstack Entwickler, Webentwickler, Softwareingenieur"
+        },
+        "about": {
+            "title": "Über mich — Arya Dzaky",
+            "description": "Erfahren Sie mehr über Arya Dzaky — Hintergrund, Erfahrung, Fähigkeiten und Möglichkeiten zur Zusammenarbeit.",
+            "keywords": "Über Arya Dzaky, Fullstack Entwickler, Entwicklerprofil, Softwareingenieur Fähigkeiten"
+        },
+        "projects": {
+            "title": "Projekte — Arya Dzaky",
+            "description": "Eine Sammlung von Projekten von Arya Dzaky, die Fähigkeiten in Webentwicklung und Software Engineering zeigen.",
+            "keywords": "Arya Dzaky Projekte, Webentwicklungsprojekte, Fullstack Portfolio, Software Engineering"
+        },
+        "blog": {
+            "title": "Blog — Arya Dzaky",
+            "description": "Lesen Sie Artikel, Einblicke und Tutorials von Arya Dzaky über Webentwicklung und Software Engineering.",
+            "keywords": "Arya Dzaky Blog, Programmierartikel, Webentwicklung Tipps, Software Engineering Tutorials"
+        },
+        "category": {
+            "title": "Kategorie — Arya Dzaky",
+            "description": "Durchsuchen Sie Blogs und Projekte nach Kategorien."
+        },
+        "projectNotFound": {
+            "title": "Projekt nicht gefunden",
+            "description": "Das angeforderte Projekt konnte nicht gefunden werden."
+        },
+        "blogNotFound": {
+            "title": "Blog nicht gefunden",
+            "description": "Der angeforderte Blogbeitrag konnte nicht gefunden werden."
+        }
+    },
+    "home": {
+        "hero": {
+            "buttonCv": "Lebenslauf ansehen",
+            "ariaLabel": "Hero-Bereich mit Hintergrundvideo",
+            "availableForWork": "Verfügbar für Projekte",
+            "scrollDown": "Nach unten scrollen"
+        },
+        "about": {
+            "h1": "Über mich",
+            "aboutMe": "Über mich",
+            "getInTouch": "Kontakt aufnehmen",
+            "poweredBy": "Angetrieben von",
+            "coffeeAndCode": "Kaffee & Code",
+            "coreExpertise": "Kernkompetenzen",
+            "myPhilosophy": "Meine Philosophie",
+            "philosophyText": "Technologie ist am besten, wenn sie Menschen zusammenbringt und das Unmögliche möglich macht.",
+            "locationLabel": "Standort"
+        },
+        "project": {
+            "h1": "Projektübersicht",
+            "desc": "Einige ausgewählte Projekte, an denen ich gearbeitet habe",
+            "button": "Details",
+            "portfolio": "Portfolio",
+            "viewDetail": "Details ansehen",
+            "launched": "Veröffentlicht:",
+            "ariaLabel": "Projektdetails anzeigen: {title}"
+        },
+        "education": {
+            "h1": "Ausbildung",
+            "description": "Mein akademischer Hintergrund und meine Qualifikationen"
+        },
+        "experience": {
+            "h1": "Erfahrung",
+            "description": "Mein beruflicher Werdegang und wichtige Meilensteine",
+            "viewAll": "Alle Erfahrungen anzeigen"
+        },
+        "blog": {
+            "h1": "Blogübersicht",
+            "desc": "Die letzten drei von mir veröffentlichten Blogs",
+            "button": "Weiterlesen",
+            "featured": "Empfohlen",
+            "ariaLabel": "Weiterlesen: {title}"
+        },
+        "certificate": {
+            "h1": "Zertifizierungen",
+            "href": "Zertifikat ansehen",
+            "description": "Professionelle Zertifizierungen und Qualifikationen"
+        },
+        "contact": {
+            "h1": "Kontaktieren Sie mich",
+            "desc": "Haben Sie ein Projekt oder eine Zusammenarbeit im Sinn? Senden Sie eine kurze Nachricht — ich melde mich so schnell wie möglich.",
+            "preferEmail": "Bevorzugen Sie eine direkte E-Mail? ",
+            "name": "Name",
+            "namePlaceholder": "Ihr Name",
+            "email": "E-Mail",
+            "emailPlaceholder": "you@email.com",
+            "message": "Nachricht",
+            "messagePlaceholder": "Schreiben Sie Ihre Nachricht...",
+            "button": "Nachricht senden",
+            "helper": "Die Daten werden nicht auf dem Server gespeichert. Dieses Formular öffnet Ihre E-Mail-Anwendung mit einer vorab ausgefüllten Nachricht.",
+            "subject": "Neue Nachricht von {name}"
+        }
+    },
+    "blogPage": {
+        "title": "Alle Blogs",
+        "description": "Durchsuchen Sie Artikel und entdecken Sie mein Schreibarchiv.",
+        "searchPlaceholder": "Blogs nach Titel, Auszug oder Tags suchen…",
+        "pagination": {
+            "summary": "{total} Ergebnisse • Seite {page} von {totalPages}"
+        },
+        "button": "Weiterlesen",
+        "ariaLabel": "Weiterlesen: {title}",
+        "featured": "Empfohlen",
+        "altImage": "Blogbild für {title}"
+    },
+    "projectPage": {
+        "title": "Alle Projekte",
+        "description": "Durchsuchen Sie meine Projekte mit Such- und Seitenfunktion.",
+        "searchPlaceholder": "Projekte nach Titel, Beschreibung oder Tags suchen…",
+        "pagination": {
+            "summary": "{total} Ergebnisse • Seite {page} von {totalPages}"
+        },
+        "button": "Details ansehen",
+        "ariaLabel": "Projektdetails anzeigen: {title}",
+        "error": "Fehler beim Laden der Projekte. Bitte versuchen Sie es später erneut.",
+        "portfolio": "Portfolio",
+        "viewDetail": "Details ansehen",
+        "launched": "Veröffentlicht:",
+        "altImage": "Projektbild für {title}"
+    },
+    "aboutPage": {
+        "title": "Über mich",
+        "description": "Eine Zusammenfassung meines Profils, meiner Kernkompetenzen und der besten Möglichkeiten zur Zusammenarbeit.",
+        "skillsTitle": "Fähigkeiten",
+        "headingAction": "Aktionen",
+        "contact": "Kontaktieren Sie mich",
+        "viewProjects": "Alle Projekte anzeigen"
+    },
+    "projectDetail": {
+        "altImage": "Titelbild für {title}",
+        "backButton": "Zurück zu den Projekten",
+        "githubButton": "Auf GitHub ansehen",
+        "demoButton": "Demo ansehen",
+        "tocTitle": "Inhaltsverzeichnis",
+        "quickLinks": "Schnellzugriffe",
+        "viewSource": "Quellcode ansehen",
+        "liveDemo": "Live-Demo",
+        "availableIn": "Dieses Projekt ist auch in anderen Sprachen verfügbar:"
+    },
+    "blogDetail": {
+        "altImage": "Titelbild für {title}",
+        "backButton": "Zurück zum Blog",
+        "tocTitle": "Inhaltsverzeichnis",
+        "availableIn": "Dieser Artikel ist auch in anderen Sprachen verfügbar:"
+    },
+    "categoryPage": {
+        "categoryLabel": "Kategorie",
+        "blogs": "Blogs",
+        "projects": "Projekte",
+        "blog": "Blog",
+        "project": "Projekt",
+        "readMore": "Weiterlesen",
+        "viewProject": "Projekt ansehen",
+        "launched": "Veröffentlicht:",
+        "notFound": "Kategorie nicht gefunden",
+        "noContent": "Keine Inhalte gefunden",
+        "noContentDescription": "In dieser Kategorie gibt es noch keine Blogs oder Projekte.",
+        "backToBlogs": "Zurück zu den Blogs",
+        "backToProjects": "Zurück zu den Projekten",
+        "pagination": {
+            "summary": "{total} Ergebnisse • Seite {page} von {totalPages}"
+        }
+    },
+    "footer": {
+        "desc": "Entwickler, die sich auf saubere, schnelle und barrierefreie Benutzeroberflächen konzentrieren.",
+        "links": "Schnelllinks",
+        "follow": "Folgen Sie mir"
+    }
+}

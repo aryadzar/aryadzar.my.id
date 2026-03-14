@@ -4,6 +4,7 @@ import type { StructureResolver } from "sanity/structure";
 const LANGUAGES = [
   { title: "Indonesia", value: "id" },
   { title: "English", value: "en" },
+  { title: "German", value: "de" },
 ];
 
 const filteredList = (S: any, type: string, lang: string) =>
@@ -52,8 +53,12 @@ export const structure: StructureResolver = (S) =>
                 S.listItem()
                   .title("Experience")
                   .child(filteredList(S, "experience", lang.value)),
-              ])
-          )
+
+                S.listItem()
+                  .title("Certification")
+                  .child(filteredList(S, "certification", lang.value)),
+              ]),
+          ),
       ),
 
       S.divider(),
@@ -63,10 +68,7 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Global Content")
             .items([
-              S.listItem()
-                .title("Certification")
-                .child(globalList(S, "certification")),
               S.listItem().title("Category").child(globalList(S, "category")),
-            ])
+            ]),
         ),
     ]);

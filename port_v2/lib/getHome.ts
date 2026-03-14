@@ -42,10 +42,11 @@ export const getAbout = async (lang: string): Promise<About> => {
 };
 
 export const getCertificate = async (
-  limit: number = 6
+  limit: number = 6,
+  lang: string,
 ): Promise<Certificate[]> => {
   const { data } = await sanityFetch({
-    query: `*[_type == "certification"] | order(date desc)[0...$limit]{
+    query: `*[_type == "certification" && language == $lang] | order(date desc)[0...$limit]{
       _id,
       _type,
       title,
@@ -56,7 +57,7 @@ export const getCertificate = async (
       "logoSrc": logo.asset->url,
       "logoAlt": logoAlt
     }`,
-    params: { limit },
+    params: { limit, lang },
   });
 
   return data;
@@ -65,7 +66,7 @@ export const getCertificate = async (
 export const getProjectOverview = async (
   lang: string,
   page: number = 1,
-  limit: number = 3
+  limit: number = 3,
 ): Promise<ProjectOverview> => {
   const start = (page - 1) * limit;
 
@@ -113,7 +114,7 @@ export const getProjectOverview = async (
 export const getBlogOverview = async (
   lang: string,
   page: number = 1,
-  limit: number = 3
+  limit: number = 3,
 ): Promise<BlogOverview> => {
   const start = (page - 1) * limit;
 

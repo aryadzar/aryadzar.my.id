@@ -146,12 +146,14 @@
         "tocTitle": "Daftar Isi",
         "quickLinks": "Tautan Cepat",
         "viewSource": "Lihat Source Code",
-        "liveDemo": "Lihat Demo"
+        "liveDemo": "Lihat Demo",
+        "availableIn": "Proyek ini tersedia dalam bahasa lain:"
     },
     "blogDetail": {
         "altImage": "Gambar sampul untuk {title}",
         "backButton": "Kembali ke Blog",
-        "tocTitle": "Daftar Isi"
+        "tocTitle": "Daftar Isi",
+        "availableIn": "Artikel ini tersedia dalam bahasa lain:"
     },
     "categoryPage": {
         "categoryLabel": "Kategori",

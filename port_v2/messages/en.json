@@ -146,12 +146,14 @@
         "tocTitle": "Table of Contents",
         "quickLinks": "Quick Links",
         "viewSource": "View Source Code",
-        "liveDemo": "Live Demo"
+        "liveDemo": "Live Demo",
+        "availableIn": "This project is available in other languages:"
     },
     "blogDetail": {
         "altImage": "Cover image for {title}",
         "backButton": "Back to Blog",
-        "tocTitle": "Table of Contents"
+        "tocTitle": "Table of Contents",
+        "availableIn": "This article is available in:"
     },
     "categoryPage": {
         "categoryLabel": "Category",
