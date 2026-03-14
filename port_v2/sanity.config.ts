@@ -16,7 +16,7 @@ import * as resolve from "@/sanity/plugins/resolve";
 import { apiVersion, dataset, projectId } from "./sanity/env";
 import { schema } from "./sanity/schemaTypes";
 import { structure } from "./sanity/structure";
-import { assist } from "@sanity/assist";
+// import { assist } from "@sanity/assist";
 
 export default defineConfig({
   basePath: "/studio",
