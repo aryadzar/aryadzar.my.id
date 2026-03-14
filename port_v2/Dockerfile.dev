@@ -1,0 +1,43 @@
+# Development Dockerfile for Next.js with Hot Reload
+FROM node:20-alpine
+
+WORKDIR /app
+
+# ==== BUILD TIME ENV ====
+ARG NEXT_PUBLIC_SANITY_PROJECT_ID
+ARG NEXT_PUBLIC_SANITY_DATASET
+ARG NEXT_PUBLIC_BASE_URL
+ARG SANITY_API_READ_TOKEN
+ARG SPOTIFY_CLIENT_ID
+ARG SPOTIFY_CLIENT_SECRET
+ARG SPOTIFY_REFRESH_TOKEN
+
+ENV NEXT_PUBLIC_SANITY_PROJECT_ID=$NEXT_PUBLIC_SANITY_PROJECT_ID
+ENV NEXT_PUBLIC_SANITY_DATASET=$NEXT_PUBLIC_SANITY_DATASET
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+ENV SANITY_API_READ_TOKEN=$SANITY_API_READ_TOKEN
+ENV SPOTIFY_CLIENT_ID=$SPOTIFY_CLIENT_ID
+ENV SPOTIFY_CLIENT_SECRET=$SPOTIFY_CLIENT_SECRET
+ENV SPOTIFY_REFRESH_TOKEN=$SPOTIFY_REFRESH_TOKEN
+
+# Install dependencies for native modules if needed
+RUN apk add --no-cache libc6-compat
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install all dependencies (including devDependencies)
+RUN npm install
+
+# Copy the rest of the application
+COPY . .
+
+# Expose the development port
+EXPOSE 3000
+
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Start the development server with hot reload
+CMD ["npm", "run", "dev"]

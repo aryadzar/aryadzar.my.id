@@ -8,13 +8,15 @@ export const getProjects = async (
   lang: string,
   page = 1,
   limit = 6,
-  q = ""
+  q = "",
+  categorySlug = ""
 ): Promise<ProjectOverview> => {
   const { data } = await api.get(`/api/${lang}/project`, {
     params: {
       page,
       limit,
       q,
+      category: categorySlug,
     },
   });
 
@@ -26,6 +28,23 @@ export const getProject = async (
   lang: string
 ): Promise<ProjectDetail> => {
   const { data } = await api.get(`/api/${lang}/project/${slug}`);
+
+  return data;
+};
+
+export const getProjectsByCategory = async (
+  categorySlug: string,
+  lang: string,
+  page = 1,
+  limit = 6
+): Promise<ProjectOverview> => {
+  const { data } = await api.get(`/api/${lang}/project`, {
+    params: {
+      page,
+      limit,
+      category: categorySlug,
+    },
+  });
 
   return data;
 };

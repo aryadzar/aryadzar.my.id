@@ -1,0 +1,48 @@
+# Docker Compose for Development
+version: "3.8"
+
+services:
+  # Next.js Development Application with Hot Reload
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        - NEXT_PUBLIC_SANITY_PROJECT_ID=${NEXT_PUBLIC_SANITY_PROJECT_ID}
+        - NEXT_PUBLIC_SANITY_DATASET=${NEXT_PUBLIC_SANITY_DATASET}
+        - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+        - SANITY_API_READ_TOKEN=${SANITY_API_READ_TOKEN}
+        - SANITY_PREVIEW_SECRET=${SANITY_PREVIEW_SECRET}
+        - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+        - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+        - SPOTIFY_REFRESH_TOKEN=${SPOTIFY_REFRESH_TOKEN}
+    container_name: portfolio-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+    env_file:
+      - .env.local
+    volumes:
+      # Mount source code for hot reload
+      - ./app:/app/app
+      - ./components:/app/components
+      - ./lib:/app/lib
+      - ./public:/app/public
+      - ./styles:/app/styles
+      - ./next.config.ts:/app/next.config.ts
+      - ./tailwind.config.ts:/app/tailwind.config.ts
+      - ./postcss.config.mjs:/app/postcss.config.mjs
+      - ./tsconfig.json:/app/tsconfig.json
+      # Preserve node_modules in container
+      - /app/node_modules
+    networks:
+      - portfolio-dev-network
+    stdin_open: true
+    tty: true
+
+networks:
+  portfolio-dev-network:
+    driver: bridge
