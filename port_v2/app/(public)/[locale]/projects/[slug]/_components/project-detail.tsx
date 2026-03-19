@@ -42,7 +42,7 @@ export default function ProjectDetail({ result }: { result: Project }) {
   }, [result?.description]);
 
   return (
-    <main className="relative w-full bg-background text-foreground">
+    <main className="relative w-full text-foreground">
       {/* Reading Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 z-50 h-1 origin-left bg-primary"

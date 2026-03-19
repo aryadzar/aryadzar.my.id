@@ -21,7 +21,7 @@ export function NavbarView() {
   const navItems = useNavItems();
 
   return (
-    <div className="inset-x-0 w-full mb-10">
+    <div className="inset-x-0 w-full">
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>
@@ -36,10 +36,10 @@ export function NavbarView() {
             >
               Legacy
             </NavbarButton>
-            <NavbarButton className="bg-background">
+            <NavbarButton>
               <ModeToggle />
             </NavbarButton>
-            <NavbarButton className="bg-background">
+            <NavbarButton>
               <LanguageSwitcher />
             </NavbarButton>
           </div>
