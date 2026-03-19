@@ -1,7 +1,7 @@
 // components/blog/AvailableLanguagesBanner.tsx
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { TranslationDoc } from "@/types/blogDetailTypes";
@@ -26,7 +26,7 @@ export function AvailableLanguagesBanner({
   const t = useTranslations(route === "blog" ? "blogDetail" : "projectDetail");
 
   const otherTranslations = translations.filter(
-    (tr) => tr.language !== currentLocale,
+    (tr) => tr !== null && tr !== undefined && tr.language !== currentLocale,
   );
 
   if (otherTranslations.length === 0) return null;
@@ -39,8 +39,9 @@ export function AvailableLanguagesBanner({
         {otherTranslations.map((tr) => (
           <Link
             key={tr.language}
-            href={`/${tr.language}/${route}/${tr.slug.current}`}
+            href={`/${route}/${tr.slug.current}`}
             className="font-medium text-primary hover:underline"
+            locale={tr.language}
           >
             {LANGUAGE_NAMES[tr.language] ?? tr.language.toUpperCase()}
           </Link>
