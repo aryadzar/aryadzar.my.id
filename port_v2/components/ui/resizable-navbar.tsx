@@ -58,7 +58,7 @@ export const Navbar = ({ children, className }: NavbarProps) => {
   const [visible, setVisible] = useState<boolean>(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    if (latest > 100) {
+    if (latest > 80) {
       setVisible(true);
     } else {
       setVisible(false);
@@ -68,8 +68,7 @@ export const Navbar = ({ children, className }: NavbarProps) => {
   return (
     <motion.div
       ref={ref}
-      // IMPORTANT: Change this to class of `fixed` if you want the navbar to be fixed
-      className={cn("fixed top-0  z-40 w-full", className)}
+      className={cn("fixed top-0 z-40 w-full", className)}
     >
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
@@ -87,27 +86,32 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
   return (
     <motion.div
       animate={{
-        backdropFilter: visible ? "blur(10px)" : "none",
+        backdropFilter: visible ? "blur(20px) saturate(180%)" : "none",
         boxShadow: visible
-          ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
+          ? "0 0 0 1px rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.06) inset"
           : "none",
-        width: visible ? "40%" : "100%",
-        y: visible ? 20 : 0,
+        width: visible ? "55%" : "100%",
+        y: visible ? 16 : 0,
       }}
       transition={{
         type: "spring",
-        stiffness: 200,
-        damping: 50,
+        stiffness: 260,
+        damping: 40,
       }}
       style={{
-        minWidth: "800px",
+        minWidth: "780px",
       }}
       className={cn(
-        "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full bg-transparent px-4 py-2 lg:flex dark:bg-transparent",
-        visible && "bg-white/80 dark:bg-neutral-950/80",
+        "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-2xl bg-transparent px-5 py-2.5 lg:flex dark:bg-transparent",
+        visible &&
+          "bg-white/70 dark:bg-neutral-950/75 border border-white/10 dark:border-white/[0.07]",
         className,
       )}
     >
+      {/* Subtle glow line on top when visible */}
+      {visible && (
+        <span className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-full bg-gradient-to-r from-transparent via-indigo-400/60 to-transparent dark:via-indigo-500/50" />
+      )}
       {children}
     </motion.div>
   );
@@ -120,7 +124,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
     <motion.div
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        "absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-2 text-sm font-medium text-zinc-600 transition duration-200 hover:text-zinc-800 lg:flex lg:space-x-2",
+        "absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-1 text-sm font-medium lg:flex",
         className,
       )}
     >
@@ -128,17 +132,20 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         <Link
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
-          className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300"
+          className="group relative px-4 py-2 text-neutral-600 transition-colors duration-150 dark:text-neutral-300"
           key={`link-${idx}`}
           href={item.link}
         >
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
-              className="absolute inset-0 w-full h-full bg-gray-100 rounded-full dark:bg-neutral-800"
+              className="absolute inset-0 h-full w-full rounded-xl bg-neutral-100 dark:bg-white/[0.07]"
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
           )}
-          <span className="relative z-20">{item.name}</span>
+          <span className="relative z-20 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors duration-150">
+            {item.name}
+          </span>
         </Link>
       ))}
     </motion.div>
@@ -149,24 +156,25 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
   return (
     <motion.div
       animate={{
-        backdropFilter: visible ? "blur(10px)" : "none",
+        backdropFilter: visible ? "blur(20px) saturate(180%)" : "none",
         boxShadow: visible
-          ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
+          ? "0 0 0 1px rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.18)"
           : "none",
-        width: visible ? "90%" : "100%",
-        paddingRight: visible ? "12px" : "0px",
-        paddingLeft: visible ? "12px" : "0px",
-        borderRadius: visible ? "4px" : "2rem",
-        y: visible ? 20 : 0,
+        width: visible ? "92%" : "100%",
+        paddingRight: visible ? "14px" : "0px",
+        paddingLeft: visible ? "14px" : "0px",
+        borderRadius: visible ? "16px" : "0px",
+        y: visible ? 16 : 0,
       }}
       transition={{
         type: "spring",
-        stiffness: 200,
-        damping: 50,
+        stiffness: 260,
+        damping: 40,
       }}
       className={cn(
         "relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-0 py-2 lg:hidden",
-        visible && "bg-white/80 dark:bg-neutral-950/80",
+        visible &&
+          "bg-white/70 dark:bg-neutral-950/75 border border-white/10 dark:border-white/[0.07]",
         className,
       )}
     >
@@ -201,15 +209,20 @@ export const MobileNavMenu = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0, y: -12, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -12, scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 320, damping: 28 }}
           className={cn(
-            "absolute inset-x-0 top-16 z-50 flex w-full flex-col items-start justify-start gap-4 rounded-lg bg-white px-4 py-8 shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] dark:bg-neutral-950",
+            "absolute inset-x-0 top-[3.75rem] z-50 overflow-visible",
             className,
           )}
         >
-          {children}
+          <div className="relative flex flex-col items-start gap-3 rounded-2xl bg-white/90 px-5 py-6 shadow-xl border border-neutral-100 dark:bg-neutral-950/90 dark:border-white/[0.07] backdrop-blur-xl">
+            {/* Top accent line */}
+            <span className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400/50 to-transparent dark:via-indigo-500/40" />
+            {children}
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
@@ -223,10 +236,37 @@ export const MobileNavToggle = ({
   isOpen: boolean;
   onClick: () => void;
 }) => {
-  return isOpen ? (
-    <X className="text-black dark:text-white" onClick={onClick} />
-  ) : (
-    <Menu className="text-black dark:text-white" onClick={onClick} />
+  return (
+    <motion.button
+      onClick={onClick}
+      whileTap={{ scale: 0.9 }}
+      className="flex items-center justify-center w-8 h-8 rounded-lg text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-colors duration-150"
+      aria-label="Toggle menu"
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        {isOpen ? (
+          <motion.span
+            key="close"
+            initial={{ rotate: -90, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            exit={{ rotate: 90, opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            <X size={18} />
+          </motion.span>
+        ) : (
+          <motion.span
+            key="menu"
+            initial={{ rotate: 90, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            exit={{ rotate: -90, opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            <Menu size={18} />
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
   );
 };
 
@@ -234,15 +274,17 @@ export const NavbarLogo = () => {
   return (
     <Link
       href="/"
-      className="relative z-20 flex items-center px-2 py-1 mr-4 space-x-2 text-sm font-normal text-black"
+      className="group relative z-20 flex items-center gap-2.5 px-1 py-1 mr-4"
     >
-      <img
-        src="https://assets.aceternity.com/logo-dark.png"
-        alt="logo"
-        width={30}
-        height={30}
-      />
-      <span className="font-medium text-black dark:text-white">Arya</span>
+      {/* Monogram logo mark */}
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-500/30 dark:shadow-indigo-500/20 transition-shadow duration-300 group-hover:shadow-indigo-500/50">
+        <span className="text-xs font-bold tracking-tight text-white select-none">
+          AD
+        </span>
+      </div>
+      <span className="text-sm font-semibold text-neutral-800 dark:text-white tracking-tight">
+        Arya<span className="text-indigo-500">.</span>
+      </span>
     </Link>
   );
 };
@@ -265,15 +307,16 @@ export const NavbarButton = ({
   | React.ComponentPropsWithoutRef<"button">
 )) => {
   const baseStyles =
-    " rounded-md  button text-black text-sm font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center";
+    "relative inline-flex items-center justify-center rounded-xl text-sm font-medium cursor-pointer select-none transition-all duration-200 active:scale-[0.97]";
 
   const variantStyles = {
     primary:
-      "shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
-    secondary: "bg-transparent shadow-none dark:text-white",
-    dark: "bg-black text-white shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
+      "bg-white text-neutral-800 border border-neutral-200/80 shadow-sm hover:bg-neutral-50 hover:shadow-md hover:-translate-y-px dark:bg-neutral-800 dark:text-neutral-100 dark:border-white/10 dark:hover:bg-neutral-700",
+    secondary:
+      "bg-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white",
+    dark: "bg-neutral-900 text-white border border-white/10 shadow-sm hover:bg-neutral-800 hover:shadow-md hover:-translate-y-px dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100",
     gradient:
-      "bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
+      "bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-px dark:shadow-indigo-500/20",
   };
 
   return (
