@@ -1,15 +1,25 @@
 import { urlFor } from "@/sanity/lib/image";
 import { PortableTextComponents } from "next-sanity";
+import type { PortableTextBlock, PortableTextSpan } from "@portabletext/types";
 import { useState } from "react";
 
-function slugify(text: any) {
-  return String(text)
+function slugify(text: string): string {
+  return text
+    .normalize("NFKD")               // decompose accented chars (é → e + ́)
+    .replace(/[\u0300-\u036f]/g, "") // strip combining diacritical marks
     .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "");
+    .trim()
+    .replace(/[^\w\s-]/g, "")        // remove non-word chars (keeps letters, digits, _, -, space)
+    .replace(/[\s_]+/g, "-")         // spaces/underscores → dash
+    .replace(/-{2,}/g, "-")          // collapse multiple dashes
+    .replace(/^-+|-+$/g, "");        // trim leading/trailing dashes
+}
+
+/** Extract plain text from a Sanity PortableText block value */
+function blockText(value: PortableTextBlock): string {
+  return value.children
+    .map((child) => ("text" in child ? (child as PortableTextSpan).text : ""))
+    .join("");
 }
 
 export const components: PortableTextComponents = {
@@ -92,7 +102,7 @@ export const components: PortableTextComponents = {
   block: {
     // H1
     h1: ({ children, value }) => {
-      const id = slugify(children?.toString() || "");
+      const id = slugify(blockText(value));
       return (
         <h1 data-sanity={value._key} id={id}>
           {children}
@@ -102,7 +112,7 @@ export const components: PortableTextComponents = {
 
     // H2
     h2: ({ children, value }) => {
-      const id = slugify(children?.toString() || "");
+      const id = slugify(blockText(value));
       return (
         <h2 data-sanity={value._key} id={id}>
           {children}
@@ -112,7 +122,7 @@ export const components: PortableTextComponents = {
 
     // H3
     h3: ({ children, value }) => {
-      const id = slugify(children?.toString() || "");
+      const id = slugify(blockText(value));
       return (
         <h3 data-sanity={value._key} id={id}>
           {children}
@@ -122,7 +132,7 @@ export const components: PortableTextComponents = {
 
     // H4
     h4: ({ children, value }) => {
-      const id = slugify(children?.toString() || "");
+      const id = slugify(blockText(value));
       return (
         <h4 data-sanity={value._key} id={id}>
           {children}
