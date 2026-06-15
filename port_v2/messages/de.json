@@ -3,8 +3,11 @@
         "home": "Startseite",
         "projects": "Projekte",
         "blog": "Blog",
+        "skills": "Fähigkeiten",
+        "uses": "Werkzeuge",
         "about": "Über mich",
-        "contact": "Kontakt"
+        "contact": "Kontakt",
+        "more": "Mehr"
     },
     "metadata": {
         "home": {
@@ -38,6 +41,16 @@
         "blogNotFound": {
             "title": "Blog nicht gefunden",
             "description": "Der angeforderte Blogbeitrag konnte nicht gefunden werden."
+        },
+        "skills": {
+            "title": "Fähigkeiten & Tech Stack — Arya Dzaky",
+            "description": "Technologien und Werkzeuge, die ich zum Erstellen moderner Webanwendungen verwende.",
+            "keywords": "Arya Dzaky Fähigkeiten, Tech Stack, Frontend, Backend, Datenbank, Entwicklungswerkzeuge"
+        },
+        "uses": {
+            "title": "Werkzeuge / Setup — Arya Dzaky",
+            "description": "Die Tools, Apps und Hardware, die ich für die Softwareentwicklung verwende.",
+            "keywords": "Arya Dzaky Setup, Entwicklungswerkzeuge, Editor, IDE, Terminal, DevOps"
         }
     },
     "home": {
@@ -172,6 +185,25 @@
         "pagination": {
             "summary": "{total} Ergebnisse • Seite {page} von {totalPages}"
         }
+    },
+    "skillsPage": {
+        "title": "Fähigkeiten & Tech Stack",
+        "description": "Technologien und Frameworks, mit denen ich Ideen zum Leben erwecke.",
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Datenbank",
+        "tools": "Werkzeuge"
+    },
+    "usesPage": {
+        "title": "Werkzeuge / Setup",
+        "description": "Ein Blick auf die Tools, Apps und Hardware, die meinen täglichen Workflow antreiben.",
+        "editor": "Editor & IDE",
+        "terminal": "Terminal",
+        "devops": "DevOps & Bereitstellung",
+        "design": "Design",
+        "browser": "Browser",
+        "hardware": "Hardware & OS",
+        "visitSite": "Website besuchen"
     },
     "footer": {
         "desc": "Entwickler, die sich auf saubere, schnelle und barrierefreie Benutzeroberflächen konzentrieren.",

@@ -57,6 +57,10 @@ export const structure: StructureResolver = (S) =>
                 S.listItem()
                   .title("Certification")
                   .child(filteredList(S, "certification", lang.value)),
+
+                S.listItem()
+                  .title("Uses")
+                  .child(filteredList(S, "uses", lang.value)),
               ]),
           ),
       ),
@@ -69,6 +73,7 @@ export const structure: StructureResolver = (S) =>
             .title("Global Content")
             .items([
               S.listItem().title("Category").child(globalList(S, "category")),
+              S.listItem().title("Skills").child(globalList(S, "skill")),
             ]),
         ),
     ]);

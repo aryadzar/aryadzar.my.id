@@ -52,6 +52,7 @@ export default defineConfig({
         "education",
         "experience",
         "certification",
+        "uses"
       ],
       // Make language field available as "language" instead of "__i18n_lang"
       languageField: "language",

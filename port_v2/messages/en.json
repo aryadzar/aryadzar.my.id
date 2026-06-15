@@ -3,8 +3,11 @@
         "home": "Home",
         "projects": "Projects",
         "blog": "Blog",
+        "skills": "Skills",
+        "uses": "Uses",
         "about": "About",
-        "contact": "Contact"
+        "contact": "Contact",
+        "more": "More"
     },
     "metadata": {
         "home": {
@@ -38,6 +41,16 @@
         "blogNotFound": {
             "title": "Blog Not Found",
             "description": "The requested blog post could not be found."
+        },
+        "skills": {
+            "title": "Skills & Tech Stack — Arya Dzaky",
+            "description": "Technologies and tools I use to build modern web applications.",
+            "keywords": "Arya Dzaky Skills, Tech Stack, Frontend, Backend, Database, Development Tools"
+        },
+        "uses": {
+            "title": "Uses / Setup — Arya Dzaky",
+            "description": "The tools, apps, and hardware I use for software development.",
+            "keywords": "Arya Dzaky Setup, Development Tools, Editor, IDE, Terminal, DevOps"
         }
     },
     "home": {
@@ -172,6 +185,25 @@
         "pagination": {
             "summary": "{total} results • page {page} of {totalPages}"
         }
+    },
+    "skillsPage": {
+        "title": "Skills & Tech Stack",
+        "description": "Technologies and frameworks I use to bring ideas to life.",
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Database",
+        "tools": "Tools"
+    },
+    "usesPage": {
+        "title": "Uses / Setup",
+        "description": "A look at the tools, apps, and hardware that power my daily workflow.",
+        "editor": "Editor & IDE",
+        "terminal": "Terminal",
+        "devops": "DevOps & Deployment",
+        "design": "Design",
+        "browser": "Browser",
+        "hardware": "Hardware & OS",
+        "visitSite": "Visit Site"
     },
     "footer": {
         "desc": "Developers who focus on clean, fast, and accessible interface experiences.",

@@ -60,14 +60,35 @@ export function NavbarView() {
             onClose={() => setIsMobileMenuOpen(false)}
           >
             {navItems.map((item, idx) => (
-              <Link
-                key={`mobile-link-${idx}`}
-                href={item.link}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="relative text-neutral-600 dark:text-neutral-300"
-              >
-                <span className="block">{item.name}</span>
-              </Link>
+              <div key={`mobile-link-${idx}`} className="flex flex-col gap-3">
+                {item.children ? (
+                  <>
+                    <span className="relative text-neutral-900 font-medium dark:text-neutral-100">
+                      {item.name}
+                    </span>
+                    <div className="flex flex-col gap-3 pl-4 border-l border-neutral-200 dark:border-neutral-800 ml-1">
+                      {item.children.map((child, cIdx) => (
+                        <Link
+                          key={`mobile-sublink-${cIdx}`}
+                          href={child.link}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="relative text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                        >
+                          <span className="block">{child.name}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <Link
+                    href={item.link!}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="relative text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                  >
+                    <span className="block">{item.name}</span>
+                  </Link>
+                )}
+              </div>
             ))}
             <Link
               href="https://legacy.aryadzar.my.id"

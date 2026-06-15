@@ -3,8 +3,11 @@
         "home": "Beranda",
         "projects": "Proyek",
         "blog": "Blog",
+        "skills": "Keahlian",
+        "uses": "Perangkat",
         "about": "Tentang",
-        "contact": "Kontak"
+        "contact": "Kontak",
+        "more": "Lainnya"
     },
     "metadata": {
         "home": {
@@ -38,6 +41,16 @@
         "blogNotFound": {
             "title": "Blog Tidak Ditemukan",
             "description": "Postingan blog yang diminta tidak dapat ditemukan."
+        },
+        "skills": {
+            "title": "Keahlian & Tech Stack — Arya Dzaky",
+            "description": "Teknologi dan alat yang saya gunakan untuk membangun aplikasi web modern.",
+            "keywords": "Keahlian Arya Dzaky, Tech Stack, Frontend, Backend, Database, Alat Pengembangan"
+        },
+        "uses": {
+            "title": "Perangkat / Setup — Arya Dzaky",
+            "description": "Alat, aplikasi, dan perangkat keras yang saya gunakan untuk pengembangan perangkat lunak.",
+            "keywords": "Setup Arya Dzaky, Alat Pengembangan, Editor, IDE, Terminal, DevOps"
         }
     },
     "home": {
@@ -172,6 +185,25 @@
         "pagination": {
             "summary": "{total} hasil • halaman {page} dari {totalPages}"
         }
+    },
+    "skillsPage": {
+        "title": "Keahlian & Tech Stack",
+        "description": "Teknologi dan framework yang saya gunakan untuk mewujudkan ide.",
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Database",
+        "tools": "Alat"
+    },
+    "usesPage": {
+        "title": "Perangkat / Setup",
+        "description": "Sekilas tentang alat, aplikasi, dan perangkat keras yang mendukung alur kerja harian saya.",
+        "editor": "Editor & IDE",
+        "terminal": "Terminal",
+        "devops": "DevOps & Deployment",
+        "design": "Desain",
+        "browser": "Peramban",
+        "hardware": "Perangkat & OS",
+        "visitSite": "Kunjungi Situs"
     },
     "footer": {
         "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses.",

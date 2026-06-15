@@ -137,7 +137,7 @@ export default function Footer() {
               {t("links")}
             </h3>
             <ul className="space-y-3">
-              {navItems.map((nav, i) => (
+              {navItems.flatMap(nav => nav.children ? nav.children : [nav]).map((nav, i) => (
                 <motion.li
                   key={i}
                   initial={{ opacity: 0, x: -10 }}
@@ -146,7 +146,7 @@ export default function Footer() {
                   transition={{ delay: i * 0.05 }}
                 >
                   <Link
-                    href={nav.link}
+                    href={nav.link!}
                     className="relative inline-flex items-center text-sm transition-all group text-muted-foreground hover:text-green-500 hover:translate-x-1"
                   >
                     <span className="absolute left-0 w-0 h-px -ml-5 transition-all bg-green-500 group-hover:w-4" />

@@ -5,6 +5,8 @@ import { ProjectOverview } from "@/types/projectOverviewType";
 import { BlogOverview } from "@/types/blogOverviewTypes";
 import { ExperienceData } from "@/types/experienceType";
 import { EducationData } from "@/types/educationType";
+import { Skill } from "@/types/skillType";
+import { UsesItem } from "@/types/usesType";
 import { client } from "@/sanity/lib/client";
 import { draftMode } from "next/headers";
 import { sanityFetch } from "@/sanity/lib/live";
@@ -200,3 +202,36 @@ export const getEducation = async (lang: string): Promise<EducationData> => {
 
   return { education: data };
 };
+
+export const getSkills = async (): Promise<Skill[]> => {
+  const { data } = await sanityFetch({
+    query: `*[_type == "skill"] | order(order asc) {
+      _id,
+      name,
+      category,
+      "iconUrl": icon.asset->url,
+      color,
+      order
+    }`
+  });
+
+  return data ?? [];
+};
+
+export const getUses = async (lang: string): Promise<UsesItem[]> => {
+  const { data } = await sanityFetch({
+    query: `*[_type == "uses" && language == $lang] | order(order asc) {
+      _id,
+      name,
+      description,
+      category,
+      "iconUrl": icon.asset->url,
+      link,
+      order
+    }`,
+    params: { lang },
+  });
+
+  return data ?? [];
+};
+

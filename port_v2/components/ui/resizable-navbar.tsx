@@ -8,6 +8,7 @@ import {
   useMotionValueEvent,
 } from "motion/react";
 import Link from "next/link";
+import Image from "next/image";
 
 import React, { useRef, useState } from "react";
 
@@ -22,11 +23,14 @@ interface NavBodyProps {
   visible?: boolean;
 }
 
+interface NavItemType {
+  name: string;
+  link?: string;
+  children?: { name: string; link: string }[];
+}
+
 interface NavItemsProps {
-  items: {
-    name: string;
-    link: string;
-  }[];
+  items: NavItemType[];
   className?: string;
   onItemClick?: () => void;
 }
@@ -73,9 +77,9 @@ export const Navbar = ({ children, className }: NavbarProps) => {
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
           ? React.cloneElement(
-              child as React.ReactElement<{ visible?: boolean }>,
-              { visible },
-            )
+            child as React.ReactElement<{ visible?: boolean }>,
+            { visible },
+          )
           : child,
       )}
     </motion.div>
@@ -104,7 +108,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
       className={cn(
         "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-2xl bg-transparent px-5 py-2.5 lg:flex dark:bg-transparent",
         visible &&
-          "bg-white/70 dark:bg-neutral-950/75 border border-white/10 dark:border-white/[0.07]",
+        "bg-white/70 dark:bg-neutral-950/75 border border-white/10 dark:border-white/[0.07]",
         className,
       )}
     >
@@ -119,35 +123,102 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
 
 export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
   const [hovered, setHovered] = useState<number | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
 
   return (
     <motion.div
-      onMouseLeave={() => setHovered(null)}
+      onMouseLeave={() => {
+        setHovered(null);
+        setDropdownOpen(null);
+      }}
       className={cn(
         "absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-1 text-sm font-medium lg:flex",
         className,
       )}
     >
-      {items.map((item, idx) => (
-        <Link
-          onMouseEnter={() => setHovered(idx)}
-          onClick={onItemClick}
-          className="group relative px-4 py-2 text-neutral-600 transition-colors duration-150 dark:text-neutral-300"
-          key={`link-${idx}`}
-          href={item.link}
-        >
-          {hovered === idx && (
-            <motion.div
-              layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-xl bg-neutral-100 dark:bg-white/[0.07]"
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            />
-          )}
-          <span className="relative z-20 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors duration-150">
-            {item.name}
-          </span>
-        </Link>
-      ))}
+      {items.map((item, idx) => {
+        const isHovered = hovered === idx;
+        const isDropdownOpen = dropdownOpen === idx;
+
+        return (
+          <div
+            key={`link-${idx}`}
+            className="relative"
+            onMouseEnter={() => {
+              setHovered(idx);
+              if (item.children) setDropdownOpen(idx);
+            }}
+            onMouseLeave={() => {
+              if (item.children) setDropdownOpen(null);
+            }}
+          >
+            {item.children ? (
+              <button className="group relative px-4 py-2 text-neutral-600 transition-colors duration-150 dark:text-neutral-300 flex items-center gap-1">
+                {isHovered && (
+                  <motion.div
+                    layoutId="hovered"
+                    className="absolute inset-0 h-full w-full rounded-xl bg-neutral-100 dark:bg-white/[0.07]"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-20 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors duration-150">
+                  {item.name}
+                </span>
+                <svg className="w-3 h-3 relative z-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            ) : (
+              <Link
+                onClick={onItemClick}
+                className="group relative px-4 py-2 text-neutral-600 transition-colors duration-150 dark:text-neutral-300 block"
+                href={item.link!}
+              >
+                {isHovered && (
+                  <motion.div
+                    layoutId="hovered"
+                    className="absolute inset-0 h-full w-full rounded-xl bg-neutral-100 dark:bg-white/[0.07]"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-20 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors duration-150">
+                  {item.name}
+                </span>
+              </Link>
+            )}
+
+            {item.children && (
+              <AnimatePresence>
+                {isDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50"
+                  >
+                    <div className="flex flex-col gap-1 rounded-xl bg-white/90 p-2 shadow-xl border border-neutral-100 dark:bg-neutral-950/90 dark:border-white/[0.07] backdrop-blur-xl min-w-[140px]">
+                      {item.children.map((child, cIdx) => (
+                        <Link
+                          key={cIdx}
+                          href={child.link}
+                          onClick={() => {
+                            setDropdownOpen(null);
+                            if (onItemClick) onItemClick();
+                          }}
+                          className="px-4 py-2 rounded-lg text-sm text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.07] hover:text-neutral-900 dark:hover:text-white transition-colors whitespace-nowrap"
+                        >
+                          {child.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
+          </div>
+        );
+      })}
     </motion.div>
   );
 };
@@ -174,7 +245,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
       className={cn(
         "relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-0 py-2 lg:hidden",
         visible &&
-          "bg-white/70 dark:bg-neutral-950/75 border border-white/10 dark:border-white/[0.07]",
+        "bg-white/70 dark:bg-neutral-950/75 border border-white/10 dark:border-white/[0.07]",
         className,
       )}
     >
@@ -276,11 +347,14 @@ export const NavbarLogo = () => {
       href="/"
       className="group relative z-20 flex items-center gap-2.5 px-1 py-1 mr-4"
     >
-      {/* Monogram logo mark */}
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-500/30 dark:shadow-indigo-500/20 transition-shadow duration-300 group-hover:shadow-indigo-500/50">
-        <span className="text-xs font-bold tracking-tight text-white select-none">
-          AD
-        </span>
+      <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg shadow-md shadow-indigo-500/20 transition-shadow duration-300 group-hover:shadow-indigo-500/50">
+        <Image
+          src="/logo-2.png"
+          alt="logo"
+          width={32}
+          height={32}
+          className="h-full w-full object-cover"
+        />
       </div>
       <span className="text-sm font-semibold text-neutral-800 dark:text-white tracking-tight">
         Arya<span className="text-indigo-500">.</span>
@@ -303,9 +377,9 @@ export const NavbarButton = ({
   className?: string;
   variant?: "primary" | "secondary" | "dark" | "gradient";
 } & (
-  | React.ComponentPropsWithoutRef<"a">
-  | React.ComponentPropsWithoutRef<"button">
-)) => {
+    | React.ComponentPropsWithoutRef<"a">
+    | React.ComponentPropsWithoutRef<"button">
+  )) => {
   const baseStyles =
     "relative inline-flex items-center justify-center rounded-xl text-sm font-medium cursor-pointer select-none transition-all duration-200 active:scale-[0.97]";
 

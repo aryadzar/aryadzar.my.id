@@ -4,7 +4,7 @@ import { getBaseUrl } from "@/lib/getBaseUrl";
 import type { MetadataRoute } from "next";
 
 // ─── Static page paths (locale-prefixed) ────────────────────────────────────
-const STATIC_PATHS = ["", "/about", "/blog", "/projects"];
+const STATIC_PATHS = ["", "/about", "/blog", "/projects", "/skills", "/uses"];
 
 // ─── Sanity queries for slugs only ──────────────────────────────────────────
 const BLOG_SLUGS_QUERY = `
