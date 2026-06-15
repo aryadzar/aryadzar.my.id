@@ -1,13 +1,10 @@
 "use client";
 
-import { UsesItem } from "@/types/usesType";
-import {
-  fallbackUses,
-  USES_CATEGORY_ORDER,
-  type FallbackUsesItem,
-} from "@/constants/uses-data";
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
+import { stegaClean } from "next-sanity";
+import { UsesItem } from "@/types/usesType";
+import { USES_CATEGORY_ORDER } from "@/constants/uses-data";
 import { ExternalLink } from "lucide-react";
 
 interface UsesPageProps {
@@ -15,50 +12,15 @@ interface UsesPageProps {
   locale: string;
 }
 
-type DisplayItem = {
-  name: string;
-  description: string;
-  category: string;
-  color: string;
-  svgPath?: string;
-  iconUrl?: string;
-  link?: string;
-};
-
-function useUsesItems(usesData: UsesItem[], locale: string): DisplayItem[] {
-  if (usesData && usesData.length > 0) {
-    return usesData.map((u) => ({
-      name: u.name,
-      description: u.description ?? "",
-      category: u.category,
-      color: "#888888",
-      iconUrl: u.iconUrl,
-      link: u.link,
-    }));
-  }
-  const localeKey = (locale === "id" || locale === "de" ? locale : "en") as
-    | "en"
-    | "id"
-    | "de";
-  return fallbackUses.map((u) => ({
-    name: u.name,
-    description: u.description[localeKey],
-    category: u.category,
-    color: u.color,
-    svgPath: u.svgPath,
-    link: u.link,
-  }));
-}
-
 export default function UsesPage({ usesData, locale }: UsesPageProps) {
   const t = useTranslations("usesPage");
   const prefersReducedMotion = useReducedMotion();
-  const items = useUsesItems(usesData, locale);
+  const items = usesData || [];
 
   const grouped = USES_CATEGORY_ORDER.map((cat) => ({
     key: cat,
     label: t(cat),
-    items: items.filter((i) => i.category === cat),
+    items: items.filter((i) => stegaClean(i.category) === cat),
   })).filter((g) => g.items.length > 0);
 
   const container = {
@@ -135,7 +97,6 @@ export default function UsesPage({ usesData, locale }: UsesPageProps) {
                   {group.label}
                 </h2>
               </div>
-
               {/* Items */}
               <motion.div
                 variants={container}
@@ -144,86 +105,93 @@ export default function UsesPage({ usesData, locale }: UsesPageProps) {
                 viewport={{ once: true, amount: 0.1 }}
                 className="grid gap-4 md:grid-cols-2"
               >
-                {group.items.map((item) => (
-                  <motion.div
-                    key={`${group.key}-${item.name}`}
-                    variants={itemVariant}
-                    whileHover={{
-                      y: -2,
-                      transition: { duration: 0.2 },
-                    }}
-                    className="group relative flex gap-4 p-5 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
-                  >
-                    {/* Glow on hover */}
-                    <div
-                      className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
-                      style={{
-                        background: `radial-gradient(circle at 20% 50%, ${item.color}06 0%, transparent 60%)`,
-                      }}
-                    />
+                {group.items.map((item, idx) => {
+                  const cleanColor = stegaClean((item as any).color) ?? "#888888";
+                  const cleanIconUrl = stegaClean(item.iconUrl);
+                  const cleanSvgPath = stegaClean((item as any).svgPath);
+                  const cleanLink = stegaClean(item.link);
 
-                    {/* Icon */}
-                    <div
-                      className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl transition-transform duration-300 group-hover:scale-110"
-                      style={{
-                        background: `linear-gradient(135deg, ${item.color}12, ${item.color}22)`,
-                        border: `1px solid ${item.color}20`,
+                  return (
+                    <motion.div
+                      key={(item as any)._id ?? `${group.key}-${idx}`}
+                      variants={itemVariant}
+                      whileHover={{
+                        y: -2,
+                        transition: { duration: 0.2 },
                       }}
+                      className="group relative flex gap-4 p-5 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
                     >
-                      {item.iconUrl ? (
-                        <img
-                          src={item.iconUrl}
-                          alt={item.name}
-                          className="w-6 h-6 object-contain"
-                        />
-                      ) : item.svgPath ? (
-                        <svg
-                          className="w-6 h-6"
-                          viewBox="0 0 24 24"
-                          fill={item.color}
-                        >
-                          <path d={item.svgPath} />
-                        </svg>
-                      ) : (
-                        <div
-                          className="w-6 h-6 rounded-md"
-                          style={{ backgroundColor: item.color }}
-                        />
-                      )}
-                    </div>
+                      {/* Glow on hover */}
+                      <div
+                        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
+                        style={{
+                          background: `radial-gradient(circle at 20% 50%, ${cleanColor}06 0%, transparent 60%)`,
+                        }}
+                      />
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-foreground/90 group-hover:text-foreground transition-colors">
-                          {item.name}
-                        </h3>
-                        {item.link && (
-                          <a
-                            href={item.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
-                            aria-label={`${t("visitSite")} - ${item.name}`}
+                      {/* Icon */}
+                      <div
+                        className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl transition-transform duration-300 group-hover:scale-110"
+                        style={{
+                          background: `linear-gradient(135deg, ${cleanColor}12, ${cleanColor}22)`,
+                          border: `1px solid ${cleanColor}20`,
+                        }}
+                      >
+                        {cleanIconUrl ? (
+                          <img
+                            src={cleanIconUrl}
+                            alt={item.name}
+                            className="w-6 h-6 object-contain"
+                          />
+                        ) : cleanSvgPath ? (
+                          <svg
+                            className="w-6 h-6"
+                            viewBox="0 0 24 24"
+                            fill={cleanColor}
                           >
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
+                            <path d={cleanSvgPath} />
+                          </svg>
+                        ) : (
+                          <div
+                            className="w-6 h-6 rounded-md"
+                            style={{ backgroundColor: cleanColor }}
+                          />
                         )}
                       </div>
-                      {item.description && (
-                        <p className="mt-1 text-sm text-muted-foreground leading-relaxed line-clamp-2">
-                          {item.description}
-                        </p>
-                      )}
-                    </div>
 
-                    {/* Color accent */}
-                    <div
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 group-hover:h-8 rounded-full transition-all duration-300"
-                      style={{ backgroundColor: item.color }}
-                    />
-                  </motion.div>
-                ))}
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-foreground/90 group-hover:text-foreground transition-colors">
+                            {item.name}
+                          </h3>
+                          {cleanLink && (
+                            <a
+                              href={cleanLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
+                              aria-label={`${t("visitSite")} - ${item.name}`}
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                        {item.description && (
+                          <p className="mt-1 text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                            {item.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Color accent */}
+                      <div
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 group-hover:h-8 rounded-full transition-all duration-300"
+                        style={{ backgroundColor: cleanColor }}
+                      />
+                    </motion.div>
+                  );
+                })}
               </motion.div>
 
               {/* Separator (not after last group) */}

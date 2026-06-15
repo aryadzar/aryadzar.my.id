@@ -8,41 +8,22 @@ import {
 } from "@/constants/skills-data";
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
+import { stegaClean } from "next-sanity";
 
 interface SkillsPageProps {
   skillsData: Skill[];
   locale: string;
 }
 
-// Merge Sanity data with fallback — if Sanity has data, use it; otherwise fallback
-function useSkillItems(
-  skillsData: Skill[]
-): { name: string; category: string; color: string; svgPath?: string; iconUrl?: string }[] {
-  if (skillsData && skillsData.length > 0) {
-    return skillsData.map((s) => ({
-      name: s.name,
-      category: s.category,
-      color: s.color ?? "#888888",
-      iconUrl: s.iconUrl,
-    }));
-  }
-  return fallbackSkills.map((s) => ({
-    name: s.name,
-    category: s.category,
-    color: s.color,
-    svgPath: s.svgPath,
-  }));
-}
-
 export default function SkillsPage({ skillsData, locale }: SkillsPageProps) {
   const t = useTranslations("skillsPage");
   const prefersReducedMotion = useReducedMotion();
-  const items = useSkillItems(skillsData);
+  const items = skillsData || [];
 
   const grouped = CATEGORY_ORDER.map((cat) => ({
     key: cat,
     label: t(cat),
-    items: items.filter((i) => i.category === cat),
+    items: items.filter((i) => stegaClean(i.category) === cat),
   })).filter((g) => g.items.length > 0);
 
   const container = {
@@ -140,66 +121,55 @@ export default function SkillsPage({ skillsData, locale }: SkillsPageProps) {
                 viewport={{ once: true, amount: 0.1 }}
                 className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
               >
-                {group.items.map((item, idx) => (
-                  <motion.div
-                    key={`${group.key}-${item.name}`}
-                    variants={itemVariant}
-                    whileHover={{
-                      y: -4,
-                      transition: { duration: 0.2 },
-                    }}
-                    className="group relative flex flex-col items-center gap-3 p-4 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 cursor-default"
-                  >
-                    {/* Glow effect on hover */}
-                    <div
-                      className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
-                      style={{
-                        background: `radial-gradient(circle at center, ${item.color}08 0%, transparent 70%)`,
-                      }}
-                    />
+                {group.items.map((item, idx) => {
+                  const cleanColor = stegaClean(item.color);
+                  const cleanIconUrl = stegaClean(item.iconUrl);
+                  const cleanSvgPath = stegaClean((item as any).svgPath);
 
-                    {/* Icon */}
-                    <div
-                      className="flex items-center justify-center w-12 h-12 rounded-xl transition-transform duration-300 group-hover:scale-110"
-                      style={{
-                        background: `linear-gradient(135deg, ${item.color}12, ${item.color}22)`,
-                        border: `1px solid ${item.color}20`,
-                      }}
+                  return (
+                    <motion.div
+                      key={item._id ?? `${group.key}-${idx}`}
+                      variants={itemVariant}
+                      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                      className="group relative flex flex-col items-center gap-3 p-4 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 cursor-default"
                     >
-                      {item.iconUrl ? (
-                        <img
-                          src={item.iconUrl}
-                          alt={item.name}
-                          className="w-6 h-6 object-contain"
-                        />
-                      ) : item.svgPath ? (
-                        <svg
-                          className="w-6 h-6"
-                          viewBox="0 0 24 24"
-                          fill={item.color}
-                        >
-                          <path d={item.svgPath} />
-                        </svg>
-                      ) : (
-                        <div
-                          className="w-6 h-6 rounded-md"
-                          style={{ backgroundColor: item.color }}
-                        />
-                      )}
-                    </div>
+                      <div
+                        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
+                        style={{
+                          background: `radial-gradient(circle at center, ${cleanColor}08 0%, transparent 70%)`,
+                        }}
+                      />
 
-                    {/* Name */}
-                    <span className="text-sm font-medium text-center leading-tight text-foreground/90 group-hover:text-foreground transition-colors">
-                      {item.name}
-                    </span>
+                      <div
+                        className="flex items-center justify-center w-12 h-12 rounded-xl transition-transform duration-300 group-hover:scale-110"
+                        style={{
+                          background: `linear-gradient(135deg, ${cleanColor}12, ${cleanColor}22)`,
+                          border: `1px solid ${cleanColor}20`,
+                        }}
+                      >
+                        {cleanIconUrl ? (
+                          <img src={cleanIconUrl} alt={item.name} className="w-6 h-6 object-contain" />
+                        ) : cleanSvgPath ? (
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill={cleanColor}>
+                            <path d={cleanSvgPath} />
+                          </svg>
+                        ) : (
+                          <div className="w-6 h-6 rounded-md" style={{ backgroundColor: cleanColor }} />
+                        )}
+                      </div>
 
-                    {/* Color accent line */}
-                    <div
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-0 group-hover:w-8 rounded-full transition-all duration-300"
-                      style={{ backgroundColor: item.color }}
-                    />
-                  </motion.div>
-                ))}
+                      {/* biarkan ber-stega agar overlay edit aktif */}
+                      <span className="text-sm font-medium text-center leading-tight text-foreground/90 group-hover:text-foreground transition-colors">
+                        {item.name}
+                      </span>
+
+                      <div
+                        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-0 group-hover:w-8 rounded-full transition-all duration-300"
+                        style={{ backgroundColor: cleanColor }}
+                      />
+                    </motion.div>
+                  );
+                })}
               </motion.div>
             </motion.div>
           ))}

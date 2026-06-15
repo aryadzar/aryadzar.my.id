@@ -207,6 +207,7 @@ export const getSkills = async (): Promise<Skill[]> => {
   const { data } = await sanityFetch({
     query: `*[_type == "skill"] | order(order asc) {
       _id,
+      _type,
       name,
       category,
       "iconUrl": icon.asset->url,
@@ -222,6 +223,7 @@ export const getUses = async (lang: string): Promise<UsesItem[]> => {
   const { data } = await sanityFetch({
     query: `*[_type == "uses" && language == $lang] | order(order asc) {
       _id,
+      _type,
       name,
       description,
       category,
