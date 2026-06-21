@@ -209,5 +209,11 @@
         "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses.",
         "links": "Tautan Cepat",
         "follow": "Ikuti Saya"
+    },
+    "notFound": {
+        "title": "WADUH",
+        "subtitle": "404 - Halaman Tidak Ditemukan",
+        "description": "URL yang diminta tidak ditemukan di server ini. Hanya itu yang kami tahu.",
+        "backToHome": "Kembali ke Beranda"
     }
 }

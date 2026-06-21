@@ -209,5 +209,11 @@
         "desc": "Developers who focus on clean, fast, and accessible interface experiences.",
         "links": "Quick Links",
         "follow": "Follow Me"
+    },
+    "notFound": {
+        "title": "OOPS",
+        "subtitle": "404 - That's Error",
+        "description": "The requested URL was not found on this server. That's all we know.",
+        "backToHome": "Back to Home"
     }
 }

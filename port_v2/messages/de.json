@@ -209,5 +209,11 @@
         "desc": "Entwickler, die sich auf saubere, schnelle und barrierefreie Benutzeroberflächen konzentrieren.",
         "links": "Schnelllinks",
         "follow": "Folgen Sie mir"
+    },
+    "notFound": {
+        "title": "UPS",
+        "subtitle": "404 - Seite nicht gefunden",
+        "description": "Die angeforderte URL wurde auf diesem Server nicht gefunden. Mehr wissen wir nicht.",
+        "backToHome": "Zurück zur Startseite"
     }
 }
