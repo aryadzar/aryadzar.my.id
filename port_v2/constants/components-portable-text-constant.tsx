@@ -1,4 +1,5 @@
 import { urlFor } from "@/sanity/lib/image";
+import { projectId, dataset } from "@/sanity/env";
 import { PortableTextComponents } from "next-sanity";
 import type { PortableTextBlock, PortableTextSpan } from "@portabletext/types";
 import { useState } from "react";
@@ -20,6 +21,24 @@ function blockText(value: PortableTextBlock): string {
   return value.children
     .map((child) => ("text" in child ? (child as PortableTextSpan).text : ""))
     .join("");
+}
+
+/** Robust helper to extract or reconstruct the video URL from Sanity block values */
+function getVideoUrl(value: any): string | null {
+  if (value?.url) return value.url;
+  if (value?.video?.asset?.url) return value.video.asset.url;
+
+  const ref = value?.video?.asset?._ref || value?.video?.asset?._id;
+  if (ref && typeof ref === "string") {
+    // Sanity file asset _ref format: "file-<assetId>-<extension>"
+    const parts = ref.split("-");
+    if (parts.length >= 3 && parts[0] === "file") {
+      const assetId = parts[1];
+      const extension = parts.slice(2).join("-");
+      return `https://cdn.sanity.io/files/${projectId}/${dataset}/${assetId}.${extension}`;
+    }
+  }
+  return null;
 }
 
 export const components: PortableTextComponents = {
@@ -80,21 +99,24 @@ export const components: PortableTextComponents = {
       />
     ),
     videoBlock: ({ value }) => {
-      if (!value.url) return null;
+      const videoUrl = getVideoUrl(value);
+      if (!videoUrl) return null;
 
       return (
-        <div className="my-6">
+        <figure className="my-8 overflow-hidden rounded-2xl border border-border/80 bg-card/60 shadow-lg">
           <video
-            src={value.url}
+            src={videoUrl}
             controls
-            className="w-full border rounded-lg border-border"
+            playsInline
+            preload="metadata"
+            className="w-full rounded-t-2xl aspect-video bg-black object-contain"
           />
           {value.caption && (
-            <p className="mt-2 text-sm text-center text-muted-foreground">
+            <figcaption className="p-3 text-xs text-center text-muted-foreground border-t border-border/40 font-medium">
               {value.caption}
-            </p>
+            </figcaption>
           )}
-        </div>
+        </figure>
       );
     },
   },

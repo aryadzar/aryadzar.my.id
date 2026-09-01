@@ -13,15 +13,21 @@ export async function getBlogSSR(slug: string, lang: string): Promise<Blog> {
         slug,
         "thumbnail" : coverImage.asset->url,
         excerpt,
-        content,
+        content[]{
+          ...,
+          _type == "videoBlock" => {
+            ...,
+            "url": video.asset->url
+          }
+        },
         categories[]->{_id, title, slug},
         publishedAt,
         "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{
-      title,
-      slug,
-      language
-    }
-}
+          title,
+          slug,
+          language
+        }
+      }
   `;
 
   const { data } = await sanityFetch({

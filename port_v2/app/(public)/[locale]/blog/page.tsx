@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import BlogPage from "./_components/blog";
 import { createMetadata } from "@/lib/metadata";
+import { BlogSkeleton } from "@/components/skeleton";
 
 export async function generateMetadata({
   params,
@@ -21,5 +23,10 @@ export async function generateMetadata({
 }
 
 export default function BlogIndexPage() {
-  return <BlogPage />;
+  return (
+    <Suspense fallback={<BlogSkeleton />}>
+      <BlogPage />
+    </Suspense>
+  );
 }
+

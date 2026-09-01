@@ -2,7 +2,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Sparkles } from "lucide-react";
 import { createDataAttribute } from "next-sanity";
 import { STUDIO_SANITY_URL } from "@/constants/studio-constant";
 import { CvModal } from "./cv/cvModal";
@@ -25,13 +25,13 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
     <section
       aria-label={t("ariaLabel")}
       className={cn(
-        "relative isolate min-h-screen overflow-hidden bg-background",
+        "relative isolate min-h-screen flex items-center justify-center overflow-hidden bg-background",
       )}
     >
       {/* Video Background dengan parallax effect */}
       <div className="absolute inset-0 overflow-hidden">
         <video
-          className="absolute inset-0 object-cover w-full h-full scale-105"
+          className="absolute inset-0 object-cover w-full h-full scale-105 opacity-60 dark:opacity-40"
           autoPlay
           muted
           loop
@@ -51,8 +51,8 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
       <motion.div
         className={cn(
           "absolute inset-0",
-          "bg-gradient-to-br from-background/90 via-background/70 to-background/50",
-          "dark:from-background/95 dark:via-background/80 dark:to-background/60",
+          "bg-gradient-to-br from-background/95 via-background/80 to-background/60",
+          "dark:from-background/95 dark:via-background/85 dark:to-background/70",
         )}
         aria-hidden="true"
         initial={{ opacity: prefersReduced ? 1 : 0 }}
@@ -60,9 +60,13 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
         transition={{ duration: 0.8 }}
       />
 
+      {/* Ambient Radial Glows */}
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/15 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-glow" />
+      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] bg-accent/15 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
+
       {/* Vignette Effect */}
       <div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.35)_100%)]"
         aria-hidden="true"
       />
 
@@ -76,9 +80,9 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
       />
 
       {/* Main Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         <div className="flex items-center min-h-screen px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="w-full py-20 md:py-32">
+          <div className="w-full py-24 md:py-32">
             <motion.div
               className="max-w-4xl"
               initial={{
@@ -88,7 +92,7 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* Badge/Label (optional) */}
+              {/* Badge/Label */}
               <motion.div
                 initial={{
                   opacity: prefersReduced ? 1 : 0,
@@ -96,25 +100,30 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
                 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="mb-6"
+                className="mb-8"
               >
-                <span className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-full bg-primary/10 text-primary backdrop-blur-sm border-primary/20">
-                  <span className="relative flex w-2 h-2">
-                    <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-primary"></span>
-                    <span className="relative inline-flex w-2 h-2 rounded-full bg-primary"></span>
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 text-xs sm:text-sm font-medium border rounded-full bg-card/70 text-foreground backdrop-blur-xl border-border/80 shadow-md shadow-primary/5 hover:border-primary/50 transition-all duration-300">
+                  <span className="relative flex w-2.5 h-2.5">
+                    <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-emerald-500"></span>
+                    <span className="relative inline-flex w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                   </span>
-                  {t("availableForWork")}
-                </span>
+                  <span>{t("availableForWork")}</span>
+                  <span className="text-muted-foreground/60">•</span>
+                  <span className="text-primary font-semibold flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
+                    Full-Stack & Cloud
+                  </span>
+                </div>
               </motion.div>
 
               {/* Title dengan gradient text */}
               <motion.h1
                 className={cn(
-                  "text-5xl font-bold tracking-tight text-balance",
+                  "text-5xl font-extrabold tracking-tight text-balance",
                   "sm:text-6xl md:text-7xl lg:text-8xl",
-                  "bg-gradient-to-br from-foreground via-foreground to-foreground/70",
+                  "bg-gradient-to-br from-foreground via-foreground to-foreground/60",
                   "bg-clip-text text-transparent",
-                  "dark:from-white dark:via-white dark:to-white/70",
+                  "dark:from-white dark:via-white dark:to-neutral-400",
                 )}
                 initial={{
                   opacity: prefersReduced ? 1 : 0,
@@ -131,7 +140,7 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
                 className={cn(
                   "mt-6 text-lg text-pretty leading-relaxed",
                   "md:text-xl lg:text-2xl",
-                  "text-muted-foreground max-w-2xl",
+                  "text-muted-foreground max-w-2xl font-normal",
                 )}
                 data-sanity={dataAttribute?.("subtitle")}
                 initial={{
@@ -154,10 +163,12 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                <CvModal
-                  cvLink={data?.cvUrl as string}
-                  data-sanity={dataAttribute?.("cvUrl")}
-                />
+                <div className="relative group p-[1px] rounded-xl bg-gradient-to-r from-primary via-accent to-primary shadow-lg shadow-primary/15 transition-all duration-300 hover:shadow-primary/30">
+                  <CvModal
+                    cvLink={data?.cvUrl as string}
+                    data-sanity={dataAttribute?.("cvUrl")}
+                  />
+                </div>
               </motion.div>
             </motion.div>
           </div>
@@ -177,11 +188,12 @@ export function HeroVideoBackground({ data }: { data: Hero }) {
           repeatDelay: 0.5,
         }}
       >
-        <div className="flex flex-col items-center gap-2 text-muted-foreground">
-          <span className="text-sm font-medium">{t("scrollDown")}</span>
-          <ArrowDown className="w-5 h-5" />
+        <div className="flex flex-col items-center gap-2 px-3 py-1.5 rounded-full bg-card/40 backdrop-blur-md border border-border/40 text-muted-foreground text-xs font-medium hover:text-foreground transition-colors cursor-pointer">
+          <span>{t("scrollDown")}</span>
+          <ArrowDown className="w-3.5 h-3.5 animate-bounce" />
         </div>
       </motion.div>
     </section>
   );
 }
+

@@ -16,7 +16,13 @@ export async function getProjectSSR(
         slug,
         "thumbnail" : thumbnail.asset->url,
         shortDesc,
-        description,
+        description[]{
+          ...,
+          _type == "videoBlock" => {
+            ...,
+            "url": video.asset->url
+          }
+        },
         categories[]->{_id, title, slug},
         liveUrl,
         repoUrl,

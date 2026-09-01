@@ -8,7 +8,13 @@ export const BLOG_QUERY = defineQuery(`
         slug,
         "thumbnail" : coverImage.asset->url,
         excerpt,
-        content,
+        content[]{
+          ...,
+          _type == "videoBlock" => {
+            ...,
+            "url": video.asset->url
+          }
+        },
         categories[]->{_id, title, slug},
         publishedAt
       }
