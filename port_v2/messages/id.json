@@ -3,8 +3,11 @@
         "home": "Beranda",
         "projects": "Proyek",
         "blog": "Blog",
+        "skills": "Keahlian",
+        "uses": "Perangkat",
         "about": "Tentang",
-        "contact": "Kontak"
+        "contact": "Kontak",
+        "more": "Lainnya"
     },
     "metadata": {
         "home": {
@@ -27,6 +30,10 @@
             "description": "Baca artikel, tulisan, dan tutorial dari Arya Dzaky tentang web development dan software engineering.",
             "keywords": "Blog Arya Dzaky, Artikel Pemrograman, Tips Web Development, Tutorial Software Engineering"
         },
+        "category": {
+            "title": "Kategori — Arya Dzaky",
+            "description": "Jelajahi blog dan proyek berdasarkan kategori."
+        },
         "projectNotFound": {
             "title": "Proyek Tidak Ditemukan",
             "description": "Proyek yang diminta tidak dapat ditemukan."
@@ -34,6 +41,16 @@
         "blogNotFound": {
             "title": "Blog Tidak Ditemukan",
             "description": "Postingan blog yang diminta tidak dapat ditemukan."
+        },
+        "skills": {
+            "title": "Keahlian & Tech Stack — Arya Dzaky",
+            "description": "Teknologi dan alat yang saya gunakan untuk membangun aplikasi web modern.",
+            "keywords": "Keahlian Arya Dzaky, Tech Stack, Frontend, Backend, Database, Alat Pengembangan"
+        },
+        "uses": {
+            "title": "Perangkat / Setup — Arya Dzaky",
+            "description": "Alat, aplikasi, dan perangkat keras yang saya gunakan untuk pengembangan perangkat lunak.",
+            "keywords": "Setup Arya Dzaky, Alat Pengembangan, Editor, IDE, Terminal, DevOps"
         }
     },
     "home": {
@@ -142,17 +159,62 @@
         "tocTitle": "Daftar Isi",
         "quickLinks": "Tautan Cepat",
         "viewSource": "Lihat Source Code",
-        "liveDemo": "Lihat Demo"
+        "liveDemo": "Lihat Demo",
+        "availableIn": "Proyek ini tersedia dalam bahasa lain:"
     },
     "blogDetail": {
         "altImage": "Gambar sampul untuk {title}",
         "backButton": "Kembali ke Blog",
-        "tocTitle": "Daftar Isi"
+        "tocTitle": "Daftar Isi",
+        "availableIn": "Artikel ini tersedia dalam bahasa lain:"
+    },
+    "categoryPage": {
+        "categoryLabel": "Kategori",
+        "blogs": "Blog",
+        "projects": "Proyek",
+        "blog": "Blog",
+        "project": "Proyek",
+        "readMore": "Baca Selengkapnya",
+        "viewProject": "Lihat Proyek",
+        "launched": "Dirilis:",
+        "notFound": "Kategori tidak ditemukan",
+        "noContent": "Tidak ada konten",
+        "noContentDescription": "Belum ada blog atau proyek dalam kategori ini.",
+        "backToBlogs": "Kembali ke Blog",
+        "backToProjects": "Kembali ke Proyek",
+        "pagination": {
+            "summary": "{total} hasil • halaman {page} dari {totalPages}"
+        }
+    },
+    "skillsPage": {
+        "title": "Keahlian & Tech Stack",
+        "description": "Teknologi dan framework yang saya gunakan untuk mewujudkan ide.",
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Database",
+        "tools": "Alat"
+    },
+    "usesPage": {
+        "title": "Perangkat / Setup",
+        "description": "Sekilas tentang alat, aplikasi, dan perangkat keras yang mendukung alur kerja harian saya.",
+        "editor": "Editor & IDE",
+        "terminal": "Terminal",
+        "devops": "DevOps & Deployment",
+        "design": "Desain",
+        "browser": "Peramban",
+        "hardware": "Perangkat & OS",
+        "visitSite": "Kunjungi Situs"
     },
     "footer": {
         "desc": "Developer yang fokus pada pengalaman antarmuka yang rapi,cepat, dan dapat diakses.",
         "links": "Tautan Cepat",
         "follow": "Ikuti Saya"
+    },
+    "notFound": {
+        "title": "WADUH",
+        "subtitle": "404 - Halaman Tidak Ditemukan",
+        "description": "URL yang diminta tidak ditemukan di server ini. Hanya itu yang kami tahu.",
+        "backToHome": "Kembali ke Beranda"
     },
     "comments": {
         "title": "Komentar",

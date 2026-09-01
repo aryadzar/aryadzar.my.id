@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ lang: string }> },
+) {
   // Ambil parameter "limit" dari URL
   const { searchParams } = new URL(req.url);
   const limitParam = searchParams.get("limit");
@@ -15,7 +18,7 @@ export async function GET(req: NextRequest) {
   const safeLimit = Number.isFinite(limit) ? limit : 6;
 
   const query = `
-    *[_type == "certification"] | order(date desc)[0...$limit]{
+    *[_type == "certification" && language == $lang] | order(date desc)[0...$limit]{
       title,
       issuer,
       "date": date,

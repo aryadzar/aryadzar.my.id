@@ -31,14 +31,14 @@ export default function AboutPage({
   return (
     <main className="min-h-[60vh]">
       {/* Header */}
-      <header className="max-w-5xl px-4 pt-10 mx-auto md:px-6 md:pt-14">
+      {/* <header className="max-w-5xl px-4 pt-10 mx-auto md:px-6 md:pt-14">
         <h1 className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">
           {t("title")}
         </h1>
         <p className="mt-2 text-pretty text-muted-foreground">
           {t("description")}
         </p>
-      </header>
+      </header> */}
 
       {/* About Brief */}
       <AboutBrief data={aboutData} />

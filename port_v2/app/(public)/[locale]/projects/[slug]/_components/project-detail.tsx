@@ -26,6 +26,7 @@ import { useTranslations } from "next-intl";
 import { Project } from "@/types/projectDetailType";
 import { ArrowLeft, Calendar, ExternalLink, Github, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AvailableLanguagesBanner } from "@/components/available-language-banner";
 import { CommentSection } from "@/components/comments/CommentSection";
 
 export default function ProjectDetail({ result }: { result: Project }) {
@@ -42,7 +43,7 @@ export default function ProjectDetail({ result }: { result: Project }) {
   }, [result?.description]);
 
   return (
-    <main className="relative w-full bg-background text-foreground">
+    <main className="relative w-full text-foreground">
       {/* Reading Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 z-50 h-1 origin-left bg-primary"
@@ -91,14 +92,19 @@ export default function ProjectDetail({ result }: { result: Project }) {
             {result.categories && result.categories.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-6">
                 {result.categories.map((tag, i) => (
-                  <Badge
+                  <Link
                     key={i}
-                    variant="secondary"
-                    className="transition-colors rounded-full bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                    href={`/category/${tag.slug.current}`}
+                    className="inline-block"
                   >
-                    <Tag className="w-3 h-3 mr-1" />
-                    {tag.title}
-                  </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="transition-colors rounded-full bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                    >
+                      <Tag className="w-3 h-3 mr-1" />
+                      {tag.title}
+                    </Badge>
+                  </Link>
                 ))}
               </div>
             )}
@@ -112,7 +118,16 @@ export default function ProjectDetail({ result }: { result: Project }) {
             <p className="mb-8 text-xl leading-relaxed md:text-2xl text-muted-foreground">
               {result.shortDesc}
             </p>
-
+            {result._translations &&
+              result._translations.some(
+                (tr) => tr !== null && tr.language !== locale,
+              ) && (
+                <AvailableLanguagesBanner
+                  translations={result._translations}
+                  currentLocale={locale as string}
+                  route="projects"
+                />
+              )}
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
               {result.publishedAt && (

@@ -3,8 +3,11 @@
         "home": "Home",
         "projects": "Projects",
         "blog": "Blog",
+        "skills": "Skills",
+        "uses": "Uses",
         "about": "About",
-        "contact": "Contact"
+        "contact": "Contact",
+        "more": "More"
     },
     "metadata": {
         "home": {
@@ -27,6 +30,10 @@
             "description": "Read articles, insights, and tutorials written by Arya Dzaky on web development and software engineering.",
             "keywords": "Arya Dzaky Blog, Programming Articles, Web Development Tips, Software Engineering Tutorials"
         },
+        "category": {
+            "title": "Category — Arya Dzaky",
+            "description": "Browse blogs and projects by category."
+        },
         "projectNotFound": {
             "title": "Project Not Found",
             "description": "The requested project could not be found."
@@ -34,6 +41,16 @@
         "blogNotFound": {
             "title": "Blog Not Found",
             "description": "The requested blog post could not be found."
+        },
+        "skills": {
+            "title": "Skills & Tech Stack — Arya Dzaky",
+            "description": "Technologies and tools I use to build modern web applications.",
+            "keywords": "Arya Dzaky Skills, Tech Stack, Frontend, Backend, Database, Development Tools"
+        },
+        "uses": {
+            "title": "Uses / Setup — Arya Dzaky",
+            "description": "The tools, apps, and hardware I use for software development.",
+            "keywords": "Arya Dzaky Setup, Development Tools, Editor, IDE, Terminal, DevOps"
         }
     },
     "home": {
@@ -142,17 +159,62 @@
         "tocTitle": "Table of Contents",
         "quickLinks": "Quick Links",
         "viewSource": "View Source Code",
-        "liveDemo": "Live Demo"
+        "liveDemo": "Live Demo",
+        "availableIn": "This project is available in other languages:"
     },
     "blogDetail": {
         "altImage": "Cover image for {title}",
         "backButton": "Back to Blog",
-        "tocTitle": "Table of Contents"
+        "tocTitle": "Table of Contents",
+        "availableIn": "This article is available in:"
+    },
+    "categoryPage": {
+        "categoryLabel": "Category",
+        "blogs": "Blogs",
+        "projects": "Projects",
+        "blog": "Blog",
+        "project": "Project",
+        "readMore": "Read More",
+        "viewProject": "View Project",
+        "launched": "Launched:",
+        "notFound": "Category not found",
+        "noContent": "No content found",
+        "noContentDescription": "There are no blogs or projects in this category yet.",
+        "backToBlogs": "Back to Blogs",
+        "backToProjects": "Back to Projects",
+        "pagination": {
+            "summary": "{total} results • page {page} of {totalPages}"
+        }
+    },
+    "skillsPage": {
+        "title": "Skills & Tech Stack",
+        "description": "Technologies and frameworks I use to bring ideas to life.",
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Database",
+        "tools": "Tools"
+    },
+    "usesPage": {
+        "title": "Uses / Setup",
+        "description": "A look at the tools, apps, and hardware that power my daily workflow.",
+        "editor": "Editor & IDE",
+        "terminal": "Terminal",
+        "devops": "DevOps & Deployment",
+        "design": "Design",
+        "browser": "Browser",
+        "hardware": "Hardware & OS",
+        "visitSite": "Visit Site"
     },
     "footer": {
         "desc": "Developers who focus on clean, fast, and accessible interface experiences.",
         "links": "Quick Links",
         "follow": "Follow Me"
+    },
+    "notFound": {
+        "title": "OOPS",
+        "subtitle": "404 - That's Error",
+        "description": "The requested URL was not found on this server. That's all we know.",
+        "backToHome": "Back to Home"
     },
     "comments": {
         "title": "Comments",

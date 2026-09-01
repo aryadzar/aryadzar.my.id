@@ -3,7 +3,11 @@ export interface BlogDetail {
   blog: Blog;
   slug: string;
 }
-
+export interface TranslationDoc {
+  title: string;
+  slug: { current: string };
+  language: string;
+}
 export interface Blog {
   _id: string;
   categories: Category[];
@@ -13,6 +17,7 @@ export interface Blog {
   slug: Slug2;
   thumbnail: string;
   title: string;
+  _translations?: TranslationDoc[];
 }
 
 export interface Category {

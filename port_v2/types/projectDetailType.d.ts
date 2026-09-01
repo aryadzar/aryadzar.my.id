@@ -1,3 +1,5 @@
+import { TranslationDoc } from "./blogDetailTypes";
+
 export interface ProjectDetail {
   success: boolean;
   project: Project;
@@ -15,6 +17,7 @@ export interface Project {
   slug: Slug2;
   thumbnail: string;
   title: string;
+  _translations?: TranslationDoc[];
 }
 
 export interface Category {

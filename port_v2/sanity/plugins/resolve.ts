@@ -107,6 +107,33 @@ export const locations = {
       ],
     }),
   }),
+
+  // Skills (shared globally, displayed on /skills page)
+  skill: defineLocations({
+    select: {
+      name: "name",
+    },
+    resolve: (doc) => ({
+      locations: [
+        { title: `Skills (${doc?.name || "Global"})`, href: `/en/skills` },
+        { title: `Skills (${doc?.name || "Global"})`, href: `/id/skills` },
+        { title: `Skills (${doc?.name || "Global"})`, href: `/de/skills` },
+      ],
+    }),
+  }),
+
+  // Uses (localized, displayed on /uses page)
+  uses: defineLocations({
+    select: {
+      name: "name",
+      language: "language",
+    },
+    resolve: (doc) => ({
+      locations: [
+        { title: `Uses (${doc?.language || "en"}) - ${doc?.name}`, href: `/${doc?.language || "en"}/uses` },
+      ],
+    }),
+  }),
 };
 
 // Configures documents presentation tool should open by default when navigating to an URL
@@ -126,5 +153,13 @@ export const mainDocuments = defineDocuments([
   {
     route: "/about",
     filter: `_type == "about" && language == $locale`,
+  },
+  {
+    route: "/:locale/skills",
+    filter: `_type == "skill"`,
+  },
+  {
+    route: "/:locale/uses",
+    filter: `_type == "uses" && language == $locale`,
   },
 ]);

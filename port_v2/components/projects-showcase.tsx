@@ -203,14 +203,19 @@ export function ProjectsShowcase({
                   {project.categories && project.categories.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {project.categories.slice(0, 4).map((category) => (
-                        <Badge
+                        <Link
                           key={category._id}
-                          variant="outline"
-                          className="text-xs font-normal transition-colors cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
+                          href={`/category/${category.slug.current}`}
+                          className="inline-block"
                         >
-                          <Tag className="w-3 h-3 mr-1" />
-                          {category.title}
-                        </Badge>
+                          <Badge
+                            variant="secondary"
+                            className="text-xs font-normal transition-colors cursor-pointer hover:bg-primary/10"
+                          >
+                            <Tag className="w-3 h-3 mr-1" />
+                            {category.title}
+                          </Badge>
+                        </Link>
                       ))}
                       {/* {project.categories.length > 4 && (
                         <Badge className="text-xs border-primary/30 text-primary">

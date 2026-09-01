@@ -5,6 +5,8 @@ import { ProjectOverview } from "@/types/projectOverviewType";
 import { BlogOverview } from "@/types/blogOverviewTypes";
 import { ExperienceData } from "@/types/experienceType";
 import { EducationData } from "@/types/educationType";
+import { Skill } from "@/types/skillType";
+import { UsesItem } from "@/types/usesType";
 import { client } from "@/sanity/lib/client";
 import { draftMode } from "next/headers";
 import { sanityFetch } from "@/sanity/lib/live";
@@ -42,10 +44,11 @@ export const getAbout = async (lang: string): Promise<About> => {
 };
 
 export const getCertificate = async (
-  limit: number = 6
+  limit: number = 6,
+  lang: string,
 ): Promise<Certificate[]> => {
   const { data } = await sanityFetch({
-    query: `*[_type == "certification"] | order(date desc)[0...$limit]{
+    query: `*[_type == "certification" && language == $lang] | order(date desc)[0...$limit]{
       _id,
       _type,
       title,
@@ -56,7 +59,7 @@ export const getCertificate = async (
       "logoSrc": logo.asset->url,
       "logoAlt": logoAlt
     }`,
-    params: { limit },
+    params: { limit, lang },
   });
 
   return data;
@@ -65,7 +68,7 @@ export const getCertificate = async (
 export const getProjectOverview = async (
   lang: string,
   page: number = 1,
-  limit: number = 3
+  limit: number = 3,
 ): Promise<ProjectOverview> => {
   const start = (page - 1) * limit;
 
@@ -113,7 +116,7 @@ export const getProjectOverview = async (
 export const getBlogOverview = async (
   lang: string,
   page: number = 1,
-  limit: number = 3
+  limit: number = 3,
 ): Promise<BlogOverview> => {
   const start = (page - 1) * limit;
 
@@ -199,3 +202,38 @@ export const getEducation = async (lang: string): Promise<EducationData> => {
 
   return { education: data };
 };
+
+export const getSkills = async (): Promise<Skill[]> => {
+  const { data } = await sanityFetch({
+    query: `*[_type == "skill"] | order(order asc) {
+      _id,
+      _type,
+      name,
+      category,
+      "iconUrl": icon.asset->url,
+      color,
+      order
+    }`
+  });
+
+  return data ?? [];
+};
+
+export const getUses = async (lang: string): Promise<UsesItem[]> => {
+  const { data } = await sanityFetch({
+    query: `*[_type == "uses" && language == $lang] | order(order asc) {
+      _id,
+      _type,
+      name,
+      description,
+      category,
+      "iconUrl": icon.asset->url,
+      link,
+      order
+    }`,
+    params: { lang },
+  });
+
+  return data ?? [];
+};
+

@@ -29,7 +29,7 @@ export default async function AboutPageIndex({
   const { locale } = await params;
   const [aboutData, certificateData] = await Promise.all([
     getAbout(locale),
-    getCertificate(6),
+    getCertificate(6, locale),
   ]);
   return <AboutPage aboutData={aboutData} certificateData={certificateData} />;
 }

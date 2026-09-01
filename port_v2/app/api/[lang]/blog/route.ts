@@ -14,6 +14,7 @@ export async function GET(
   const page = Number(searchParams.get("page") || 1);
   const limit = Number(searchParams.get("limit") || 6);
   const q = (searchParams.get("q") || "").toLowerCase();
+  const categorySlug = searchParams.get("category") || "";
 
   const start = (page - 1) * limit;
 
@@ -26,6 +27,11 @@ export async function GET(
       )`
     : "";
 
+  // GROQ CATEGORY FILTER
+  const categoryFilter = categorySlug
+    ? `&& categories[]->slug == "${categorySlug}"`
+    : "";
+
   const query = `
     {
       "blogs": *[
@@ -33,6 +39,7 @@ export async function GET(
         language == "${lang}" &&
         publishedAt <= now()
         ${searchFilter}
+        ${categoryFilter}
       ] | order(publishedAt desc) [${start}...${start + limit}] {
         _id,
         title,
@@ -48,6 +55,7 @@ export async function GET(
         language == "${lang}" &&
         publishedAt <= now()
         ${searchFilter}
+        ${categoryFilter}
       ])
     }
   `;

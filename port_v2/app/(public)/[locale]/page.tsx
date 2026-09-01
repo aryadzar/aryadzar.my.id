@@ -34,7 +34,7 @@ export default async function Page({
   ] = await Promise.all([
     getHero(locale),
     getAbout(locale),
-    getCertificate(6),
+    getCertificate(6, locale),
     getProjectOverview(locale, 1, 3),
     getBlogOverview(locale, 1, 3),
     getExperience(locale),
