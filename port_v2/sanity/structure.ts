@@ -74,8 +74,7 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem().title("Category").child(globalList(S, "category")),
               S.listItem().title("Skills").child(globalList(S, "skill")),
+              S.listItem().title("Comment").child(globalList(S, "comment")),
             ]),
-          S.listItem().title("Comment").child(globalList(S, "comment")),
-            ])
         ),
     ]);

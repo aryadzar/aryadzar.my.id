@@ -215,5 +215,36 @@
         "subtitle": "404 - Seite nicht gefunden",
         "description": "Die angeforderte URL wurde auf diesem Server nicht gefunden. Mehr wissen wir nicht.",
         "backToHome": "Zurück zur Startseite"
+    },
+    "comments": {
+        "title": "Kommentare",
+        "count": "{count, plural, =0 {Kommentare} =1 {Kommentar} other {Kommentare}}",
+        "writeComment": "Schreibe einen Kommentar...",
+        "post": "Kommentar posten",
+        "posting": "Wird gepostet...",
+        "cancel": "Abbrechen",
+        "reply": "Antworten",
+        "replyPlaceholder": "Schreibe eine Antwort...",
+        "postReply": "Antwort posten",
+        "edit": "Bearbeiten",
+        "update": "Kommentar aktualisieren",
+        "delete": "Löschen",
+        "edited": "bearbeitet",
+        "deleting": "Wird gelöscht...",
+        "deleteConfirmTitle": "Diesen Kommentar löschen?",
+        "deleteConfirmDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Dein Kommentar wird dauerhaft gelöscht.",
+        "noCommentsTitle": "Noch keine Kommentare",
+        "noCommentsDescription": "Sei der Erste, der seine Gedanken zu diesem Beitrag teilt.",
+        "approachingLimit": "Zeichenlimit wird bald erreicht",
+        "loginRequired": {
+            "title": "Anmelden zum Kommentieren",
+            "description": "Du musst angemeldet sein, um einen Kommentar zu diesem Beitrag zu hinterlassen.",
+            "googleButton": "Weiter mit Google",
+            "githubButton": "Weiter mit GitHub",
+            "keycloakButton": "Mit Aryadzar SSO einloggen"
+        },
+        "loginToReply": "Anmelden zum Antworten",
+        "logout": "Abmelden",
+        "loggedInAs": "Angemeldet als {email}"
     }
 }

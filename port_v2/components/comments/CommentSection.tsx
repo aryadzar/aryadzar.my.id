@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Chrome, Github } from "lucide-react";
+import { Key } from "lucide-react";
 
 interface CommentSectionProps {
   postId: string;
@@ -130,27 +130,15 @@ export function CommentSection({ postId }: CommentSectionProps) {
             <CardContent>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button
-                  onClick={() => login("google")}
+                  onClick={() => login("keycloak")}
                   className="w-full gap-2 sm:w-auto"
                   size="lg"
                   variant="default"
                   disabled={isLoadingAuth}
                 >
-                  <Chrome className="w-5 h-5" />
-                  {t("loginRequired.googleButton", {
-                    defaultValue: "Continue with Google",
-                  })}
-                </Button>
-                <Button
-                  onClick={() => login("github")}
-                  className="w-full gap-2 sm:w-auto"
-                  size="lg"
-                  variant="outline"
-                  disabled={isLoadingAuth}
-                >
-                  <Github className="w-5 h-5" />
-                  {t("loginRequired.githubButton", {
-                    defaultValue: "Continue with Github",
+                  <Key className="w-5 h-5" />
+                  {t("loginRequired.keycloakButton", {
+                    defaultValue: "Login with Aryadzar SSO",
                   })}
                 </Button>
               </div>

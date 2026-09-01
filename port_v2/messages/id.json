@@ -240,7 +240,8 @@
             "title": "Login untuk Berkomentar",
             "description": "Anda perlu login untuk meninggalkan komentar pada postingan ini.",
             "googleButton": "Lanjutkan dengan Google",
-            "githubButton": "Lanjutkan dengan GitHub"
+            "githubButton": "Lanjutkan dengan GitHub",
+            "keycloakButton": "Login dengan Aryadzar SSO"
         },
         "loginToReply": "Login untuk Membalas",
         "logout": "Keluar",

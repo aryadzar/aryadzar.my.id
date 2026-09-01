@@ -1,14 +1,14 @@
 import NextAuth from "next-auth";
-import Github from "next-auth/providers/github";
-import Google from "next-auth/providers/google";
+import Keycloak from "next-auth/providers/keycloak";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [Google, Github],
+  providers: [Keycloak],
   callbacks: {
     async jwt({ token, account, profile, user }) {
       // Persist the OAuth access_token and or the user id to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
+        token.idToken = account.id_token;
         token.id = user?.id || profile?.sub;
       }
       // Store user info from profile
@@ -23,6 +23,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Add custom user info to session
       session.user.id = token.id as string;
       session.user.accessToken = token.accessToken as string;
+      session.user.idToken = token.idToken as string;
       session.user.name = token.name as string;
       session.user.email = token.email as string;
       session.user.image = token.image as string;

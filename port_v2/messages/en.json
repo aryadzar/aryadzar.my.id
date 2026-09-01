@@ -240,7 +240,8 @@
             "title": "Login to Comment",
             "description": "You need to login to leave a comment on this post.",
             "googleButton": "Continue with Google",
-            "githubButton": "Continue with GitHub"
+            "githubButton": "Continue with GitHub",
+            "keycloakButton": "Login with Aryadzar SSO"
         },
         "loginToReply": "Login to Reply",
         "logout": "Logout",

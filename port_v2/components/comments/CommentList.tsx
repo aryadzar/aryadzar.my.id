@@ -63,8 +63,8 @@ export function CommentList({
     <div className="space-y-4">
       {comments.map((comment) => (
         <CommentItem
-          key={comment._id}
-          comment={comment}
+          key={comment.id}
+          comment={comment as any}
           onReply={onReply}
           onUpdate={onUpdate}
           onDelete={onDelete}

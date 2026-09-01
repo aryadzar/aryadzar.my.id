@@ -58,14 +58,14 @@ export function CommentItem({
 
   const handleUpdate = async (content: string) => {
     if (onUpdate) {
-      await onUpdate(comment._id, content);
+      await onUpdate(comment.id, content);
       setIsEditing(false);
     }
   };
 
   const handleReply = async (content: string) => {
     if (onReply) {
-      await onReply(content, comment._id);
+      await onReply(content, comment.id);
       setShowReplyForm(false);
     }
   };
@@ -82,7 +82,7 @@ export function CommentItem({
 
   const handleDelete = async () => {
     if (onDelete) {
-      await onDelete(comment._id);
+      await onDelete(comment.id);
       setShowDeleteDialog(false);
     }
   };
@@ -265,7 +265,7 @@ export function CommentItem({
         <div className="mt-4 space-y-4">
           {comment.replies.map((reply: any) => (
             <CommentItem
-              key={reply._id}
+              key={reply.id}
               comment={reply}
               onReply={onReply}
               onUpdate={onUpdate}

@@ -16,7 +16,7 @@ interface User {
   image?: string | null;
 }
 
-type AuthProvider = "google" | "github";
+type AuthProvider = "google" | "github" | "keycloak";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -56,7 +56,7 @@ function AuthProviderInner({ children }: AuthProviderProps) {
     : null;
   const token = (session?.user as any)?.accessToken || null;
 
-  const login = async (provider: AuthProvider = "google") => {
+  const login = async (provider: AuthProvider = "keycloak") => {
     try {
       await signIn(provider, {
         callbackUrl: `${window.location.href}`,
@@ -70,7 +70,18 @@ function AuthProviderInner({ children }: AuthProviderProps) {
 
   const logout = async () => {
     try {
-      await signOut({ callbackUrl: `${window.location.href}` });
+      const idToken = (session?.user as any)?.idToken;
+      // Sign out of NextAuth (clears the session cookie)
+      await signOut({ redirect: false });
+      
+      // Redirect to Keycloak's logout endpoint if we have the idToken
+      if (idToken) {
+        const keycloakIssuer = "https://auth.aryadzar.my.id/realms/aryadzar-aplication";
+        const logoutUrl = `${keycloakIssuer}/protocol/openid-connect/logout?id_token_hint=${idToken}&post_logout_redirect_uri=${encodeURIComponent(window.location.href)}`;
+        window.location.href = logoutUrl;
+      } else {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Logout failed", error);
       toast.error("Logout failed. Please try again.");
