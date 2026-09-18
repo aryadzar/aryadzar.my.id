@@ -99,7 +99,10 @@
         "certificate": {
             "h1": "Zertifizierungen",
             "href": "Zertifikat ansehen",
-            "description": "Professionelle Zertifizierungen und Qualifikationen"
+            "description": "Professionelle Zertifizierungen und Qualifikationen",
+            "openNewTab": "In neuem Tab öffnen",
+            "close": "Schließen",
+            "noPreview": "Keine Vorschau verfügbar."
         },
         "contact": {
             "h1": "Kontaktieren Sie mich",

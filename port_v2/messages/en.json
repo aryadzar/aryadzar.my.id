@@ -99,7 +99,10 @@
         "certificate": {
             "h1": "Certification",
             "href": "View Certificate",
-            "description": "Professional certifications and credentials"
+            "description": "Professional certifications and credentials",
+            "openNewTab": "Open in New Tab",
+            "close": "Close",
+            "noPreview": "No preview available."
         },
         "contact": {
             "h1": "Contact Me",

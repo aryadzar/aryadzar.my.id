@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,10 +9,20 @@ import {
   ExternalLink,
   Shield,
   Award,
+  Eye,
 } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Certificate } from "@/types/certificateType";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export function CertificationsSection({
   data,
@@ -20,8 +31,15 @@ export function CertificationsSection({
   data: Certificate[];
   limit?: number;
 }) {
+  const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const t = useTranslations("home.certificate");
+
+  const isPdf = Boolean(
+    selectedCert?.href &&
+      (selectedCert.href.toLowerCase().includes(".pdf") ||
+        selectedCert.href.toLowerCase().includes("/files/"))
+  );
 
   return (
     <section
@@ -146,25 +164,24 @@ export function CertificationsSection({
                           )}
                         </div>
 
-                        {/* View Certificate Link */}
+                        {/* View Certificate Modal Trigger */}
                         <div>
                           {item.href ? (
-                            <Link
-                              href={item.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold transition-all rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/25 group/link"
+                            <button
+                              type="button"
+                              onClick={() => setSelectedCert(item)}
+                              className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold transition-all rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/25 group/btn cursor-pointer hover:shadow-sm"
                               aria-label={`View Certificate: ${item.title}`}
                             >
-                              <ExternalLink
-                                className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform"
+                              <Eye
+                                className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform"
                                 aria-hidden="true"
                               />
                               <span>{t("href")}</span>
-                            </Link>
+                            </button>
                           ) : (
                             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium rounded-xl cursor-not-allowed bg-muted/50 text-muted-foreground border border-border/40">
-                              <ExternalLink
+                              <Eye
                                 className="w-3.5 h-3.5"
                                 aria-hidden="true"
                               />
@@ -184,6 +201,104 @@ export function CertificationsSection({
           })}
         </div>
       </div>
+
+      {/* Certificate Modal Dialog */}
+      <Dialog
+        open={Boolean(selectedCert)}
+        onOpenChange={(open) => {
+          if (!open) setSelectedCert(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-5xl lg:max-w-6xl w-[96vw] h-[90vh] max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden border border-border/80 bg-card/95 backdrop-blur-xl shadow-2xl rounded-2xl">
+          {selectedCert && (
+            <>
+              {/* Modal Header */}
+              <DialogHeader className="p-5 md:p-6 pb-4 border-b border-border/60 text-left shrink-0">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <Award className="w-3.5 h-3.5" />
+                    {selectedCert.issuer}
+                  </span>
+                  {selectedCert.id && (
+                    <Badge
+                      variant="secondary"
+                      className="text-[11px] font-mono rounded-md bg-muted/60 text-muted-foreground border border-border/60 px-2 py-0.5"
+                    >
+                      ID: {selectedCert.id}
+                    </Badge>
+                  )}
+                </div>
+                <DialogTitle className="text-xl md:text-2xl font-bold text-foreground line-clamp-2">
+                  {selectedCert.title}
+                </DialogTitle>
+                <DialogDescription className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                  <Calendar className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>{selectedCert.date}</span>
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* Modal Certificate Preview Body */}
+              <div className="flex-1 min-h-0 p-3 md:p-5 overflow-auto bg-muted/10 flex items-center justify-center">
+                {isPdf ? (
+                  <iframe
+                    src={`${selectedCert.href}#toolbar=0`}
+                    title={selectedCert.title}
+                    className="w-full h-full min-h-[500px] rounded-xl border border-border/60 bg-white dark:bg-zinc-900 shadow-inner"
+                  />
+                ) : selectedCert.href ? (
+                  <div className="relative flex items-center justify-center w-full h-full min-h-0 overflow-auto rounded-xl bg-muted/20 border border-border/40 p-2">
+                    <img
+                      src={selectedCert.href}
+                      alt={selectedCert.title}
+                      className="max-h-full max-w-full w-auto object-contain rounded-lg shadow-md"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
+                    <Award className="w-12 h-12 mb-3 text-muted-foreground/30 stroke-1" />
+                    <p>{t("noPreview")}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <DialogFooter className="p-4 md:px-6 py-3.5 border-t border-border/60 bg-card/60 flex flex-row items-center justify-between sm:justify-between gap-3 shrink-0">
+                <div className="text-xs text-muted-foreground hidden sm:block">
+                  {selectedCert.id ? `ID: ${selectedCert.id}` : selectedCert.issuer}
+                </div>
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                  {selectedCert.href && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-8 rounded-lg gap-1.5 border-border/70 hover:bg-muted"
+                      asChild
+                    >
+                      <a
+                        href={selectedCert.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>{t("openNewTab")}</span>
+                      </a>
+                    </Button>
+                  )}
+                  <DialogClose asChild>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="text-xs h-8 rounded-lg"
+                    >
+                      {t("close")}
+                    </Button>
+                  </DialogClose>
+                </div>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

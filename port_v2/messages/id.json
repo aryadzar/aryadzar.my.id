@@ -99,7 +99,10 @@
         "certificate": {
             "h1": "Sertifikasi",
             "href": "Lihat Sertifikat",
-            "description": "Sertifikasi dan kredensial profesional"
+            "description": "Sertifikasi dan kredensial profesional",
+            "openNewTab": "Buka di Tab Baru",
+            "close": "Tutup",
+            "noPreview": "Tidak ada pratinjau yang tersedia."
         },
         "contact": {
             "h1": "Hubungi Saya",
