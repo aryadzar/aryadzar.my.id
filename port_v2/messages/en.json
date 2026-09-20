@@ -7,7 +7,8 @@
         "uses": "Uses",
         "about": "About",
         "contact": "Contact",
-        "more": "More"
+        "more": "More",
+        "photos": "Photos"
     },
     "metadata": {
         "home": {
@@ -51,6 +52,11 @@
             "title": "Uses / Setup — Arya Dzaky",
             "description": "The tools, apps, and hardware I use for software development.",
             "keywords": "Arya Dzaky Setup, Development Tools, Editor, IDE, Terminal, DevOps"
+        },
+        "photos": {
+            "title": "Photos — Arya Dzaky",
+            "description": "Snapshots of memories pinned to a board.",
+            "keywords": "Arya Dzaky Photos, Photo Album, Travel, Memories"
         }
     },
     "home": {
@@ -380,12 +386,11 @@
     "usesPage": {
         "title": "Uses / Setup",
         "description": "A look at the tools, apps, and hardware that power my daily workflow.",
-        "editor": "Editor & IDE",
-        "terminal": "Terminal",
-        "devops": "DevOps & Deployment",
-        "design": "Design",
-        "browser": "Browser",
-        "hardware": "Hardware & OS",
+        "workstation": "Workstation",
+        "furniture": "Furniture",
+        "accessories": "Accessories",
+        "applications": "Applications",
+        "subscriptions": "Subscriptions",
         "visitSite": "Visit Site"
     },
     "footer": {
@@ -398,5 +403,13 @@
         "subtitle": "404 - That's Error",
         "description": "The requested URL was not found on this server. That's all we know.",
         "backToHome": "Back to Home"
+    },
+    "photosPage": {
+        "title": "Photo Album",
+        "description": "Snapshots of memories pinned to a board.",
+        "close": "Close photo",
+        "previous": "Previous photo",
+        "next": "Next photo",
+        "empty": "No photos yet. Check back soon."
     }
 }

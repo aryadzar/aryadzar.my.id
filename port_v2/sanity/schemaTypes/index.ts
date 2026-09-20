@@ -11,6 +11,8 @@ import embedType from "./objects/embed-block";
 import videoBlockType from "./objects/video-block";
 import skillType from "./skill";
 import usesType from "./uses";
+import photoType from "./photo";
+import workspaceType from "./workspace";
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     heroType,
@@ -25,5 +27,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     videoBlockType,
     skillType,
     usesType,
+    photoType,
+    workspaceType,
   ],
 };

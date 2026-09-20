@@ -7,7 +7,8 @@
         "uses": "Perangkat",
         "about": "Tentang",
         "contact": "Kontak",
-        "more": "Lainnya"
+        "more": "Lainnya",
+        "photos": "Foto"
     },
     "metadata": {
         "home": {
@@ -51,6 +52,11 @@
             "title": "Perangkat / Setup — Arya Dzaky",
             "description": "Alat, aplikasi, dan perangkat keras yang saya gunakan untuk pengembangan perangkat lunak.",
             "keywords": "Setup Arya Dzaky, Alat Pengembangan, Editor, IDE, Terminal, DevOps"
+        },
+        "photos": {
+            "title": "Foto — Arya Dzaky",
+            "description": "Potret kenangan yang ditempel di sebuah papan.",
+            "keywords": "Foto Arya Dzaky, Album Foto, Perjalanan, Kenangan"
         }
     },
     "home": {
@@ -380,12 +386,11 @@
     "usesPage": {
         "title": "Perangkat / Setup",
         "description": "Sekilas tentang alat, aplikasi, dan perangkat keras yang mendukung alur kerja harian saya.",
-        "editor": "Editor & IDE",
-        "terminal": "Terminal",
-        "devops": "DevOps & Deployment",
-        "design": "Desain",
-        "browser": "Peramban",
-        "hardware": "Perangkat & OS",
+        "workstation": "Workstation",
+        "furniture": "Furnitur",
+        "accessories": "Aksesori",
+        "applications": "Aplikasi",
+        "subscriptions": "Langganan",
         "visitSite": "Kunjungi Situs"
     },
     "footer": {
@@ -398,5 +403,13 @@
         "subtitle": "404 - Halaman Tidak Ditemukan",
         "description": "URL yang diminta tidak ditemukan di server ini. Hanya itu yang kami tahu.",
         "backToHome": "Kembali ke Beranda"
+    },
+    "photosPage": {
+        "title": "Album Foto",
+        "description": "Potret kenangan yang ditempel di sebuah papan.",
+        "close": "Tutup foto",
+        "previous": "Foto sebelumnya",
+        "next": "Foto berikutnya",
+        "empty": "Belum ada foto. Kembali lagi nanti."
     }
 }

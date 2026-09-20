@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import UsesPage from "./_components/uses-page";
 import { createMetadata } from "@/lib/metadata";
-import { getUses } from "@/lib/getHome";
+import { getUses, getWorkspace } from "@/lib/getHome";
 
 export async function generateMetadata({
   params,
@@ -27,6 +27,6 @@ export default async function UsesPageIndex({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const usesData = await getUses(locale);
-  return <UsesPage usesData={usesData} locale={locale} />;
+  const [usesData, workspace] = await Promise.all([getUses(locale), getWorkspace(locale)]);
+  return <UsesPage usesData={usesData} workspace={workspace} locale={locale} />;
 }

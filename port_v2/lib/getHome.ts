@@ -7,6 +7,8 @@ import { ExperienceData } from "@/types/experienceType";
 import { EducationData } from "@/types/educationType";
 import { Skill } from "@/types/skillType";
 import { UsesItem } from "@/types/usesType";
+import { Photo } from "@/types/photoType";
+import { Workspace } from "@/types/workspaceType";
 import { client } from "@/sanity/lib/client";
 import { draftMode } from "next/headers";
 import { sanityFetch } from "@/sanity/lib/live";
@@ -233,12 +235,53 @@ export const getUses = async (lang: string): Promise<UsesItem[]> => {
       _type,
       name,
       description,
+      specs,
       category,
       "iconUrl": icon.asset->url,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt,
+      "imageWidth": image.asset->metadata.dimensions.width,
+      "imageHeight": image.asset->metadata.dimensions.height,
+      "imageLqip": image.asset->metadata.lqip,
       link,
       order
     }`,
     params: { lang },
+  });
+
+  return data ?? [];
+};
+
+export const getWorkspace = async (lang: string): Promise<Workspace | null> => {
+  const { data } = await sanityFetch({
+    query: `*[_type == "workspace" && language == $lang && defined(image.asset)][0]{
+      _id,
+      caption,
+      "alt": image.alt,
+      "url": image.asset->url,
+      "width": image.asset->metadata.dimensions.width,
+      "height": image.asset->metadata.dimensions.height,
+      "lqip": image.asset->metadata.lqip
+    }`,
+    params: { lang },
+  });
+
+  return data ?? null;
+};
+
+export const getPhotos = async (): Promise<Photo[]> => {
+  const { data } = await sanityFetch({
+    query: `*[_type == "photo" && defined(image.asset)] | order(date desc, _createdAt desc)[0...200]{
+      _id,
+      caption,
+      date,
+      location,
+      "alt": image.alt,
+      "url": image.asset->url,
+      "width": image.asset->metadata.dimensions.width,
+      "height": image.asset->metadata.dimensions.height,
+      "lqip": image.asset->metadata.lqip
+    }`,
   });
 
   return data ?? [];

@@ -29,16 +29,37 @@ export default defineType({
       type: "string",
       options: {
         list: [
-          { title: "Editor & IDE", value: "editor" },
-          { title: "Terminal", value: "terminal" },
-          { title: "DevOps & Deployment", value: "devops" },
-          { title: "Design", value: "design" },
-          { title: "Browser", value: "browser" },
-          { title: "Hardware", value: "hardware" },
+          { title: "Workstation", value: "workstation" },
+          { title: "Furniture", value: "furniture" },
+          { title: "Accessories", value: "accessories" },
+          { title: "Applications", value: "applications" },
+          { title: "Subscriptions", value: "subscriptions" },
         ],
         layout: "radio",
       },
       validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
+      name: "specs",
+      title: "Specs",
+      type: "string",
+      description: 'Optional line under the name, e.g. \'14" M3 Pro, 36GB, 1TB SSD\'',
+    }),
+
+    defineField({
+      name: "image",
+      title: "Photo / Screenshot",
+      type: "image",
+      options: { hotspot: true },
+      description: "Shown next to the description. A product photo or a screenshot of the app.",
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alternative text",
+          type: "string",
+        }),
+      ],
     }),
 
     defineField({

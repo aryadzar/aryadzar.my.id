@@ -1,51 +1,41 @@
 // Fallback uses/setup data used when Sanity has no entries yet.
 
+import type { UsesCategory } from "@/types/usesType";
+
 export interface FallbackUsesItem {
   name: string;
   description: { en: string; id: string; de: string };
-  category: "editor" | "terminal" | "devops" | "design" | "browser" | "hardware";
+  category: UsesCategory;
   link?: string;
   svgPath: string; // Simple Icons SVG path (viewBox 0 0 24 24)
   color: string;
 }
 
+/** Order of the sections on the Uses page. Labels live in messages/*.json under usesPage.<category>. */
 export const USES_CATEGORY_ORDER = [
-  "editor",
-  "terminal",
-  "devops",
-  "design",
-  "browser",
-  "hardware",
-] as const;
+  "workstation",
+  "furniture",
+  "accessories",
+  "applications",
+  "subscriptions",
+] as const satisfies readonly UsesCategory[];
 
-export const USES_CATEGORY_LABELS: Record<
-  string,
-  { en: string; id: string; de: string }
-> = {
-  editor: { en: "Editor & IDE", id: "Editor & IDE", de: "Editor & IDE" },
-  terminal: { en: "Terminal", id: "Terminal", de: "Terminal" },
-  devops: {
-    en: "DevOps & Deployment",
-    id: "DevOps & Deployment",
-    de: "DevOps & Bereitstellung",
-  },
-  design: { en: "Design", id: "Desain", de: "Design" },
-  browser: { en: "Browser", id: "Peramban", de: "Browser" },
-  hardware: { en: "Hardware & OS", id: "Perangkat & OS", de: "Hardware & OS" },
+// Documents saved before the redesign may still use the old six categories.
+const LEGACY_CATEGORY: Record<string, UsesCategory> = {
+  editor: "applications",
+  terminal: "applications",
+  devops: "applications",
+  design: "applications",
+  browser: "applications",
+  hardware: "workstation",
 };
 
-export const USES_CATEGORY_ICONS: Record<string, string> = {
-  editor:
-    "M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z",
-  terminal: "M4 17l6-6-6-6M12 19h8",
-  devops:
-    "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
-  design:
-    "M12 19l7-7 3 3-7 7-3-3z M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z M2 2l7.586 7.586 M11 13a2 2 0 1 1-4 0 2 2 0 0 1 4 0z",
-  browser: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 0v20m10-10H2",
-  hardware:
-    "M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0l1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16",
-};
+/** Maps any stored category (current or legacy) onto one of the five sections, or null if unknown. */
+export function normalizeUsesCategory(value: string | undefined): UsesCategory | null {
+  if (!value) return null;
+  if ((USES_CATEGORY_ORDER as readonly string[]).includes(value)) return value as UsesCategory;
+  return LEGACY_CATEGORY[value] ?? null;
+}
 
 export const fallbackUses: FallbackUsesItem[] = [
   // ─── Editor & IDE ──────────────────────────────────────
@@ -56,7 +46,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Editor kode utama saya. Cepat, extensible, dan memiliki ekosistem extension yang luar biasa.",
       de: "Mein Hauptcode-Editor. Schnell, erweiterbar und hat ein unglaubliches Ökosystem von Erweiterungen.",
     },
-    category: "editor",
+    category: "applications",
     link: "https://code.visualstudio.com",
     color: "#007ACC",
     svgPath:
@@ -69,7 +59,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Editor kode berbasis AI yang dibangun di atas VS Code. Cocok untuk alur kerja pengembangan dengan AI.",
       de: "KI-gestützter Code-Editor auf VS Code-Basis. Ideal für KI-unterstützte Entwicklungsworkflows.",
     },
-    category: "editor",
+    category: "applications",
     link: "https://cursor.sh",
     color: "#000000",
     svgPath:
@@ -84,7 +74,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Terminal modern dan kaya fitur untuk Windows dengan tab, panel, dan rendering GPU.",
       de: "Modernes, funktionsreiches Terminal für Windows mit Tabs, Panels und GPU-beschleunigtem Rendering.",
     },
-    category: "terminal",
+    category: "applications",
     link: "https://github.com/microsoft/terminal",
     color: "#4D4D4D",
     svgPath:
@@ -97,7 +87,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Framework otomasi tugas lintas platform dengan bahasa scripting berbasis .NET.",
       de: "Plattformübergreifendes Task-Automatisierungs-Framework mit .NET-basierter Skriptsprache.",
     },
-    category: "terminal",
+    category: "applications",
     link: "https://github.com/PowerShell/PowerShell",
     color: "#5391FE",
     svgPath:
@@ -112,7 +102,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Platform kontainerisasi untuk lingkungan pengembangan dan deployment yang konsisten.",
       de: "Containerisierungsplattform für konsistente Entwicklungs- und Bereitstellungsumgebungen.",
     },
-    category: "devops",
+    category: "applications",
     link: "https://docker.com",
     color: "#2496ED",
     svgPath:
@@ -125,7 +115,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Sistem kontrol versi terdistribusi. Esensial untuk setiap alur kerja pengembangan.",
       de: "Verteiltes Versionskontrollsystem. Unverzichtbar für jeden Entwicklungsworkflow.",
     },
-    category: "devops",
+    category: "applications",
     link: "https://git-scm.com",
     color: "#F05032",
     svgPath:
@@ -138,7 +128,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Platform hosting kode dan kolaborasi. Tempat semua proyek saya berada.",
       de: "Code-Hosting- und Kollaborationsplattform. Wo alle meine Projekte leben.",
     },
-    category: "devops",
+    category: "applications",
     link: "https://github.com",
     color: "#181717",
     svgPath:
@@ -151,7 +141,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Platform cloud frontend untuk deploy Next.js dan aplikasi web lainnya.",
       de: "Frontend-Cloud-Plattform für die Bereitstellung von Next.js und anderen Webanwendungen.",
     },
-    category: "devops",
+    category: "applications",
     link: "https://vercel.com",
     color: "#000000",
     svgPath: "M24 22.525H0l12-21.05 12 21.05z",
@@ -165,7 +155,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Alat desain kolaboratif untuk desain UI/UX, prototyping, dan design system.",
       de: "Kollaboratives Designtool für UI/UX-Design, Prototyping und Designsysteme.",
     },
-    category: "design",
+    category: "applications",
     link: "https://figma.com",
     color: "#F24E1E",
     svgPath:
@@ -180,7 +170,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Browser utama untuk pengembangan. DevTools sangat powerful untuk debugging.",
       de: "Hauptbrowser für die Entwicklung. DevTools ist unglaublich leistungsfähig zum Debuggen.",
     },
-    category: "browser",
+    category: "applications",
     link: "https://google.com/chrome",
     color: "#4285F4",
     svgPath:
@@ -193,7 +183,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Browser sekunder untuk pengujian lintas browser dan browsing yang berfokus pada privasi.",
       de: "Zweitbrowser für Cross-Browser-Tests und datenschutzorientiertes Surfen.",
     },
-    category: "browser",
+    category: "applications",
     link: "https://firefox.com",
     color: "#FF7139",
     svgPath:
@@ -208,7 +198,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Sistem operasi utama untuk pengembangan. WSL2 membuatnya cocok untuk full-stack.",
       de: "Primäres Betriebssystem für die Entwicklung. WSL2 macht es ideal für Full-Stack-Arbeit.",
     },
-    category: "hardware",
+    category: "workstation",
     link: "https://www.microsoft.com/windows",
     color: "#0078D4",
     svgPath:
@@ -221,7 +211,7 @@ export const fallbackUses: FallbackUsesItem[] = [
       id: "Keyboard mekanikal yang bagus membuat sesi coding lebih menyenangkan dan produktif.",
       de: "Eine gute mechanische Tastatur macht das Programmieren angenehmer und produktiver.",
     },
-    category: "hardware",
+    category: "workstation",
     color: "#333333",
     svgPath:
       "M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm-9 2h2v2h-2V9zm0 3h2v2h-2v-2zM7 9h2v2H7V9zm0 3h2v2H7v-2zm-1 5v-2h12v2H6zm11-5h2v2h-2v-2zm0-3h2v2h-2V9z",

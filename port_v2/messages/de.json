@@ -7,7 +7,8 @@
         "uses": "Werkzeuge",
         "about": "Über mich",
         "contact": "Kontakt",
-        "more": "Mehr"
+        "more": "Mehr",
+        "photos": "Fotos"
     },
     "metadata": {
         "home": {
@@ -51,6 +52,11 @@
             "title": "Werkzeuge / Setup — Arya Dzaky",
             "description": "Die Tools, Apps und Hardware, die ich für die Softwareentwicklung verwende.",
             "keywords": "Arya Dzaky Setup, Entwicklungswerkzeuge, Editor, IDE, Terminal, DevOps"
+        },
+        "photos": {
+            "title": "Fotos — Arya Dzaky",
+            "description": "Schnappschüsse von Erinnerungen, an eine Pinnwand geheftet.",
+            "keywords": "Arya Dzaky Fotos, Fotoalbum, Reisen, Erinnerungen"
         }
     },
     "home": {
@@ -380,12 +386,11 @@
     "usesPage": {
         "title": "Werkzeuge / Setup",
         "description": "Ein Blick auf die Tools, Apps und Hardware, die meinen täglichen Workflow antreiben.",
-        "editor": "Editor & IDE",
-        "terminal": "Terminal",
-        "devops": "DevOps & Bereitstellung",
-        "design": "Design",
-        "browser": "Browser",
-        "hardware": "Hardware & OS",
+        "workstation": "Workstation",
+        "furniture": "Möbel",
+        "accessories": "Zubehör",
+        "applications": "Anwendungen",
+        "subscriptions": "Abonnements",
         "visitSite": "Website besuchen"
     },
     "footer": {
@@ -398,5 +403,13 @@
         "subtitle": "404 - Seite nicht gefunden",
         "description": "Die angeforderte URL wurde auf diesem Server nicht gefunden. Mehr wissen wir nicht.",
         "backToHome": "Zurück zur Startseite"
+    },
+    "photosPage": {
+        "title": "Fotoalbum",
+        "description": "Schnappschüsse von Erinnerungen, an eine Pinnwand geheftet.",
+        "close": "Foto schließen",
+        "previous": "Vorheriges Foto",
+        "next": "Nächstes Foto",
+        "empty": "Noch keine Fotos. Schau bald wieder vorbei."
     }
 }

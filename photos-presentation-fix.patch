@@ -1,0 +1,180 @@
+From 3046362928df7511e3f32c7caaf8187fc024dd4e Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sun, 20 Sep 2026 18:46:25 +0700
+Subject: [PATCH] Make Photos and workspace/Uses images editable from Sanity
+ Presentation
+
+Add "Used on" locations for photo and workspace documents, main-document routes
+for /:locale/photos (and workspace on /:locale/uses), and data-sanity attributes
+on the photo, workspace and Uses images so the overlay opens the image field.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_019Au13BHPjUgRvpqWWWW3dF
+---
+ .../photos/_components/photos-page.tsx        |  5 ++-
+ .../[locale]/uses/_components/uses-page.tsx   | 18 ++++++++---
+ port_v2/components/ui/layout-grid.tsx         |  4 +++
+ port_v2/sanity/plugins/resolve.ts             | 32 ++++++++++++++++++-
+ 4 files changed, 53 insertions(+), 6 deletions(-)
+
+diff --git a/port_v2/app/(public)/[locale]/photos/_components/photos-page.tsx b/port_v2/app/(public)/[locale]/photos/_components/photos-page.tsx
+index 03575de..19389cd 100644
+--- a/port_v2/app/(public)/[locale]/photos/_components/photos-page.tsx
++++ b/port_v2/app/(public)/[locale]/photos/_components/photos-page.tsx
+@@ -3,7 +3,8 @@
+ import { ImageOff } from "lucide-react";
+ import { motion, useReducedMotion } from "framer-motion";
+ import { useFormatter, useTranslations } from "next-intl";
+-import { stegaClean } from "next-sanity";
++import { createDataAttribute, stegaClean } from "next-sanity";
++import { STUDIO_SANITY_URL } from "@/constants/studio-constant";
+ import { LayoutGrid, type LayoutGridCard } from "@/components/ui/layout-grid";
+ import type { Photo } from "@/types/photoType";
+ 
+@@ -31,6 +32,8 @@ export default function PhotosPage({ photos }: { photos: Photo[] }) {
+       width: p.width || FALLBACK_SIZE.width,
+       height: p.height || FALLBACK_SIZE.height,
+       alt: stegaClean(p.alt || p.caption),
++      // Lets Presentation's overlay open this photo's image field in Studio.
++      dataSanity: createDataAttribute({ baseUrl: STUDIO_SANITY_URL, id: p._id, type: "photo", path: "image" }).toString(),
+       blurDataURL: p.lqip ? stegaClean(p.lqip) : undefined,
+       caption: (
+         <>
+diff --git a/port_v2/app/(public)/[locale]/uses/_components/uses-page.tsx b/port_v2/app/(public)/[locale]/uses/_components/uses-page.tsx
+index b01f2d8..2aca8ea 100644
+--- a/port_v2/app/(public)/[locale]/uses/_components/uses-page.tsx
++++ b/port_v2/app/(public)/[locale]/uses/_components/uses-page.tsx
+@@ -3,7 +3,8 @@
+ import { ExternalLink } from "lucide-react";
+ import { motion, useReducedMotion } from "framer-motion";
+ import { useTranslations } from "next-intl";
+-import { stegaClean } from "next-sanity";
++import { createDataAttribute, stegaClean } from "next-sanity";
++import { STUDIO_SANITY_URL } from "@/constants/studio-constant";
+ import Image from "next/image";
+ import { fallbackUses, normalizeUsesCategory, USES_CATEGORY_ORDER } from "@/constants/uses-data";
+ import type { UsesItem } from "@/types/usesType";
+@@ -25,7 +26,7 @@ interface Row {
+   iconUrl?: string;
+   svgPath?: string;
+   color?: string;
+-  image?: { url: string; alt: string; lqip?: string };
++  image?: { url: string; alt: string; lqip?: string; dataSanity?: string };
+ }
+ 
+ export default function UsesPage({ usesData, workspace, locale }: UsesPageProps) {
+@@ -45,7 +46,12 @@ export default function UsesPage({ usesData, workspace, locale }: UsesPageProps)
+           iconUrl: item.iconUrl,
+           category: stegaClean(item.category),
+           image: item.imageUrl
+-            ? { url: stegaClean(item.imageUrl), alt: stegaClean(item.imageAlt || item.name), lqip: item.imageLqip }
++            ? {
++                url: stegaClean(item.imageUrl),
++                alt: stegaClean(item.imageAlt || item.name),
++                lqip: item.imageLqip,
++                dataSanity: createDataAttribute({ baseUrl: STUDIO_SANITY_URL, id: item._id, type: "uses", path: "image" }).toString(),
++              }
+             : undefined,
+         }))
+       : fallbackUses.map((item) => ({
+@@ -86,6 +92,7 @@ export default function UsesPage({ usesData, workspace, locale }: UsesPageProps)
+           >
+             <div
+               className="relative w-full overflow-hidden rounded-2xl border border-border/60 bg-muted shadow-lg"
++              data-sanity={createDataAttribute({ baseUrl: STUDIO_SANITY_URL, id: workspace._id, type: "workspace", path: "image" }).toString()}
+               style={{ aspectRatio: Math.min(Math.max(workspace.width / workspace.height, 1.2), 2) }}
+             >
+               <Image
+@@ -134,7 +141,10 @@ export default function UsesPage({ usesData, workspace, locale }: UsesPageProps)
+                       }
+                     >
+                       {row.image ? (
+-                        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/60 bg-muted shadow-sm md:order-last md:aspect-[4/3]">
++                        <div
++                          className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/60 bg-muted shadow-sm md:order-last md:aspect-[4/3]"
++                          data-sanity={row.image.dataSanity}
++                        >
+                           <Image
+                             src={row.image.url}
+                             alt={row.image.alt}
+diff --git a/port_v2/components/ui/layout-grid.tsx b/port_v2/components/ui/layout-grid.tsx
+index 2ea80f4..6784468 100644
+--- a/port_v2/components/ui/layout-grid.tsx
++++ b/port_v2/components/ui/layout-grid.tsx
+@@ -25,6 +25,8 @@ export interface LayoutGridCard {
+   caption?: ReactNode;
+   /** Shown over the photo once it is opened. */
+   content?: ReactNode;
++  /** Value for `data-sanity`, so Sanity's Presentation tool can open the photo's image field. */
++  dataSanity?: string;
+ }
+ 
+ interface LayoutGridProps {
+@@ -142,6 +144,7 @@ export function LayoutGrid({ cards, labels, className }: LayoutGridProps) {
+                         layoutId={layoutId(card.id)}
+                         className="absolute inset-0 overflow-hidden rounded-xl bg-muted shadow-sm ring-1 ring-border/60"
+                         style={{ borderRadius: 12 }}
++                        data-sanity={card.dataSanity}
+                       >
+                         <Image
+                           src={card.thumbnail}
+@@ -186,6 +189,7 @@ export function LayoutGrid({ cards, labels, className }: LayoutGridProps) {
+                 animate={{ opacity: 1, scale: 1 }}
+                 transition={{ duration: 0.35, ease: EASE }}
+                 className="relative m-0 overflow-hidden bg-muted shadow-2xl ring-1 ring-white/10"
++                data-sanity={selected.dataSanity}
+                 style={{
+                   aspectRatio: selected.width / selected.height,
+                   width: `min(92vw, calc(82vh * ${selected.width / selected.height}))`,
+diff --git a/port_v2/sanity/plugins/resolve.ts b/port_v2/sanity/plugins/resolve.ts
+index 4c09663..037cc4d 100644
+--- a/port_v2/sanity/plugins/resolve.ts
++++ b/port_v2/sanity/plugins/resolve.ts
+@@ -134,6 +134,32 @@ export const locations = {
+       ],
+     }),
+   }),
++
++  // Photos (not localized: one board shared by every language, displayed on /photos)
++  photo: defineLocations({
++    select: {
++      caption: "caption",
++    },
++    resolve: (doc) => ({
++      locations: ["en", "id", "de"].map((locale) => ({
++        title: `Photos (${locale}) - ${doc?.caption || "Untitled"}`,
++        href: `/${locale}/photos`,
++      })),
++    }),
++  }),
++
++  // Workspace photo (localized, shown at the top of /uses)
++  workspace: defineLocations({
++    select: {
++      caption: "caption",
++      language: "language",
++    },
++    resolve: (doc) => ({
++      locations: [
++        { title: `Uses (${doc?.language || "en"}) - workspace photo`, href: `/${doc?.language || "en"}/uses` },
++      ],
++    }),
++  }),
+ };
+ 
+ // Configures documents presentation tool should open by default when navigating to an URL
+@@ -160,6 +186,10 @@ export const mainDocuments = defineDocuments([
+   },
+   {
+     route: "/:locale/uses",
+-    filter: `_type == "uses" && language == $locale`,
++    filter: `_type in ["uses", "workspace"] && language == $locale`,
++  },
++  {
++    route: "/:locale/photos",
++    filter: `_type == "photo"`,
+   },
+ ]);
+-- 
+2.43.0
+

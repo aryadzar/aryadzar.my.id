@@ -14,6 +14,7 @@ export function useNavItems() {
       children: [
         { name: t("skills"), link: "/skills" },
         { name: t("uses"), link: "/uses" },
+        { name: t("photos"), link: "/photos" },
       ],
     },
     { name: t("about"), link: "/about" },

@@ -134,6 +134,32 @@ export const locations = {
       ],
     }),
   }),
+
+  // Photos (not localized: one board shared by every language, displayed on /photos)
+  photo: defineLocations({
+    select: {
+      caption: "caption",
+    },
+    resolve: (doc) => ({
+      locations: ["en", "id", "de"].map((locale) => ({
+        title: `Photos (${locale}) - ${doc?.caption || "Untitled"}`,
+        href: `/${locale}/photos`,
+      })),
+    }),
+  }),
+
+  // Workspace photo (localized, shown at the top of /uses)
+  workspace: defineLocations({
+    select: {
+      caption: "caption",
+      language: "language",
+    },
+    resolve: (doc) => ({
+      locations: [
+        { title: `Uses (${doc?.language || "en"}) - workspace photo`, href: `/${doc?.language || "en"}/uses` },
+      ],
+    }),
+  }),
 };
 
 // Configures documents presentation tool should open by default when navigating to an URL
@@ -160,6 +186,10 @@ export const mainDocuments = defineDocuments([
   },
   {
     route: "/:locale/uses",
-    filter: `_type == "uses" && language == $locale`,
+    filter: `_type in ["uses", "workspace"] && language == $locale`,
+  },
+  {
+    route: "/:locale/photos",
+    filter: `_type == "photo"`,
   },
 ]);

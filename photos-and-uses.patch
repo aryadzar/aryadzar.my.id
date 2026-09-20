@@ -1,0 +1,1650 @@
+diff --git a/port_v2/app/(public)/[locale]/photos/_components/photos-page.tsx b/port_v2/app/(public)/[locale]/photos/_components/photos-page.tsx
+new file mode 100644
+index 0000000..03575de
+--- /dev/null
++++ b/port_v2/app/(public)/[locale]/photos/_components/photos-page.tsx
+@@ -0,0 +1,83 @@
++"use client";
++
++import { ImageOff } from "lucide-react";
++import { motion, useReducedMotion } from "framer-motion";
++import { useFormatter, useTranslations } from "next-intl";
++import { stegaClean } from "next-sanity";
++import { LayoutGrid, type LayoutGridCard } from "@/components/ui/layout-grid";
++import type { Photo } from "@/types/photoType";
++
++// Photos uploaded without Sanity's size metadata fall back to a 4:3 frame.
++const FALLBACK_SIZE = { width: 1200, height: 900 };
++
++export default function PhotosPage({ photos }: { photos: Photo[] }) {
++  const t = useTranslations("photosPage");
++  const format = useFormatter();
++  const prefersReducedMotion = useReducedMotion();
++
++  const day = (iso: string) =>
++    format.dateTime(new Date(stegaClean(iso) + "T00:00:00Z"), {
++      day: "numeric",
++      month: "short",
++      year: "numeric",
++      timeZone: "UTC",
++    });
++
++  const cards: LayoutGridCard[] = photos.map((p) => {
++    const caption = p.caption;
++    return {
++      id: p._id,
++      thumbnail: stegaClean(p.url),
++      width: p.width || FALLBACK_SIZE.width,
++      height: p.height || FALLBACK_SIZE.height,
++      alt: stegaClean(p.alt || p.caption),
++      blurDataURL: p.lqip ? stegaClean(p.lqip) : undefined,
++      caption: (
++        <>
++          <time dateTime={stegaClean(p.date)} className="block font-mono text-[11px] leading-none tracking-wide text-muted-foreground uppercase">
++            {day(p.date)}
++          </time>
++          <span className="mt-1.5 block text-sm leading-snug text-pretty text-foreground/90">{caption}</span>
++        </>
++      ),
++      content: (
++        <>
++          <p className="text-lg leading-snug font-semibold text-balance md:text-xl">{caption}</p>
++          <p className="mt-1 font-mono text-xs tracking-wide text-white/75 uppercase">
++            {day(p.date)}
++            {p.location ? ` · ${p.location}` : ""}
++          </p>
++        </>
++      ),
++    };
++  });
++
++  return (
++    <main className="min-h-[60vh]">
++      <header className="mx-auto max-w-6xl px-4 pt-28 pb-4 md:px-6 md:pt-32">
++        <motion.div
++          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : -20 }}
++          animate={{ opacity: 1, y: 0 }}
++          transition={{ duration: 0.6 }}
++        >
++          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t("title")}</h1>
++          <p className="mt-3 max-w-2xl text-lg text-pretty text-muted-foreground">{t("description")}</p>
++        </motion.div>
++      </header>
++
++      <section aria-label={t("title")} className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-12">
++        {cards.length > 0 ? (
++          <LayoutGrid
++            cards={cards}
++            labels={{ close: t("close"), previous: t("previous"), next: t("next") }}
++          />
++        ) : (
++          <div className="grid place-items-center gap-3 rounded-2xl border border-dashed border-border py-24 text-center text-muted-foreground">
++            <ImageOff className="size-8" aria-hidden="true" />
++            <p>{t("empty")}</p>
++          </div>
++        )}
++      </section>
++    </main>
++  );
++}
+diff --git a/port_v2/app/(public)/[locale]/photos/page.tsx b/port_v2/app/(public)/[locale]/photos/page.tsx
+new file mode 100644
+index 0000000..4c3603c
+--- /dev/null
++++ b/port_v2/app/(public)/[locale]/photos/page.tsx
+@@ -0,0 +1,27 @@
++import { getTranslations } from "next-intl/server";
++import PhotosPage from "./_components/photos-page";
++import { createMetadata } from "@/lib/metadata";
++import { getPhotos } from "@/lib/getHome";
++
++export async function generateMetadata({
++  params,
++}: {
++  params: Promise<{ locale: string }>;
++}) {
++  const { locale } = await params;
++  const t = await getTranslations({
++    locale: locale,
++    namespace: "metadata.photos",
++  });
++  return createMetadata({
++    title: t("title"),
++    description: t("description"),
++    url: `/photos`,
++    locale: locale,
++  });
++}
++
++export default async function PhotosPageIndex() {
++  const photos = await getPhotos();
++  return <PhotosPage photos={photos} />;
++}
+diff --git a/port_v2/app/(public)/[locale]/uses/_components/uses-page.tsx b/port_v2/app/(public)/[locale]/uses/_components/uses-page.tsx
+index 445c7b7..b01f2d8 100644
+--- a/port_v2/app/(public)/[locale]/uses/_components/uses-page.tsx
++++ b/port_v2/app/(public)/[locale]/uses/_components/uses-page.tsx
+@@ -1,261 +1,193 @@
+ "use client";
+ 
+-import { useTranslations } from "next-intl";
++import { ExternalLink } from "lucide-react";
+ import { motion, useReducedMotion } from "framer-motion";
++import { useTranslations } from "next-intl";
+ import { stegaClean } from "next-sanity";
+-import { UsesItem } from "@/types/usesType";
+-import { USES_CATEGORY_ORDER } from "@/constants/uses-data";
+-import { ExternalLink } from "lucide-react";
++import Image from "next/image";
++import { fallbackUses, normalizeUsesCategory, USES_CATEGORY_ORDER } from "@/constants/uses-data";
++import type { UsesItem } from "@/types/usesType";
++import type { Workspace } from "@/types/workspaceType";
+ 
+ interface UsesPageProps {
+   usesData: UsesItem[];
++  workspace: Workspace | null;
+   locale: string;
+ }
+ 
+-export default function UsesPage({ usesData, locale }: UsesPageProps) {
++/** What one row needs, whether it came from Sanity or from the built-in fallback list. */
++interface Row {
++  key: string;
++  name: string;
++  description?: string;
++  specs?: string;
++  link?: string;
++  iconUrl?: string;
++  svgPath?: string;
++  color?: string;
++  image?: { url: string; alt: string; lqip?: string };
++}
++
++export default function UsesPage({ usesData, workspace, locale }: UsesPageProps) {
+   const t = useTranslations("usesPage");
+   const prefersReducedMotion = useReducedMotion();
+-  const items = usesData || [];
++  const rise = prefersReducedMotion ? 0 : 24;
+ 
+-  const grouped = USES_CATEGORY_ORDER.map((cat) => ({
+-    key: cat,
+-    label: t(cat),
+-    items: items.filter((i) => stegaClean(i.category) === cat),
+-  })).filter((g) => g.items.length > 0);
++  // Sanity first; the built-in list only fills in while the dataset has no Uses yet.
++  const source: (Row & { category: string })[] =
++    usesData.length > 0
++      ? usesData.map((item) => ({
++          key: item._id,
++          name: item.name,
++          description: item.description,
++          specs: item.specs,
++          link: item.link,
++          iconUrl: item.iconUrl,
++          category: stegaClean(item.category),
++          image: item.imageUrl
++            ? { url: stegaClean(item.imageUrl), alt: stegaClean(item.imageAlt || item.name), lqip: item.imageLqip }
++            : undefined,
++        }))
++      : fallbackUses.map((item) => ({
++          key: item.name,
++          name: item.name,
++          description: item.description[locale as "en" | "id" | "de"] ?? item.description.en,
++          link: item.link,
++          svgPath: item.svgPath,
++          color: item.color,
++          category: item.category,
++        }));
+ 
+-  const container = {
+-    hidden: { opacity: 0 },
+-    show: {
+-      opacity: 1,
+-      transition: { staggerChildren: 0.06, delayChildren: 0.1 },
+-    },
+-  } as const;
+-
+-  const sectionVariant = {
+-    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 30 },
+-    show: {
+-      opacity: 1,
+-      y: 0,
+-      transition: { duration: 0.6, ease: "easeOut" as const },
+-    },
+-  } as const;
+-
+-  const itemVariant = {
+-    hidden: { opacity: 0, x: prefersReducedMotion ? 0 : -16 },
+-    show: {
+-      opacity: 1,
+-      x: 0,
+-      transition: { duration: 0.4, ease: "easeOut" as const },
+-    },
+-  } as const;
++  const sections = USES_CATEGORY_ORDER.map((category) => ({
++    category,
++    rows: source.filter((row) => normalizeUsesCategory(row.category) === category),
++  })).filter((section) => section.rows.length > 0);
+ 
+   return (
+     <main className="min-h-[60vh]">
+-      {/* Header */}
+-      <header className="max-w-5xl px-4 pt-28 pb-4 mx-auto md:px-6 md:pt-32">
++      <header className="mx-auto max-w-4xl px-4 pt-28 pb-4 md:px-6 md:pt-32">
+         <motion.div
+-          initial={{ opacity: 0, y: -20 }}
++          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : -20 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.6 }}
+         >
+-          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+-            {t("title")}
+-          </h1>
+-          <p className="mt-3 text-lg text-pretty text-muted-foreground max-w-2xl">
+-            {t("description")}
+-          </p>
++          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t("title")}</h1>
++          <p className="mt-3 max-w-2xl text-lg text-pretty text-muted-foreground">{t("description")}</p>
+         </motion.div>
+       </header>
+ 
+-      {/* Uses Sections */}
+-      <section className="max-w-5xl px-4 py-10 mx-auto md:px-6 md:py-14">
+-        <div className="space-y-16">
+-          {grouped.map((group, gi) => (
+-            <motion.div
+-              key={group.key}
+-              variants={sectionVariant}
+-              initial="hidden"
+-              whileInView="show"
++      <div className="mx-auto max-w-4xl px-4 pb-20 md:px-6">
++        {workspace ? (
++          <motion.figure
++            className="mt-6 md:mt-8"
++            initial={{ opacity: 0, y: rise }}
++            animate={{ opacity: 1, y: 0 }}
++            transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
++          >
++            <div
++              className="relative w-full overflow-hidden rounded-2xl border border-border/60 bg-muted shadow-lg"
++              style={{ aspectRatio: Math.min(Math.max(workspace.width / workspace.height, 1.2), 2) }}
++            >
++              <Image
++                src={stegaClean(workspace.url)}
++                alt={stegaClean(workspace.alt || workspace.caption || t("title"))}
++                fill
++                priority
++                sizes="(min-width: 896px) 896px, 100vw"
++                placeholder={workspace.lqip ? "blur" : "empty"}
++                blurDataURL={workspace.lqip ? stegaClean(workspace.lqip) : undefined}
++                className="object-cover"
++              />
++            </div>
++            {workspace.caption ? (
++              <figcaption className="mt-3 text-center text-sm text-muted-foreground">{workspace.caption}</figcaption>
++            ) : null}
++          </motion.figure>
++        ) : null}
++
++        <div className="mt-12 space-y-16 md:mt-16 md:space-y-20">
++          {sections.map(({ category, rows }) => (
++            <motion.section
++              key={category}
++              aria-labelledby={`uses-${category}`}
++              initial={{ opacity: 0, y: rise }}
++              whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true, amount: 0.1 }}
++              transition={{ duration: 0.6, ease: "easeOut" }}
+             >
+-              {/* Category Header */}
+-              <div className="flex items-center gap-3 mb-8">
+-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/80 border border-border/50">
+-                  <svg
+-                    className="w-5 h-5 text-foreground/70"
+-                    viewBox="0 0 24 24"
+-                    fill="none"
+-                    stroke="currentColor"
+-                    strokeWidth="2"
+-                    strokeLinecap="round"
+-                    strokeLinejoin="round"
+-                  >
+-                    {getCategoryIcon(group.key)}
+-                  </svg>
+-                </div>
+-                <h2 className="text-xl font-semibold tracking-tight">
+-                  {group.label}
+-                </h2>
+-              </div>
+-              {/* Items */}
+-              <motion.div
+-                variants={container}
+-                initial="hidden"
+-                whileInView="show"
+-                viewport={{ once: true, amount: 0.1 }}
+-                className="grid gap-4 md:grid-cols-2"
+-              >
+-                {group.items.map((item, idx) => {
+-                  const cleanColor = stegaClean((item as any).color) ?? "#888888";
+-                  const cleanIconUrl = stegaClean(item.iconUrl);
+-                  const cleanSvgPath = stegaClean((item as any).svgPath);
+-                  const cleanLink = stegaClean(item.link);
++              <h2 id={`uses-${category}`} className="text-2xl font-bold tracking-tight md:text-3xl">
++                {t(category)}
++              </h2>
+ 
++              <ul className="mt-4 divide-y divide-border/70 border-t border-border/70">
++                {rows.map((row) => {
++                  const link = stegaClean(row.link);
++                  const icon = stegaClean(row.iconUrl);
++                  const svgPath = row.svgPath;
+                   return (
+-                    <motion.div
+-                      key={(item as any)._id ?? `${group.key}-${idx}`}
+-                      variants={itemVariant}
+-                      whileHover={{
+-                        y: -2,
+-                        transition: { duration: 0.2 },
+-                      }}
+-                      className="group relative flex gap-4 p-5 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
++                    <li
++                      key={row.key}
++                      className={
++                        row.image
++                          ? "grid items-start gap-5 py-8 md:grid-cols-[minmax(0,1fr)_minmax(0,17rem)] md:gap-8"
++                          : "py-8"
++                      }
+                     >
+-                      {/* Glow on hover */}
+-                      <div
+-                        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
+-                        style={{
+-                          background: `radial-gradient(circle at 20% 50%, ${cleanColor}06 0%, transparent 60%)`,
+-                        }}
+-                      />
+-
+-                      {/* Icon */}
+-                      <div
+-                        className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl transition-transform duration-300 group-hover:scale-110"
+-                        style={{
+-                          background: `linear-gradient(135deg, ${cleanColor}12, ${cleanColor}22)`,
+-                          border: `1px solid ${cleanColor}20`,
+-                        }}
+-                      >
+-                        {cleanIconUrl ? (
+-                          <img
+-                            src={cleanIconUrl}
+-                            alt={item.name}
+-                            className="w-6 h-6 object-contain"
++                      {row.image ? (
++                        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/60 bg-muted shadow-sm md:order-last md:aspect-[4/3]">
++                          <Image
++                            src={row.image.url}
++                            alt={row.image.alt}
++                            fill
++                            sizes="(min-width: 768px) 272px, 100vw"
++                            placeholder={row.image.lqip ? "blur" : "empty"}
++                            blurDataURL={row.image.lqip ? stegaClean(row.image.lqip) : undefined}
++                            className="object-cover"
+                           />
+-                        ) : cleanSvgPath ? (
+-                          <svg
+-                            className="w-6 h-6"
+-                            viewBox="0 0 24 24"
+-                            fill={cleanColor}
+-                          >
+-                            <path d={cleanSvgPath} />
+-                          </svg>
+-                        ) : (
+-                          <div
+-                            className="w-6 h-6 rounded-md"
+-                            style={{ backgroundColor: cleanColor }}
+-                          />
+-                        )}
+-                      </div>
+-
+-                      {/* Content */}
+-                      <div className="flex-1 min-w-0">
+-                        <div className="flex items-center gap-2">
+-                          <h3 className="font-semibold text-foreground/90 group-hover:text-foreground transition-colors">
+-                            {item.name}
+-                          </h3>
+-                          {cleanLink && (
+-                            <a
+-                              href={cleanLink}
+-                              target="_blank"
+-                              rel="noopener noreferrer"
+-                              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
+-                              aria-label={`${t("visitSite")} - ${item.name}`}
+-                            >
+-                              <ExternalLink className="w-3 h-3" />
+-                            </a>
+-                          )}
+                         </div>
+-                        {item.description && (
+-                          <p className="mt-1 text-sm text-muted-foreground leading-relaxed line-clamp-2">
+-                            {item.description}
++                      ) : null}
++
++                      <div className="min-w-0">
++                        <h3 className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
++                          {icon ? (
++                            // eslint-disable-next-line @next/next/no-img-element -- Sanity icons can be SVG, which next/image refuses
++                            <img src={icon} alt="" aria-hidden="true" className="size-5 shrink-0 object-contain" />
++                          ) : svgPath ? (
++                            <svg viewBox="0 0 24 24" aria-hidden="true" className="size-5 shrink-0" fill={row.color ?? "currentColor"}>
++                              <path d={svgPath} />
++                            </svg>
++                          ) : null}
++                          {row.name}
++                        </h3>
++                        {row.specs ? (
++                          <p className="mt-1 font-mono text-[13px] leading-snug text-muted-foreground">{row.specs}</p>
++                        ) : null}
++                        {row.description ? (
++                          <p className="mt-3 max-w-[60ch] leading-relaxed text-pretty text-muted-foreground">
++                            {row.description}
+                           </p>
+-                        )}
++                        ) : null}
++                        {link ? (
++                          <a
++                            href={link}
++                            target="_blank"
++                            rel="noopener noreferrer"
++                            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium underline decoration-foreground/30 underline-offset-4 transition-colors hover:decoration-foreground"
++                          >
++                            {t("visitSite")}
++                            <ExternalLink className="size-3.5" aria-hidden="true" />
++                            <span className="sr-only">— {row.name}</span>
++                          </a>
++                        ) : null}
+                       </div>
+-
+-                      {/* Color accent */}
+-                      <div
+-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 group-hover:h-8 rounded-full transition-all duration-300"
+-                        style={{ backgroundColor: cleanColor }}
+-                      />
+-                    </motion.div>
++                    </li>
+                   );
+                 })}
+-              </motion.div>
+-
+-              {/* Separator (not after last group) */}
+-              {gi < grouped.length - 1 && (
+-                <div className="mt-16 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+-              )}
+-            </motion.div>
++              </ul>
++            </motion.section>
+           ))}
+         </div>
+-      </section>
++      </div>
+     </main>
+   );
+ }
+-
+-function getCategoryIcon(category: string) {
+-  switch (category) {
+-    case "editor":
+-      return (
+-        <>
+-          <polyline points="16 18 22 12 16 6" />
+-          <polyline points="8 6 2 12 8 18" />
+-        </>
+-      );
+-    case "terminal":
+-      return (
+-        <>
+-          <polyline points="4 17 10 11 4 5" />
+-          <line x1="12" y1="19" x2="20" y2="19" />
+-        </>
+-      );
+-    case "devops":
+-      return (
+-        <>
+-          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+-          <path d="M2 17l10 5 10-5" />
+-          <path d="M2 12l10 5 10-5" />
+-        </>
+-      );
+-    case "design":
+-      return (
+-        <>
+-          <path d="M12 19l7-7 3 3-7 7-3-3z" />
+-          <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+-          <path d="M2 2l7.586 7.586" />
+-          <circle cx="11" cy="11" r="2" />
+-        </>
+-      );
+-    case "browser":
+-      return (
+-        <>
+-          <circle cx="12" cy="12" r="10" />
+-          <line x1="2" y1="12" x2="22" y2="12" />
+-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+-        </>
+-      );
+-    case "hardware":
+-      return (
+-        <>
+-          <rect x="2" y="3" width="20" height="14" rx="2" />
+-          <line x1="8" y1="21" x2="16" y2="21" />
+-          <line x1="12" y1="17" x2="12" y2="21" />
+-        </>
+-      );
+-    default:
+-      return <circle cx="12" cy="12" r="10" />;
+-  }
+-}
+diff --git a/port_v2/app/(public)/[locale]/uses/page.tsx b/port_v2/app/(public)/[locale]/uses/page.tsx
+index 5372d65..a18e749 100644
+--- a/port_v2/app/(public)/[locale]/uses/page.tsx
++++ b/port_v2/app/(public)/[locale]/uses/page.tsx
+@@ -1,7 +1,7 @@
+ import { getTranslations } from "next-intl/server";
+ import UsesPage from "./_components/uses-page";
+ import { createMetadata } from "@/lib/metadata";
+-import { getUses } from "@/lib/getHome";
++import { getUses, getWorkspace } from "@/lib/getHome";
+ 
+ export async function generateMetadata({
+   params,
+@@ -27,6 +27,6 @@ export default async function UsesPageIndex({
+   params: Promise<{ locale: string }>;
+ }) {
+   const { locale } = await params;
+-  const usesData = await getUses(locale);
+-  return <UsesPage usesData={usesData} locale={locale} />;
++  const [usesData, workspace] = await Promise.all([getUses(locale), getWorkspace(locale)]);
++  return <UsesPage usesData={usesData} workspace={workspace} locale={locale} />;
+ }
+diff --git a/port_v2/app/sitemap.ts b/port_v2/app/sitemap.ts
+index d2eedea..0d6a19c 100644
+--- a/port_v2/app/sitemap.ts
++++ b/port_v2/app/sitemap.ts
+@@ -4,7 +4,7 @@ import { getBaseUrl } from "@/lib/getBaseUrl";
+ import type { MetadataRoute } from "next";
+ 
+ // ─── Static page paths (locale-prefixed) ────────────────────────────────────
+-const STATIC_PATHS = ["", "/about", "/blog", "/projects", "/skills", "/uses"];
++const STATIC_PATHS = ["", "/about", "/blog", "/projects", "/skills", "/uses", "/photos"];
+ 
+ // ─── Sanity queries for slugs only ──────────────────────────────────────────
+ const BLOG_SLUGS_QUERY = `
+diff --git a/port_v2/components/ui/layout-grid.tsx b/port_v2/components/ui/layout-grid.tsx
+new file mode 100644
+index 0000000..2ea80f4
+--- /dev/null
++++ b/port_v2/components/ui/layout-grid.tsx
+@@ -0,0 +1,252 @@
++"use client";
++
++import { AnimatePresence, LayoutGroup, MotionConfig, motion } from "framer-motion";
++import { ChevronLeft, ChevronRight, X } from "lucide-react";
++import Image from "next/image";
++import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
++import { cn } from "@/lib/utils";
++
++/**
++ * A masonry board where a click opens the photo with a shared-layout
++ * animation: the card grows out of its slot into a centred view and shrinks
++ * back on close. Inspired by Aceternity UI's Layout Grid, but the opened photo
++ * is fixed to the viewport (so it is centred wherever you scrolled to), keeps
++ * its own aspect ratio, and can be closed or stepped through by keyboard.
++ */
++
++export interface LayoutGridCard {
++  id: string;
++  thumbnail: string;
++  width: number;
++  height: number;
++  alt: string;
++  blurDataURL?: string;
++  /** Shown under the photo in the grid. */
++  caption?: ReactNode;
++  /** Shown over the photo once it is opened. */
++  content?: ReactNode;
++}
++
++interface LayoutGridProps {
++  cards: LayoutGridCard[];
++  labels: { close: string; previous: string; next: string };
++  className?: string;
++}
++
++/** Grid cells snap to one of three ratios so the board reads as a tidy collage. */
++function cellRatio(card: LayoutGridCard): number {
++  const r = card.width / card.height;
++  if (r > 1.15) return 4 / 3;
++  if (r < 0.87) return 3 / 4;
++  return 1;
++}
++
++const EASE = [0.22, 1, 0.36, 1] as const;
++
++export function LayoutGrid({ cards, labels, className }: LayoutGridProps) {
++  const groupId = useId();
++  const [selectedId, setSelectedId] = useState<string | null>(null);
++  /** The card that was opened from the grid; only it shares layout with its slot. */
++  const [sharedId, setSharedId] = useState<string | null>(null);
++  const opener = useRef<HTMLElement | null>(null);
++  const dialogRef = useRef<HTMLDivElement>(null);
++  const closeRef = useRef<HTMLButtonElement>(null);
++
++  const index = selectedId ? cards.findIndex((c) => c.id === selectedId) : -1;
++  const selected = index >= 0 ? cards[index] : null;
++
++  const open = (card: LayoutGridCard, trigger: HTMLElement) => {
++    opener.current = trigger;
++    setSharedId(card.id);
++    setSelectedId(card.id);
++  };
++
++  const close = useCallback(() => setSelectedId(null), []);
++
++  const go = useCallback(
++    (delta: number) => {
++      if (index < 0 || cards.length < 2) return;
++      const next = cards[(index + delta + cards.length) % cards.length];
++      setSharedId(null);
++      setSelectedId(next.id);
++    },
++    [cards, index],
++  );
++
++  // While open: lock page scroll and move focus into the dialog.
++  const isOpen = selected !== null;
++  useEffect(() => {
++    if (!isOpen) return;
++    const body = document.body;
++    const wasLocked = body.classList.contains("overflow-hidden");
++    body.classList.add("overflow-hidden");
++    closeRef.current?.focus();
++    const trigger = opener.current;
++    return () => {
++      if (!wasLocked) body.classList.remove("overflow-hidden");
++      trigger?.focus({ preventScroll: true });
++    };
++  }, [isOpen]);
++
++  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
++    if (e.key === "Escape") {
++      e.stopPropagation();
++      close();
++    } else if (e.key === "ArrowLeft") {
++      go(-1);
++    } else if (e.key === "ArrowRight") {
++      go(1);
++    } else if (e.key === "Tab") {
++      // Keep focus inside the dialog.
++      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>("button");
++      if (!focusable || focusable.length === 0) return;
++      const first = focusable[0];
++      const last = focusable[focusable.length - 1];
++      if (e.shiftKey && document.activeElement === first) {
++        e.preventDefault();
++        last.focus();
++      } else if (!e.shiftKey && document.activeElement === last) {
++        e.preventDefault();
++        first.focus();
++      }
++    }
++  };
++
++  const layoutId = (id: string) => `layout-grid-${groupId}-${id}`;
++
++  return (
++    <MotionConfig reducedMotion="user">
++      <LayoutGroup id={groupId}>
++        <div className={cn("columns-2 gap-3 md:columns-3 md:gap-4 lg:gap-5", className)}>
++          {cards.map((card, i) => {
++            const ratio = cellRatio(card);
++            const lifted = sharedId === card.id && selectedId === card.id;
++            return (
++              <motion.div
++                key={card.id}
++                className="mb-3 break-inside-avoid md:mb-4 lg:mb-5"
++                initial={{ opacity: 0, y: 24 }}
++                whileInView={{ opacity: 1, y: 0 }}
++                viewport={{ once: true, margin: "0px 0px -60px 0px" }}
++                transition={{ duration: 0.6, ease: EASE, delay: (i % 3) * 0.07 }}
++              >
++                <button
++                  type="button"
++                  aria-haspopup="dialog"
++                  onClick={(e) => open(card, e.currentTarget)}
++                  className="group block w-full cursor-zoom-in rounded-xl text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
++                >
++                  <div className="relative w-full" style={{ aspectRatio: ratio }}>
++                    {lifted ? null : (
++                      <motion.div
++                        layoutId={layoutId(card.id)}
++                        className="absolute inset-0 overflow-hidden rounded-xl bg-muted shadow-sm ring-1 ring-border/60"
++                        style={{ borderRadius: 12 }}
++                      >
++                        <Image
++                          src={card.thumbnail}
++                          alt={card.alt}
++                          fill
++                          sizes="(min-width: 768px) 33vw, 50vw"
++                          placeholder={card.blurDataURL ? "blur" : "empty"}
++                          blurDataURL={card.blurDataURL}
++                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
++                        />
++                      </motion.div>
++                    )}
++                  </div>
++                  {card.caption ? <div className="mt-2 px-0.5">{card.caption}</div> : null}
++                </button>
++              </motion.div>
++            );
++          })}
++        </div>
++
++        <AnimatePresence>
++          {selected ? (
++            <motion.div
++              key="layout-grid-dialog"
++              ref={dialogRef}
++              role="dialog"
++              aria-modal="true"
++              aria-label={selected.alt}
++              onKeyDown={onKeyDown}
++              className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
++              initial={{ opacity: 0 }}
++              animate={{ opacity: 1 }}
++              exit={{ opacity: 0 }}
++              transition={{ duration: 0.25 }}
++            >
++              <div aria-hidden="true" onClick={close} className="absolute inset-0 bg-black/75 backdrop-blur-sm" />
++
++              <motion.figure
++                key={selected.id}
++                layoutId={sharedId === selected.id ? layoutId(selected.id) : undefined}
++                initial={sharedId === selected.id ? false : { opacity: 0, scale: 0.96 }}
++                animate={{ opacity: 1, scale: 1 }}
++                transition={{ duration: 0.35, ease: EASE }}
++                className="relative m-0 overflow-hidden bg-muted shadow-2xl ring-1 ring-white/10"
++                style={{
++                  aspectRatio: selected.width / selected.height,
++                  width: `min(92vw, calc(82vh * ${selected.width / selected.height}))`,
++                  borderRadius: 16,
++                }}
++              >
++                <Image
++                  src={selected.thumbnail}
++                  alt={selected.alt}
++                  fill
++                  priority
++                  sizes="92vw"
++                  placeholder={selected.blurDataURL ? "blur" : "empty"}
++                  blurDataURL={selected.blurDataURL}
++                  className="object-cover"
++                />
++                {selected.content ? (
++                  <motion.figcaption
++                    initial={{ opacity: 0, y: 16 }}
++                    animate={{ opacity: 1, y: 0 }}
++                    transition={{ duration: 0.35, delay: 0.2, ease: EASE }}
++                    className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/40 to-transparent px-5 pt-16 pb-4 text-white md:px-7 md:pb-5"
++                  >
++                    {selected.content}
++                  </motion.figcaption>
++                ) : null}
++              </motion.figure>
++
++              <button
++                ref={closeRef}
++                type="button"
++                onClick={close}
++                aria-label={labels.close}
++                className="absolute top-4 right-4 z-10 grid size-10 place-items-center rounded-full bg-black/50 text-white backdrop-blur transition-colors hover:bg-black/70 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none md:top-6 md:right-6"
++              >
++                <X className="size-5" aria-hidden="true" />
++              </button>
++              {cards.length > 1 ? (
++                <>
++                  <button
++                    type="button"
++                    onClick={() => go(-1)}
++                    aria-label={labels.previous}
++                    className="absolute top-1/2 left-3 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-black/50 text-white backdrop-blur transition-colors hover:bg-black/70 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none md:left-6"
++                  >
++                    <ChevronLeft className="size-5" aria-hidden="true" />
++                  </button>
++                  <button
++                    type="button"
++                    onClick={() => go(1)}
++                    aria-label={labels.next}
++                    className="absolute top-1/2 right-3 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-black/50 text-white backdrop-blur transition-colors hover:bg-black/70 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none md:right-6"
++                  >
++                    <ChevronRight className="size-5" aria-hidden="true" />
++                  </button>
++                </>
++              ) : null}
++            </motion.div>
++          ) : null}
++        </AnimatePresence>
++      </LayoutGroup>
++    </MotionConfig>
++  );
++}
+diff --git a/port_v2/constants/nav-constant.tsx b/port_v2/constants/nav-constant.tsx
+index 9bbaca1..309b6ea 100644
+--- a/port_v2/constants/nav-constant.tsx
++++ b/port_v2/constants/nav-constant.tsx
+@@ -14,6 +14,7 @@ export function useNavItems() {
+       children: [
+         { name: t("skills"), link: "/skills" },
+         { name: t("uses"), link: "/uses" },
++        { name: t("photos"), link: "/photos" },
+       ],
+     },
+     { name: t("about"), link: "/about" },
+diff --git a/port_v2/constants/uses-data.ts b/port_v2/constants/uses-data.ts
+index 034ef17..1598902 100644
+--- a/port_v2/constants/uses-data.ts
++++ b/port_v2/constants/uses-data.ts
+@@ -1,51 +1,41 @@
+ // Fallback uses/setup data used when Sanity has no entries yet.
+ 
++import type { UsesCategory } from "@/types/usesType";
++
+ export interface FallbackUsesItem {
+   name: string;
+   description: { en: string; id: string; de: string };
+-  category: "editor" | "terminal" | "devops" | "design" | "browser" | "hardware";
++  category: UsesCategory;
+   link?: string;
+   svgPath: string; // Simple Icons SVG path (viewBox 0 0 24 24)
+   color: string;
+ }
+ 
++/** Order of the sections on the Uses page. Labels live in messages/*.json under usesPage.<category>. */
+ export const USES_CATEGORY_ORDER = [
+-  "editor",
+-  "terminal",
+-  "devops",
+-  "design",
+-  "browser",
+-  "hardware",
+-] as const;
++  "workstation",
++  "furniture",
++  "accessories",
++  "applications",
++  "subscriptions",
++] as const satisfies readonly UsesCategory[];
+ 
+-export const USES_CATEGORY_LABELS: Record<
+-  string,
+-  { en: string; id: string; de: string }
+-> = {
+-  editor: { en: "Editor & IDE", id: "Editor & IDE", de: "Editor & IDE" },
+-  terminal: { en: "Terminal", id: "Terminal", de: "Terminal" },
+-  devops: {
+-    en: "DevOps & Deployment",
+-    id: "DevOps & Deployment",
+-    de: "DevOps & Bereitstellung",
+-  },
+-  design: { en: "Design", id: "Desain", de: "Design" },
+-  browser: { en: "Browser", id: "Peramban", de: "Browser" },
+-  hardware: { en: "Hardware & OS", id: "Perangkat & OS", de: "Hardware & OS" },
++// Documents saved before the redesign may still use the old six categories.
++const LEGACY_CATEGORY: Record<string, UsesCategory> = {
++  editor: "applications",
++  terminal: "applications",
++  devops: "applications",
++  design: "applications",
++  browser: "applications",
++  hardware: "workstation",
+ };
+ 
+-export const USES_CATEGORY_ICONS: Record<string, string> = {
+-  editor:
+-    "M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z",
+-  terminal: "M4 17l6-6-6-6M12 19h8",
+-  devops:
+-    "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
+-  design:
+-    "M12 19l7-7 3 3-7 7-3-3z M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z M2 2l7.586 7.586 M11 13a2 2 0 1 1-4 0 2 2 0 0 1 4 0z",
+-  browser: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 0v20m10-10H2",
+-  hardware:
+-    "M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0l1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16",
+-};
++/** Maps any stored category (current or legacy) onto one of the five sections, or null if unknown. */
++export function normalizeUsesCategory(value: string | undefined): UsesCategory | null {
++  if (!value) return null;
++  if ((USES_CATEGORY_ORDER as readonly string[]).includes(value)) return value as UsesCategory;
++  return LEGACY_CATEGORY[value] ?? null;
++}
+ 
+ export const fallbackUses: FallbackUsesItem[] = [
+   // ─── Editor & IDE ──────────────────────────────────────
+@@ -56,7 +46,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Editor kode utama saya. Cepat, extensible, dan memiliki ekosistem extension yang luar biasa.",
+       de: "Mein Hauptcode-Editor. Schnell, erweiterbar und hat ein unglaubliches Ökosystem von Erweiterungen.",
+     },
+-    category: "editor",
++    category: "applications",
+     link: "https://code.visualstudio.com",
+     color: "#007ACC",
+     svgPath:
+@@ -69,7 +59,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Editor kode berbasis AI yang dibangun di atas VS Code. Cocok untuk alur kerja pengembangan dengan AI.",
+       de: "KI-gestützter Code-Editor auf VS Code-Basis. Ideal für KI-unterstützte Entwicklungsworkflows.",
+     },
+-    category: "editor",
++    category: "applications",
+     link: "https://cursor.sh",
+     color: "#000000",
+     svgPath:
+@@ -84,7 +74,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Terminal modern dan kaya fitur untuk Windows dengan tab, panel, dan rendering GPU.",
+       de: "Modernes, funktionsreiches Terminal für Windows mit Tabs, Panels und GPU-beschleunigtem Rendering.",
+     },
+-    category: "terminal",
++    category: "applications",
+     link: "https://github.com/microsoft/terminal",
+     color: "#4D4D4D",
+     svgPath:
+@@ -97,7 +87,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Framework otomasi tugas lintas platform dengan bahasa scripting berbasis .NET.",
+       de: "Plattformübergreifendes Task-Automatisierungs-Framework mit .NET-basierter Skriptsprache.",
+     },
+-    category: "terminal",
++    category: "applications",
+     link: "https://github.com/PowerShell/PowerShell",
+     color: "#5391FE",
+     svgPath:
+@@ -112,7 +102,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Platform kontainerisasi untuk lingkungan pengembangan dan deployment yang konsisten.",
+       de: "Containerisierungsplattform für konsistente Entwicklungs- und Bereitstellungsumgebungen.",
+     },
+-    category: "devops",
++    category: "applications",
+     link: "https://docker.com",
+     color: "#2496ED",
+     svgPath:
+@@ -125,7 +115,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Sistem kontrol versi terdistribusi. Esensial untuk setiap alur kerja pengembangan.",
+       de: "Verteiltes Versionskontrollsystem. Unverzichtbar für jeden Entwicklungsworkflow.",
+     },
+-    category: "devops",
++    category: "applications",
+     link: "https://git-scm.com",
+     color: "#F05032",
+     svgPath:
+@@ -138,7 +128,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Platform hosting kode dan kolaborasi. Tempat semua proyek saya berada.",
+       de: "Code-Hosting- und Kollaborationsplattform. Wo alle meine Projekte leben.",
+     },
+-    category: "devops",
++    category: "applications",
+     link: "https://github.com",
+     color: "#181717",
+     svgPath:
+@@ -151,7 +141,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Platform cloud frontend untuk deploy Next.js dan aplikasi web lainnya.",
+       de: "Frontend-Cloud-Plattform für die Bereitstellung von Next.js und anderen Webanwendungen.",
+     },
+-    category: "devops",
++    category: "applications",
+     link: "https://vercel.com",
+     color: "#000000",
+     svgPath: "M24 22.525H0l12-21.05 12 21.05z",
+@@ -165,7 +155,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Alat desain kolaboratif untuk desain UI/UX, prototyping, dan design system.",
+       de: "Kollaboratives Designtool für UI/UX-Design, Prototyping und Designsysteme.",
+     },
+-    category: "design",
++    category: "applications",
+     link: "https://figma.com",
+     color: "#F24E1E",
+     svgPath:
+@@ -180,7 +170,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Browser utama untuk pengembangan. DevTools sangat powerful untuk debugging.",
+       de: "Hauptbrowser für die Entwicklung. DevTools ist unglaublich leistungsfähig zum Debuggen.",
+     },
+-    category: "browser",
++    category: "applications",
+     link: "https://google.com/chrome",
+     color: "#4285F4",
+     svgPath:
+@@ -193,7 +183,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Browser sekunder untuk pengujian lintas browser dan browsing yang berfokus pada privasi.",
+       de: "Zweitbrowser für Cross-Browser-Tests und datenschutzorientiertes Surfen.",
+     },
+-    category: "browser",
++    category: "applications",
+     link: "https://firefox.com",
+     color: "#FF7139",
+     svgPath:
+@@ -208,7 +198,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Sistem operasi utama untuk pengembangan. WSL2 membuatnya cocok untuk full-stack.",
+       de: "Primäres Betriebssystem für die Entwicklung. WSL2 macht es ideal für Full-Stack-Arbeit.",
+     },
+-    category: "hardware",
++    category: "workstation",
+     link: "https://www.microsoft.com/windows",
+     color: "#0078D4",
+     svgPath:
+@@ -221,7 +211,7 @@ export const fallbackUses: FallbackUsesItem[] = [
+       id: "Keyboard mekanikal yang bagus membuat sesi coding lebih menyenangkan dan produktif.",
+       de: "Eine gute mechanische Tastatur macht das Programmieren angenehmer und produktiver.",
+     },
+-    category: "hardware",
++    category: "workstation",
+     color: "#333333",
+     svgPath:
+       "M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm-9 2h2v2h-2V9zm0 3h2v2h-2v-2zM7 9h2v2H7V9zm0 3h2v2H7v-2zm-1 5v-2h12v2H6zm11-5h2v2h-2v-2zm0-3h2v2h-2V9z",
+diff --git a/port_v2/lib/getHome.ts b/port_v2/lib/getHome.ts
+index 4145a5d..180bc2d 100644
+--- a/port_v2/lib/getHome.ts
++++ b/port_v2/lib/getHome.ts
+@@ -7,6 +7,8 @@ import { ExperienceData } from "@/types/experienceType";
+ import { EducationData } from "@/types/educationType";
+ import { Skill } from "@/types/skillType";
+ import { UsesItem } from "@/types/usesType";
++import { Photo } from "@/types/photoType";
++import { Workspace } from "@/types/workspaceType";
+ import { client } from "@/sanity/lib/client";
+ import { draftMode } from "next/headers";
+ import { sanityFetch } from "@/sanity/lib/live";
+@@ -233,8 +235,14 @@ export const getUses = async (lang: string): Promise<UsesItem[]> => {
+       _type,
+       name,
+       description,
++      specs,
+       category,
+       "iconUrl": icon.asset->url,
++      "imageUrl": image.asset->url,
++      "imageAlt": image.alt,
++      "imageWidth": image.asset->metadata.dimensions.width,
++      "imageHeight": image.asset->metadata.dimensions.height,
++      "imageLqip": image.asset->metadata.lqip,
+       link,
+       order
+     }`,
+@@ -244,3 +252,38 @@ export const getUses = async (lang: string): Promise<UsesItem[]> => {
+   return data ?? [];
+ };
+ 
++export const getWorkspace = async (lang: string): Promise<Workspace | null> => {
++  const { data } = await sanityFetch({
++    query: `*[_type == "workspace" && language == $lang && defined(image.asset)][0]{
++      _id,
++      caption,
++      "alt": image.alt,
++      "url": image.asset->url,
++      "width": image.asset->metadata.dimensions.width,
++      "height": image.asset->metadata.dimensions.height,
++      "lqip": image.asset->metadata.lqip
++    }`,
++    params: { lang },
++  });
++
++  return data ?? null;
++};
++
++export const getPhotos = async (): Promise<Photo[]> => {
++  const { data } = await sanityFetch({
++    query: `*[_type == "photo" && defined(image.asset)] | order(date desc, _createdAt desc)[0...200]{
++      _id,
++      caption,
++      date,
++      location,
++      "alt": image.alt,
++      "url": image.asset->url,
++      "width": image.asset->metadata.dimensions.width,
++      "height": image.asset->metadata.dimensions.height,
++      "lqip": image.asset->metadata.lqip
++    }`,
++  });
++
++  return data ?? [];
++};
++
+diff --git a/port_v2/messages/de.json b/port_v2/messages/de.json
+index 8af01e2..85cbf27 100644
+--- a/port_v2/messages/de.json
++++ b/port_v2/messages/de.json
+@@ -7,7 +7,8 @@
+         "uses": "Werkzeuge",
+         "about": "Über mich",
+         "contact": "Kontakt",
+-        "more": "Mehr"
++        "more": "Mehr",
++        "photos": "Fotos"
+     },
+     "metadata": {
+         "home": {
+@@ -51,6 +52,11 @@
+             "title": "Werkzeuge / Setup — Arya Dzaky",
+             "description": "Die Tools, Apps und Hardware, die ich für die Softwareentwicklung verwende.",
+             "keywords": "Arya Dzaky Setup, Entwicklungswerkzeuge, Editor, IDE, Terminal, DevOps"
++        },
++        "photos": {
++            "title": "Fotos — Arya Dzaky",
++            "description": "Schnappschüsse von Erinnerungen, an eine Pinnwand geheftet.",
++            "keywords": "Arya Dzaky Fotos, Fotoalbum, Reisen, Erinnerungen"
+         }
+     },
+     "home": {
+@@ -380,12 +386,11 @@
+     "usesPage": {
+         "title": "Werkzeuge / Setup",
+         "description": "Ein Blick auf die Tools, Apps und Hardware, die meinen täglichen Workflow antreiben.",
+-        "editor": "Editor & IDE",
+-        "terminal": "Terminal",
+-        "devops": "DevOps & Bereitstellung",
+-        "design": "Design",
+-        "browser": "Browser",
+-        "hardware": "Hardware & OS",
++        "workstation": "Workstation",
++        "furniture": "Möbel",
++        "accessories": "Zubehör",
++        "applications": "Anwendungen",
++        "subscriptions": "Abonnements",
+         "visitSite": "Website besuchen"
+     },
+     "footer": {
+@@ -398,5 +403,13 @@
+         "subtitle": "404 - Seite nicht gefunden",
+         "description": "Die angeforderte URL wurde auf diesem Server nicht gefunden. Mehr wissen wir nicht.",
+         "backToHome": "Zurück zur Startseite"
++    },
++    "photosPage": {
++        "title": "Fotoalbum",
++        "description": "Schnappschüsse von Erinnerungen, an eine Pinnwand geheftet.",
++        "close": "Foto schließen",
++        "previous": "Vorheriges Foto",
++        "next": "Nächstes Foto",
++        "empty": "Noch keine Fotos. Schau bald wieder vorbei."
+     }
+ }
+\ No newline at end of file
+diff --git a/port_v2/messages/en.json b/port_v2/messages/en.json
+index 9dddd7d..bc677e6 100644
+--- a/port_v2/messages/en.json
++++ b/port_v2/messages/en.json
+@@ -7,7 +7,8 @@
+         "uses": "Uses",
+         "about": "About",
+         "contact": "Contact",
+-        "more": "More"
++        "more": "More",
++        "photos": "Photos"
+     },
+     "metadata": {
+         "home": {
+@@ -51,6 +52,11 @@
+             "title": "Uses / Setup — Arya Dzaky",
+             "description": "The tools, apps, and hardware I use for software development.",
+             "keywords": "Arya Dzaky Setup, Development Tools, Editor, IDE, Terminal, DevOps"
++        },
++        "photos": {
++            "title": "Photos — Arya Dzaky",
++            "description": "Snapshots of memories pinned to a board.",
++            "keywords": "Arya Dzaky Photos, Photo Album, Travel, Memories"
+         }
+     },
+     "home": {
+@@ -380,12 +386,11 @@
+     "usesPage": {
+         "title": "Uses / Setup",
+         "description": "A look at the tools, apps, and hardware that power my daily workflow.",
+-        "editor": "Editor & IDE",
+-        "terminal": "Terminal",
+-        "devops": "DevOps & Deployment",
+-        "design": "Design",
+-        "browser": "Browser",
+-        "hardware": "Hardware & OS",
++        "workstation": "Workstation",
++        "furniture": "Furniture",
++        "accessories": "Accessories",
++        "applications": "Applications",
++        "subscriptions": "Subscriptions",
+         "visitSite": "Visit Site"
+     },
+     "footer": {
+@@ -398,5 +403,13 @@
+         "subtitle": "404 - That's Error",
+         "description": "The requested URL was not found on this server. That's all we know.",
+         "backToHome": "Back to Home"
++    },
++    "photosPage": {
++        "title": "Photo Album",
++        "description": "Snapshots of memories pinned to a board.",
++        "close": "Close photo",
++        "previous": "Previous photo",
++        "next": "Next photo",
++        "empty": "No photos yet. Check back soon."
+     }
+ }
+\ No newline at end of file
+diff --git a/port_v2/messages/id.json b/port_v2/messages/id.json
+index 76d5768..dacf49c 100644
+--- a/port_v2/messages/id.json
++++ b/port_v2/messages/id.json
+@@ -7,7 +7,8 @@
+         "uses": "Perangkat",
+         "about": "Tentang",
+         "contact": "Kontak",
+-        "more": "Lainnya"
++        "more": "Lainnya",
++        "photos": "Foto"
+     },
+     "metadata": {
+         "home": {
+@@ -51,6 +52,11 @@
+             "title": "Perangkat / Setup — Arya Dzaky",
+             "description": "Alat, aplikasi, dan perangkat keras yang saya gunakan untuk pengembangan perangkat lunak.",
+             "keywords": "Setup Arya Dzaky, Alat Pengembangan, Editor, IDE, Terminal, DevOps"
++        },
++        "photos": {
++            "title": "Foto — Arya Dzaky",
++            "description": "Potret kenangan yang ditempel di sebuah papan.",
++            "keywords": "Foto Arya Dzaky, Album Foto, Perjalanan, Kenangan"
+         }
+     },
+     "home": {
+@@ -380,12 +386,11 @@
+     "usesPage": {
+         "title": "Perangkat / Setup",
+         "description": "Sekilas tentang alat, aplikasi, dan perangkat keras yang mendukung alur kerja harian saya.",
+-        "editor": "Editor & IDE",
+-        "terminal": "Terminal",
+-        "devops": "DevOps & Deployment",
+-        "design": "Desain",
+-        "browser": "Peramban",
+-        "hardware": "Perangkat & OS",
++        "workstation": "Workstation",
++        "furniture": "Furnitur",
++        "accessories": "Aksesori",
++        "applications": "Aplikasi",
++        "subscriptions": "Langganan",
+         "visitSite": "Kunjungi Situs"
+     },
+     "footer": {
+@@ -398,5 +403,13 @@
+         "subtitle": "404 - Halaman Tidak Ditemukan",
+         "description": "URL yang diminta tidak ditemukan di server ini. Hanya itu yang kami tahu.",
+         "backToHome": "Kembali ke Beranda"
++    },
++    "photosPage": {
++        "title": "Album Foto",
++        "description": "Potret kenangan yang ditempel di sebuah papan.",
++        "close": "Tutup foto",
++        "previous": "Foto sebelumnya",
++        "next": "Foto berikutnya",
++        "empty": "Belum ada foto. Kembali lagi nanti."
+     }
+ }
+\ No newline at end of file
+diff --git a/port_v2/sanity.config.ts b/port_v2/sanity.config.ts
+index d34185f..b898f3e 100644
+--- a/port_v2/sanity.config.ts
++++ b/port_v2/sanity.config.ts
+@@ -52,7 +52,8 @@ export default defineConfig({
+         "education",
+         "experience",
+         "certification",
+-        "uses"
++        "uses",
++        "workspace",
+       ],
+       // Make language field available as "language" instead of "__i18n_lang"
+       languageField: "language",
+diff --git a/port_v2/sanity/schemaTypes/index.ts b/port_v2/sanity/schemaTypes/index.ts
+index f90ff7d..3d837c9 100644
+--- a/port_v2/sanity/schemaTypes/index.ts
++++ b/port_v2/sanity/schemaTypes/index.ts
+@@ -11,6 +11,8 @@ import embedType from "./objects/embed-block";
+ import videoBlockType from "./objects/video-block";
+ import skillType from "./skill";
+ import usesType from "./uses";
++import photoType from "./photo";
++import workspaceType from "./workspace";
+ export const schema: { types: SchemaTypeDefinition[] } = {
+   types: [
+     heroType,
+@@ -25,5 +27,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
+     videoBlockType,
+     skillType,
+     usesType,
++    photoType,
++    workspaceType,
+   ],
+ };
+diff --git a/port_v2/sanity/schemaTypes/photo.ts b/port_v2/sanity/schemaTypes/photo.ts
+new file mode 100644
+index 0000000..f4b067a
+--- /dev/null
++++ b/port_v2/sanity/schemaTypes/photo.ts
+@@ -0,0 +1,58 @@
++import { defineType, defineField } from "sanity";
++import { Images } from "lucide-react";
++
++// One document per photo on the /photos board. Photos are not translated:
++// write the caption in whatever language suits the moment.
++export default defineType({
++  name: "photo",
++  title: "Photo",
++  type: "document",
++  icon: Images,
++  fields: [
++    defineField({
++      name: "image",
++      title: "Photo",
++      type: "image",
++      options: { hotspot: true },
++      validation: (Rule) => Rule.required(),
++      fields: [
++        defineField({
++          name: "alt",
++          title: "Alternative text",
++          type: "string",
++          description: "Describe the photo for people who can't see it. Falls back to the caption.",
++        }),
++      ],
++    }),
++    defineField({
++      name: "caption",
++      title: "Caption",
++      type: "string",
++      description: 'A short, casual line, e.g. "jumping in thailand"',
++      validation: (Rule) => Rule.required().max(120),
++    }),
++    defineField({
++      name: "date",
++      title: "Date taken",
++      type: "date",
++      initialValue: () => new Date().toISOString().slice(0, 10),
++      validation: (Rule) => Rule.required(),
++    }),
++    defineField({
++      name: "location",
++      title: "Location",
++      type: "string",
++      description: "Optional. Shown when the photo is opened.",
++    }),
++  ],
++  orderings: [
++    {
++      title: "Newest first",
++      name: "dateDesc",
++      by: [{ field: "date", direction: "desc" }],
++    },
++  ],
++  preview: {
++    select: { title: "caption", subtitle: "date", media: "image" },
++  },
++});
+diff --git a/port_v2/sanity/schemaTypes/uses.ts b/port_v2/sanity/schemaTypes/uses.ts
+index ec9b076..3f42e87 100644
+--- a/port_v2/sanity/schemaTypes/uses.ts
++++ b/port_v2/sanity/schemaTypes/uses.ts
+@@ -29,18 +29,39 @@ export default defineType({
+       type: "string",
+       options: {
+         list: [
+-          { title: "Editor & IDE", value: "editor" },
+-          { title: "Terminal", value: "terminal" },
+-          { title: "DevOps & Deployment", value: "devops" },
+-          { title: "Design", value: "design" },
+-          { title: "Browser", value: "browser" },
+-          { title: "Hardware", value: "hardware" },
++          { title: "Workstation", value: "workstation" },
++          { title: "Furniture", value: "furniture" },
++          { title: "Accessories", value: "accessories" },
++          { title: "Applications", value: "applications" },
++          { title: "Subscriptions", value: "subscriptions" },
+         ],
+         layout: "radio",
+       },
+       validation: (Rule) => Rule.required(),
+     }),
+ 
++    defineField({
++      name: "specs",
++      title: "Specs",
++      type: "string",
++      description: 'Optional line under the name, e.g. \'14" M3 Pro, 36GB, 1TB SSD\'',
++    }),
++
++    defineField({
++      name: "image",
++      title: "Photo / Screenshot",
++      type: "image",
++      options: { hotspot: true },
++      description: "Shown next to the description. A product photo or a screenshot of the app.",
++      fields: [
++        defineField({
++          name: "alt",
++          title: "Alternative text",
++          type: "string",
++        }),
++      ],
++    }),
++
+     defineField({
+       name: "icon",
+       title: "Tool Icon / Logo",
+diff --git a/port_v2/sanity/schemaTypes/workspace.ts b/port_v2/sanity/schemaTypes/workspace.ts
+new file mode 100644
+index 0000000..f22d821
+--- /dev/null
++++ b/port_v2/sanity/schemaTypes/workspace.ts
+@@ -0,0 +1,41 @@
++import { defineType, defineField } from "sanity";
++import { Armchair } from "lucide-react";
++
++// The workspace photo at the top of the Uses page. One document per language,
++// so the caption can be translated.
++export default defineType({
++  name: "workspace",
++  title: "Workspace photo",
++  type: "document",
++  icon: Armchair,
++  fields: [
++    defineField({
++      name: "image",
++      title: "Photo",
++      type: "image",
++      options: { hotspot: true },
++      validation: (Rule) => Rule.required(),
++      fields: [
++        defineField({
++          name: "alt",
++          title: "Alternative text",
++          type: "string",
++        }),
++      ],
++    }),
++    defineField({
++      name: "caption",
++      title: "Caption",
++      type: "string",
++      description: 'e.g. "My desk in Bandar Lampung, 2026"',
++    }),
++  ],
++  preview: {
++    select: { title: "caption", media: "image", subtitle: "language" },
++    prepare: ({ title, media, subtitle }) => ({
++      title: title || "Workspace photo",
++      subtitle,
++      media,
++    }),
++  },
++});
+diff --git a/port_v2/sanity/structure.ts b/port_v2/sanity/structure.ts
+index 3aec359..5330cf6 100644
+--- a/port_v2/sanity/structure.ts
++++ b/port_v2/sanity/structure.ts
+@@ -61,6 +61,10 @@ export const structure: StructureResolver = (S) =>
+                 S.listItem()
+                   .title("Uses")
+                   .child(filteredList(S, "uses", lang.value)),
++
++                S.listItem()
++                  .title("Workspace photo")
++                  .child(filteredList(S, "workspace", lang.value)),
+               ]),
+           ),
+       ),
+@@ -74,6 +78,13 @@ export const structure: StructureResolver = (S) =>
+             .items([
+               S.listItem().title("Category").child(globalList(S, "category")),
+               S.listItem().title("Skills").child(globalList(S, "skill")),
++              S.listItem()
++                .title("Photos")
++                .child(
++                  S.documentTypeList("photo")
++                    .title("Photos")
++                    .defaultOrdering([{ field: "date", direction: "desc" }]),
++                ),
+             ]),
+         ),
+     ]);
+diff --git a/port_v2/scripts/migrate-uses-categories.mjs b/port_v2/scripts/migrate-uses-categories.mjs
+new file mode 100644
+index 0000000..245fb32
+--- /dev/null
++++ b/port_v2/scripts/migrate-uses-categories.mjs
+@@ -0,0 +1,65 @@
++// One-off migration for the redesigned Uses page.
++//
++// The page now groups items into five sections (workstation, furniture,
++// accessories, applications, subscriptions). Items saved with the old six
++// categories still show up, because the page maps them at render time, but
++// Studio shows them with no category selected until they are re-saved.
++// This script rewrites the old values so Studio matches.
++//
++//   node --env-file=.env.local scripts/migrate-uses-categories.mjs           # dry run
++//   node --env-file=.env.local scripts/migrate-uses-categories.mjs --apply   # write
++//
++// Needs NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET and a token
++// with write access in SANITY_API_WRITE_TOKEN.
++
++import { createClient } from "next-sanity";
++
++const MAP = {
++  editor: "applications",
++  terminal: "applications",
++  devops: "applications",
++  design: "applications",
++  browser: "applications",
++  hardware: "workstation",
++};
++
++const { NEXT_PUBLIC_SANITY_PROJECT_ID: projectId, NEXT_PUBLIC_SANITY_DATASET: dataset, SANITY_API_WRITE_TOKEN: token } = process.env;
++const apply = process.argv.includes("--apply");
++
++if (!projectId || !dataset || !token) {
++  console.error("Set NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET and SANITY_API_WRITE_TOKEN.");
++  process.exit(1);
++}
++
++const client = createClient({
++  projectId,
++  dataset,
++  token,
++  apiVersion: "2025-11-08",
++  useCdn: false,
++  perspective: "raw", // include drafts so they are migrated too
++});
++
++const docs = await client.fetch(
++  `*[_type == "uses" && category in $legacy]{ _id, name, language, category } | order(name asc)`,
++  { legacy: Object.keys(MAP) },
++);
++
++if (docs.length === 0) {
++  console.log("Nothing to migrate: no Uses documents use the old categories.");
++  process.exit(0);
++}
++
++for (const doc of docs) {
++  console.log(`${doc._id}  [${doc.language ?? "-"}]  ${doc.name}: ${doc.category} -> ${MAP[doc.category]}`);
++}
++
++if (!apply) {
++  console.log(`\n${docs.length} document(s) would change. Re-run with --apply to write.`);
++  process.exit(0);
++}
++
++let tx = client.transaction();
++for (const doc of docs) tx = tx.patch(doc._id, { set: { category: MAP[doc.category] } });
++await tx.commit();
++console.log(`\nUpdated ${docs.length} document(s).`);
+diff --git a/port_v2/types/photoType.d.ts b/port_v2/types/photoType.d.ts
+new file mode 100644
+index 0000000..d39242b
+--- /dev/null
++++ b/port_v2/types/photoType.d.ts
+@@ -0,0 +1,13 @@
++export interface Photo {
++  _id: string;
++  caption: string;
++  /** ISO date, YYYY-MM-DD */
++  date: string;
++  location?: string;
++  alt?: string;
++  url: string;
++  width: number;
++  height: number;
++  /** Tiny blurred preview from Sanity, used while the photo loads. */
++  lqip?: string;
++}
+diff --git a/port_v2/types/usesType.d.ts b/port_v2/types/usesType.d.ts
+index de73831..42d5270 100644
+--- a/port_v2/types/usesType.d.ts
++++ b/port_v2/types/usesType.d.ts
+@@ -1,9 +1,27 @@
++export type UsesCategory =
++  | "workstation"
++  | "furniture"
++  | "accessories"
++  | "applications"
++  | "subscriptions";
++
+ export interface UsesItem {
+   _id: string;
+   name: string;
+   description?: string;
+-  category: "editor" | "terminal" | "devops" | "design" | "browser" | "hardware";
++  specs?: string;
++  /**
++   * The five categories above. Documents saved before the redesign may still
++   * carry an older value (editor, terminal, devops, design, browser, hardware);
++   * use normalizeUsesCategory() from constants/uses-data before grouping.
++   */
++  category: string;
+   iconUrl?: string;
++  imageUrl?: string;
++  imageAlt?: string;
++  imageWidth?: number;
++  imageHeight?: number;
++  imageLqip?: string;
+   link?: string;
+   order?: number;
+ }
+diff --git a/port_v2/types/workspaceType.d.ts b/port_v2/types/workspaceType.d.ts
+new file mode 100644
+index 0000000..13d862b
+--- /dev/null
++++ b/port_v2/types/workspaceType.d.ts
+@@ -0,0 +1,9 @@
++export interface Workspace {
++  _id: string;
++  caption?: string;
++  alt?: string;
++  url: string;
++  width: number;
++  height: number;
++  lqip?: string;
++}

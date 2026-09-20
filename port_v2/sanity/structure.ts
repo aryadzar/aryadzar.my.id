@@ -61,6 +61,10 @@ export const structure: StructureResolver = (S) =>
                 S.listItem()
                   .title("Uses")
                   .child(filteredList(S, "uses", lang.value)),
+
+                S.listItem()
+                  .title("Workspace photo")
+                  .child(filteredList(S, "workspace", lang.value)),
               ]),
           ),
       ),
@@ -74,6 +78,13 @@ export const structure: StructureResolver = (S) =>
             .items([
               S.listItem().title("Category").child(globalList(S, "category")),
               S.listItem().title("Skills").child(globalList(S, "skill")),
+              S.listItem()
+                .title("Photos")
+                .child(
+                  S.documentTypeList("photo")
+                    .title("Photos")
+                    .defaultOrdering([{ field: "date", direction: "desc" }]),
+                ),
             ]),
         ),
     ]);
