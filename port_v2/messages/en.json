@@ -152,7 +152,187 @@
         "skillsTitle": "Skills",
         "headingAction": "Actions",
         "contact": "Contact Me",
-        "viewProjects": "View All Projects"
+        "viewProjects": "View All Projects",
+        "intro": {
+            "available": "Available for work",
+            "tag": "Backend & Fullstack",
+            "headlineA": "Backends that hold up.",
+            "headlineB": "Interfaces that stay out of the way.",
+            "lead": "I’m <strong>{name}</strong>, a fullstack and backend developer in {location}. I design web applications that keep performing as users and features grow, and I still care about the last mile: the interface people actually touch.",
+            "roleLabel": "Role",
+            "roleDefault": "Fullstack / Backend Developer",
+            "basedLabel": "Based in",
+            "locationDefault": "Bandar Lampung, Indonesia",
+            "timezoneDefault": "UTC+7",
+            "coreLabel": "Core stack",
+            "infraLabel": "Infrastructure",
+            "cv": "View CV",
+            "contact": "Get in touch",
+            "hint": "Move your cursor",
+            "sceneLabel": "Interactive 3D scene: the AD monogram on a pedestal, orbited by technology name plaques"
+        },
+        "work": {
+            "eyebrow": "How I work",
+            "title": "Four habits you can check in the code.",
+            "subtitle": "Claims are cheap. Each habit below points to something visible in this site’s repository.",
+            "moreCerts": "See all certifications",
+            "habits": {
+                "backend": {
+                    "title": "Backends that keep performing",
+                    "description": "Scalable systems that stay fast, secure and reliable as users and features grow.",
+                    "evidence": [
+                        "Container build with health checks (Docker Compose)",
+                        "Production error tracking with Sentry since June 2025",
+                        "Server-side rendering, plus a dynamic sitemap and robots for every locale"
+                    ]
+                },
+                "interfaces": {
+                    "title": "Interfaces that stay accessible",
+                    "description": "Clean, fast screens built on primitives that already handle focus, keyboard and screen readers.",
+                    "evidence": [
+                        "Radix UI primitives behind each shadcn/ui component",
+                        "One component tree serving English, Indonesian and German",
+                        "Theme tokens with matching light and dark modes"
+                    ]
+                },
+                "content": {
+                    "title": "Content kept apart from code",
+                    "description": "Editors change words and images in Sanity Studio; developers change behaviour in code. Neither blocks the other.",
+                    "evidence": [
+                        "Typed content schemas for projects, skills, experience and more",
+                        "Live preview and visual editing wired to the Studio",
+                        "Server components fetch; client components only animate"
+                    ]
+                },
+                "teaching": {
+                    "title": "Explains what it builds",
+                    "description": "Teaching forces clarity. I have been a lecturer assistant for web programming, basic programming and OOP.",
+                    "evidence": [
+                        "Web Programming lecturer assistant, Himakom, 2025",
+                        "Basic Programming and OOP lecturer assistant, 2024",
+                        "BNSP-certified Junior Web Developer, 2024"
+                    ]
+                }
+            }
+        },
+        "architecture": {
+            "eyebrow": "Case study",
+            "title": "This site, taken apart.",
+            "subtitle": "From a client-rendered React app to a server-rendered, multilingual, CMS-driven site. Pick a node, in the scene or from the buttons, to see what it does.",
+            "sceneLabel": "Interactive 3D diagram of this site’s architecture: Sanity, Spotify, Next.js, the browser, Vercel and Sentry, connected by animated data flows",
+            "nodesLabel": "Architecture nodes",
+            "from": "from",
+            "to": "to",
+            "fallback": "Sanity → Next.js → Browser, hosted on Vercel, monitored by Sentry.",
+            "problemLabel": "Problem",
+            "problem": "The first portfolio was a client-rendered React app with its content written into components, and it spoke one language.",
+            "decisionsLabel": "Decisions",
+            "decisions": [
+                "Render on the server, animate on the client",
+                "Move content into Sanity, behind typed schemas",
+                "Route by locale with next-intl: English, Indonesian, German",
+                "Track errors and keep a container path open"
+            ],
+            "outcomeLabel": "Outcome",
+            "outcomes": {
+                "commits": "Commits",
+                "languages": "Languages",
+                "types": "Content types edited in Studio"
+            },
+            "nodes": {
+                "sanity": {
+                    "kind": "Content",
+                    "description": "The single source of content. Server components query it with GROQ, filtered by language; draft mode and content source maps power live preview."
+                },
+                "spotify": {
+                    "kind": "Integration",
+                    "description": "A route handler proxies the Spotify API, so the now-playing widget never exposes credentials to the browser."
+                },
+                "next": {
+                    "kind": "Application",
+                    "description": "App Router with server-side rendering. Locale routing through next-intl (English, Indonesian, German), a localized 404, and a dynamic sitemap and robots file."
+                },
+                "browser": {
+                    "kind": "Client",
+                    "description": "Client components handle motion and interaction with Framer Motion. Content arrives already rendered, so search engines and slow phones both get real HTML."
+                },
+                "vercel": {
+                    "kind": "Hosting",
+                    "description": "Deployed on Vercel with Analytics. A Dockerfile and a Compose file with health checks keep a self-hosted option open."
+                },
+                "sentry": {
+                    "kind": "Observability",
+                    "description": "Errors from the server and the browser are reported to Sentry. It was wired in during June 2025, two months after the first commit."
+                }
+            }
+        },
+        "skills": {
+            "eyebrow": "Depth",
+            "title": "What I reach for daily, and what I’m still learning.",
+            "subtitle": "The same groups as the Skills page, with an honest read on how deep each one goes.",
+            "levels": {
+                "1": "Learning",
+                "2": "Comfortable",
+                "3": "Daily"
+            }
+        },
+        "activity": {
+            "eyebrow": "Activity",
+            "titleRepository": "Every commit on this portfolio, as a skyline.",
+            "titleGithub": "A year of contributions, as a skyline.",
+            "subtitleRepository": "Each bar is one day in the repository’s history, laid out in a ring of {weeks} weeks. Taller means more commits. Hover a bar.",
+            "subtitleGithub": "Each bar is one day of the last year on GitHub, laid out in a ring of {weeks} weeks. Taller means more contributions. Hover a bar.",
+            "sceneLabel": "Ring of 3D bars, one per day, taller for days with more activity",
+            "start": "START",
+            "tipRepository": "{count, plural, =0 {No commits} one {# commit} other {# commits}}",
+            "tipGithub": "{count, plural, =0 {No contributions} one {# contribution} other {# contributions}}",
+            "totalRepository": "Commits",
+            "totalGithub": "Contributions",
+            "activeDays": "Days with activity",
+            "busiest": "Most in a single day",
+            "shippedTitle": "Shipped, newest first",
+            "sourceRepository": "Source: git history of the portfolio repository.",
+            "sourceGithub": "Source: GitHub contribution calendar.",
+            "shipped": {
+                "certificateModal": "Certificate preview modal and animated image zoom",
+                "skillsUses": "Skills and Uses pages powered by Sanity",
+                "seo": "Dynamic sitemap and robots.txt for every locale",
+                "categories": "Category filtering and category pages",
+                "docker": "Docker support",
+                "livePreview": "Sanity content source maps for live preview",
+                "i18n": "i18n integrated across every page",
+                "sentry": "Sentry error tracking"
+            }
+        },
+        "collab": {
+            "eyebrow": "Working together",
+            "title": "What happens after you say hello.",
+            "subtitle": "No pitch deck and no surprise at the end. Three steps, in this order.",
+            "steps": {
+                "brief": {
+                    "title": "Brief",
+                    "description": "A short message or call about goals, users and constraints. You get a scope and a rough timeline back."
+                },
+                "build": {
+                    "title": "Build in the open",
+                    "description": "Small releases on a preview link you can click through, instead of one big reveal at the end."
+                },
+                "ship": {
+                    "title": "Ship and hand over",
+                    "description": "Deployed, with error tracking on and enough documentation for your team to keep going without me."
+                }
+            },
+            "fitLabel": "Good fit",
+            "fit": [
+                "Backend and API design",
+                "Fullstack apps with Next.js",
+                "Containers with Docker and Kubernetes",
+                "Auth with Keycloak",
+                "Multilingual, CMS-driven sites"
+            ],
+            "ctaTitle": "Have a system that needs to scale, or an interface that needs care?",
+            "certifications": "Certifications"
+        }
     },
     "projectDetail": {
         "altImage": "Cover image for {title}",

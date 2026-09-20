@@ -52,6 +52,22 @@ export default defineType({
     }),
 
     defineField({
+      name: "level",
+      title: "Depth (About page)",
+      type: "number",
+      description: "How deep this skill goes. Used by the About page.",
+      options: {
+        list: [
+          { title: "Learning", value: 1 },
+          { title: "Comfortable", value: 2 },
+          { title: "Daily", value: 3 },
+        ],
+        layout: "radio",
+      },
+      initialValue: 2,
+    }),
+
+    defineField({
       name: "order",
       title: "Display Order",
       type: "number",

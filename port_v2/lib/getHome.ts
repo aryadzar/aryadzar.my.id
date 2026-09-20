@@ -33,6 +33,12 @@ export const getAbout = async (lang: string): Promise<About> => {
       name,
       jobTitle,
       description,
+      headlineA,
+      headlineB,
+      location,
+      timezone,
+      coreStack,
+      infrastructure,
       "imageUrl": profileImage.asset->url,
       "cvUrl": cvFile.asset->url,
       "certificateUrl": certificateFile.asset->url
@@ -212,6 +218,7 @@ export const getSkills = async (): Promise<Skill[]> => {
       category,
       "iconUrl": icon.asset->url,
       color,
+      level,
       order
     }`
   });
