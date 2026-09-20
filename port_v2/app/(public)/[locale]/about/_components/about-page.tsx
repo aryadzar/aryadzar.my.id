@@ -1,88 +1,38 @@
-"use client";
+import { AboutActivity } from "@/components/about/about-activity";
+import { AboutArchitecture } from "@/components/about/about-architecture";
+import { AboutCollab } from "@/components/about/about-collab";
+import { AboutIntro } from "@/components/about/about-intro";
+import { AboutSkills } from "@/components/about/about-skills";
+import { AboutWork } from "@/components/about/about-work";
+import type { Activity } from "@/types/activityType";
+import type { About } from "@/types/aboutType";
+import type { Skill } from "@/types/skillType";
 
-import { AboutBrief } from "@/components/about-brief";
-import { CertificationsSection } from "@/components/certifications-section";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { About } from "@/types/aboutType";
-import { Certificate } from "@/types/certificateType";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-const skills: string[] = [
-  "Next.js",
-  "TypeScript",
-  "React",
-  "Tailwind CSS",
-  "Framer Motion",
-  "Shadcn UI",
-  "Node.js",
-  "REST/GraphQL",
-];
-
-export default function AboutPage({
-  certificateData,
-  aboutData,
-}: {
-  certificateData: Certificate[];
+interface AboutPageProps {
   aboutData: About;
-}) {
-  const t = useTranslations("aboutPage");
+  skillsData: Skill[];
+  activity: Activity;
+  /** Number of commits in this repository, shown in the case study's outcome. */
+  commitTotal: number;
+  /** Names for the orbiting plaques on the 3D badge. */
+  plaques: string[];
+}
 
+export default function AboutPage({ aboutData, skillsData, activity, commitTotal, plaques }: AboutPageProps) {
   return (
-    <main className="min-h-[60vh]">
-      {/* Header */}
-      {/* <header className="max-w-5xl px-4 pt-10 mx-auto md:px-6 md:pt-14">
-        <h1 className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">
-          {t("title")}
-        </h1>
-        <p className="mt-2 text-pretty text-muted-foreground">
-          {t("description")}
-        </p>
-      </header> */}
-
-      {/* About Brief */}
-      <AboutBrief data={aboutData} />
-
-      {/* Keahlian */}
-      <section aria-labelledby="skills-heading" className="py-10 md:py-14">
-        <div className="max-w-5xl px-4 mx-auto md:px-6">
-          <h2
-            id="skills-heading"
-            className="text-2xl font-semibold tracking-tight text-balance"
-          >
-            {t("skillsTitle")}
-          </h2>
-          <div className="flex flex-wrap gap-2 mt-5">
-            {skills.map((s) => (
-              <Badge key={s} variant="secondary" className="rounded-md">
-                {s}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Certifications on About page */}
-      <div id="certifications">
-        <CertificationsSection data={certificateData} limit={6} />
+    <main className="relative min-h-[60vh] overflow-x-clip">
+      {/* Ambient glow behind the hero, in the site's two accent hues */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-[60px] right-[6%] size-[520px] rounded-full bg-emerald-500/15 blur-[80px] dark:bg-emerald-500/20" />
+        <div className="absolute top-[380px] -right-[8%] size-[480px] rounded-full bg-indigo-500/15 blur-[80px] dark:bg-indigo-500/25" />
       </div>
 
-      {/* CTA */}
-      <section aria-labelledby="cta-heading" className="pb-16 md:pb-20">
-        <div className="max-w-5xl px-4 mx-auto md:px-6">
-          <h2 id="cta-heading" className="sr-only">
-            {t("headingAction")}
-          </h2>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild>
-              <Link href="/#contact">{t("contact")}</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/projects">{t("viewProjects")}</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <AboutIntro about={aboutData} plaques={plaques} />
+      <AboutWork />
+      <AboutArchitecture commitTotal={commitTotal} />
+      <AboutSkills skills={skillsData} />
+      <AboutActivity activity={activity} />
+      <AboutCollab about={aboutData} />
     </main>
   );
 }

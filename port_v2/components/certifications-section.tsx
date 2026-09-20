@@ -43,6 +43,7 @@ export function CertificationsSection({
 
   return (
     <section
+      id="certifications"
       aria-labelledby="certifications-heading"
       className="relative py-20 overflow-hidden md:py-32"
     >

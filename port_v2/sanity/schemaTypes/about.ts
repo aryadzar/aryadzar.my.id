@@ -38,6 +38,51 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // ---- Fields used by the About page (all optional; the page falls back to translations) ----
+    defineField({
+      name: "headlineA",
+      title: "Headline, first line",
+      type: "string",
+      description: "e.g. Backends that hold up.",
+    }),
+
+    defineField({
+      name: "headlineB",
+      title: "Headline, second line (shown softer)",
+      type: "string",
+      description: "e.g. Interfaces that stay out of the way.",
+    }),
+
+    defineField({
+      name: "location",
+      title: "Location",
+      type: "string",
+      description: "e.g. Bandar Lampung, Indonesia",
+    }),
+
+    defineField({
+      name: "timezone",
+      title: "Time zone",
+      type: "string",
+      description: "e.g. UTC+7 (WIB)",
+    }),
+
+    defineField({
+      name: "coreStack",
+      title: "Core stack",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Shown in the facts grid, e.g. React, Next.js, Node.js, Go",
+    }),
+
+    defineField({
+      name: "infrastructure",
+      title: "Infrastructure",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Shown in the facts grid, e.g. Docker, Kubernetes, Keycloak",
+    }),
+
     defineField({
       name: "cvFile",
       title: "Upload CV (PDF)",

@@ -7,4 +7,10 @@ export interface About {
   imageUrl: string;
   jobTitle: string;
   name: string;
+  headlineA?: string;
+  headlineB?: string;
+  location?: string;
+  timezone?: string;
+  coreStack?: string[];
+  infrastructure?: string[];
 }

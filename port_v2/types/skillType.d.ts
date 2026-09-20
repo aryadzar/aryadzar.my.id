@@ -5,4 +5,6 @@ export interface Skill {
   iconUrl?: string;
   color?: string;
   order?: number;
+  /** 1 = learning, 2 = comfortable, 3 = daily. Used by the About page. */
+  level?: 1 | 2 | 3;
 }

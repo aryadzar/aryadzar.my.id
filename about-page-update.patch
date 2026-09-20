@@ -1,0 +1,3289 @@
+diff --git a/port_v2/app/(public)/[locale]/about/_components/about-page.tsx b/port_v2/app/(public)/[locale]/about/_components/about-page.tsx
+index d5d8cf0..76b09cf 100644
+--- a/port_v2/app/(public)/[locale]/about/_components/about-page.tsx
++++ b/port_v2/app/(public)/[locale]/about/_components/about-page.tsx
+@@ -1,88 +1,38 @@
+-"use client";
++import { AboutActivity } from "@/components/about/about-activity";
++import { AboutArchitecture } from "@/components/about/about-architecture";
++import { AboutCollab } from "@/components/about/about-collab";
++import { AboutIntro } from "@/components/about/about-intro";
++import { AboutSkills } from "@/components/about/about-skills";
++import { AboutWork } from "@/components/about/about-work";
++import type { Activity } from "@/types/activityType";
++import type { About } from "@/types/aboutType";
++import type { Skill } from "@/types/skillType";
+ 
+-import { AboutBrief } from "@/components/about-brief";
+-import { CertificationsSection } from "@/components/certifications-section";
+-import { Badge } from "@/components/ui/badge";
+-import { Button } from "@/components/ui/button";
+-import { About } from "@/types/aboutType";
+-import { Certificate } from "@/types/certificateType";
+-import { useTranslations } from "next-intl";
+-import Link from "next/link";
+-const skills: string[] = [
+-  "Next.js",
+-  "TypeScript",
+-  "React",
+-  "Tailwind CSS",
+-  "Framer Motion",
+-  "Shadcn UI",
+-  "Node.js",
+-  "REST/GraphQL",
+-];
+-
+-export default function AboutPage({
+-  certificateData,
+-  aboutData,
+-}: {
+-  certificateData: Certificate[];
++interface AboutPageProps {
+   aboutData: About;
+-}) {
+-  const t = useTranslations("aboutPage");
++  skillsData: Skill[];
++  activity: Activity;
++  /** Number of commits in this repository, shown in the case study's outcome. */
++  commitTotal: number;
++  /** Names for the orbiting plaques on the 3D badge. */
++  plaques: string[];
++}
+ 
++export default function AboutPage({ aboutData, skillsData, activity, commitTotal, plaques }: AboutPageProps) {
+   return (
+-    <main className="min-h-[60vh]">
+-      {/* Header */}
+-      {/* <header className="max-w-5xl px-4 pt-10 mx-auto md:px-6 md:pt-14">
+-        <h1 className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">
+-          {t("title")}
+-        </h1>
+-        <p className="mt-2 text-pretty text-muted-foreground">
+-          {t("description")}
+-        </p>
+-      </header> */}
+-
+-      {/* About Brief */}
+-      <AboutBrief data={aboutData} />
+-
+-      {/* Keahlian */}
+-      <section aria-labelledby="skills-heading" className="py-10 md:py-14">
+-        <div className="max-w-5xl px-4 mx-auto md:px-6">
+-          <h2
+-            id="skills-heading"
+-            className="text-2xl font-semibold tracking-tight text-balance"
+-          >
+-            {t("skillsTitle")}
+-          </h2>
+-          <div className="flex flex-wrap gap-2 mt-5">
+-            {skills.map((s) => (
+-              <Badge key={s} variant="secondary" className="rounded-md">
+-                {s}
+-              </Badge>
+-            ))}
+-          </div>
+-        </div>
+-      </section>
+-
+-      {/* Certifications on About page */}
+-      <div id="certifications">
+-        <CertificationsSection data={certificateData} limit={6} />
++    <main className="relative min-h-[60vh] overflow-x-clip">
++      {/* Ambient glow behind the hero, in the site's two accent hues */}
++      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
++        <div className="absolute top-[60px] right-[6%] size-[520px] rounded-full bg-emerald-500/15 blur-[80px] dark:bg-emerald-500/20" />
++        <div className="absolute top-[380px] -right-[8%] size-[480px] rounded-full bg-indigo-500/15 blur-[80px] dark:bg-indigo-500/25" />
+       </div>
+ 
+-      {/* CTA */}
+-      <section aria-labelledby="cta-heading" className="pb-16 md:pb-20">
+-        <div className="max-w-5xl px-4 mx-auto md:px-6">
+-          <h2 id="cta-heading" className="sr-only">
+-            {t("headingAction")}
+-          </h2>
+-          <div className="flex flex-col gap-3 sm:flex-row">
+-            <Button asChild>
+-              <Link href="/#contact">{t("contact")}</Link>
+-            </Button>
+-            <Button variant="outline" asChild>
+-              <Link href="/projects">{t("viewProjects")}</Link>
+-            </Button>
+-          </div>
+-        </div>
+-      </section>
++      <AboutIntro about={aboutData} plaques={plaques} />
++      <AboutWork />
++      <AboutArchitecture commitTotal={commitTotal} />
++      <AboutSkills skills={skillsData} />
++      <AboutActivity activity={activity} />
++      <AboutCollab about={aboutData} />
+     </main>
+   );
+ }
+diff --git a/port_v2/app/(public)/[locale]/about/page.tsx b/port_v2/app/(public)/[locale]/about/page.tsx
+index 11ecf70..3d75dae 100644
+--- a/port_v2/app/(public)/[locale]/about/page.tsx
++++ b/port_v2/app/(public)/[locale]/about/page.tsx
+@@ -1,7 +1,12 @@
+ import { getTranslations } from "next-intl/server";
++import { stegaClean } from "next-sanity";
+ import AboutPage from "./_components/about-page";
+ import { createMetadata } from "@/lib/metadata";
+-import { getAbout, getCertificate } from "@/lib/getHome";
++import { getAbout, getSkills } from "@/lib/getHome";
++import { getActivity, REPOSITORY_COMMITS } from "@/lib/getActivity";
++
++// Names shown on the 3D badge until skills are rated "Daily" in Sanity.
++const FALLBACK_PLAQUES = ["Next.js", "Node.js", "Go", "PostgreSQL", "Docker", "Kubernetes"];
+ 
+ export async function generateMetadata({
+   params,
+@@ -27,9 +32,25 @@ export default async function AboutPageIndex({
+   params: Promise<{ locale: string }>;
+ }) {
+   const { locale } = await params;
+-  const [aboutData, certificateData] = await Promise.all([
++  const [aboutData, skillsData, activity] = await Promise.all([
+     getAbout(locale),
+-    getCertificate(6, locale),
++    getSkills(),
++    getActivity(),
+   ]);
+-  return <AboutPage aboutData={aboutData} certificateData={certificateData} />;
++
++  const daily = (skillsData ?? [])
++    .filter((s) => s.level === 3)
++    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
++    .map((s) => stegaClean(s.name))
++    .slice(0, 6);
++
++  return (
++    <AboutPage
++      aboutData={aboutData}
++      skillsData={skillsData ?? []}
++      activity={activity}
++      commitTotal={REPOSITORY_COMMITS}
++      plaques={daily.length >= 3 ? daily : FALLBACK_PLAQUES}
++    />
++  );
+ }
+diff --git a/port_v2/components/about/about-activity.tsx b/port_v2/components/about/about-activity.tsx
+new file mode 100644
+index 0000000..66efacd
+--- /dev/null
++++ b/port_v2/components/about/about-activity.tsx
+@@ -0,0 +1,172 @@
++"use client";
++
++import { useFormatter, useTranslations } from "next-intl";
++import { useEffect, useState } from "react";
++import { SHIPPED } from "@/constants/shipped";
++import type { Activity } from "@/types/activityType";
++import { Reveal, RevealGroup, RevealItem } from "./reveal";
++import { AboutSection, SectionHead } from "./section";
++import { ThreeCanvas } from "./three-canvas";
++import type { SkylineController, SkylineHover } from "./three/skyline";
++
++const DAY = 86_400_000;
++const HEAT = ["bg-foreground/10", "bg-emerald-500/40", "bg-emerald-500/65", "bg-emerald-500"];
++
++function bucket(n: number, max: number): number {
++  if (n <= 0 || max <= 0) return 0;
++  const f = n / max;
++  return f <= 1 / 3 ? 1 : f <= 2 / 3 ? 2 : 3;
++}
++
++export function AboutActivity({ activity }: { activity: Activity }) {
++  const t = useTranslations("aboutPage.activity");
++  const format = useFormatter();
++  const [controller, setController] = useState<SkylineController | null>(null);
++  const [hover, setHover] = useState<SkylineHover | null>(null);
++
++  const kind = activity.source === "github" ? "Github" : "Repository";
++  const { days } = activity;
++  const startMs = Date.parse(activity.start + "T00:00:00Z");
++  const weeks = Math.ceil(days.length / 7);
++
++  let total = 0;
++  let active = 0;
++  let max = 0;
++  let maxIndex = 0;
++  days.forEach((n, i) => {
++    total += n;
++    if (n > 0) active += 1;
++    if (n > max) {
++      max = n;
++      maxIndex = i;
++    }
++  });
++
++  const fullDate = (index: number) =>
++    format.dateTime(new Date(startMs + index * DAY), { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
++  const monthYear = (iso: string) =>
++    format.dateTime(new Date(iso + "T00:00:00Z"), { month: "short", year: "numeric", timeZone: "UTC" });
++
++  const startLabel = `${t("start")} · ${monthYear(activity.start).toUpperCase()}`;
++  useEffect(() => {
++    controller?.setStartLabel(startLabel);
++  }, [controller, startLabel]);
++
++  const stats = [
++    { label: t(`total${kind}`), value: total },
++    { label: t("activeDays"), value: active },
++    { label: `${t("busiest")} · ${fullDate(maxIndex)}`, value: max },
++  ];
++
++  return (
++    <AboutSection labelledBy="about-activity-heading">
++      <SectionHead
++        id="about-activity-heading"
++        eyebrow={t("eyebrow")}
++        title={t(`title${kind}`)}
++        subtitle={t(`subtitle${kind}`, { weeks })}
++      />
++
++      <div className="mt-7 grid grid-cols-1 items-center gap-[clamp(24px,4vw,56px)] md:mt-11 min-[1000px]:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
++        <Reveal className="order-first min-w-0 min-[1000px]:order-none min-[1000px]:-ml-[clamp(8px,3vw,32px)]">
++          <ThreeCanvas<SkylineController>
++            className="relative h-[clamp(360px,46vw,540px)]"
++            label={t("sceneLabel")}
++            onReady={setController}
++            fallback={
++              <div className="absolute inset-0 flex items-center justify-center">
++                <div
++                  aria-hidden="true"
++                  className="grid w-full grid-flow-col grid-rows-7 gap-0.5 p-4"
++                >
++                  {days.map((n, i) => (
++                    <i key={i} className={"aspect-square rounded-[2px] " + HEAT[bucket(n, max)]} />
++                  ))}
++                </div>
++              </div>
++            }
++            create={async (ctx) => {
++              const { createSkylineScene } = await import("./three/skyline");
++              return createSkylineScene(ctx.canvas, ctx.container, {
++                reduce: ctx.reduce,
++                dark: ctx.dark,
++                days,
++                startLabel,
++                onHover: setHover,
++              });
++            }}
++          >
++            <div
++              role="status"
++              style={hover ? { left: hover.x, top: hover.y } : undefined}
++              className={
++                "pointer-events-none absolute top-0 left-0 z-[4] -translate-x-1/2 -translate-y-[120%] rounded-[10px] border border-border bg-card px-3 py-2 font-mono text-xs leading-snug font-medium whitespace-nowrap shadow-lg transition-opacity duration-100 " +
++                (hover ? "opacity-100" : "opacity-0")
++              }
++            >
++              {hover ? (
++                <>
++                  <b className="font-semibold text-emerald-700 dark:text-emerald-400">
++                    {t(`tip${kind}`, { count: days[hover.index] ?? 0 })}
++                  </b>
++                  {" · "}
++                  {fullDate(hover.index)}
++                </>
++              ) : null}
++            </div>
++          </ThreeCanvas>
++        </Reveal>
++
++        <div className="min-w-0">
++          <RevealGroup as="dl" className="mb-7 grid grid-cols-1 border-y border-border min-[480px]:grid-cols-3" stagger={0.1}>
++            {stats.map((s) => (
++              <RevealItem
++                key={s.label}
++                className="border-border py-4 pr-4 max-[479px]:border-b max-[479px]:last:border-b-0 min-[480px]:not-first:border-l min-[480px]:not-first:pl-4"
++              >
++                <dd className="font-mono text-[clamp(1.6rem,3vw,2.25rem)] leading-none font-semibold tracking-tight tabular-nums">
++                  {s.value}
++                </dd>
++                <dt className="mt-2 text-[12.5px] leading-snug text-muted-foreground">{s.label}</dt>
++              </RevealItem>
++            ))}
++          </RevealGroup>
++
++          <Reveal>
++            <h3 className="mb-1.5 font-mono text-xs leading-none font-medium tracking-[0.09em] text-muted-foreground uppercase">
++              {t("shippedTitle")}
++            </h3>
++          </Reveal>
++          <RevealGroup as="ol" stagger={0.06}>
++            {SHIPPED.map((row) => (
++              <RevealItem
++                key={row.key}
++                as="li"
++                y={12}
++                className="grid grid-cols-[64px_1fr] gap-3 border-b border-border py-3 text-[14.5px] leading-snug min-[480px]:grid-cols-[78px_1fr] min-[480px]:gap-4"
++              >
++                <time dateTime={row.date} className="font-mono text-xs leading-[1.7] whitespace-nowrap text-muted-foreground">
++                  {monthYear(row.date)}
++                </time>
++                <span>{t(`shipped.${row.key}`)}</span>
++              </RevealItem>
++            ))}
++          </RevealGroup>
++
++          <Reveal>
++            <p className="mt-3.5 font-mono text-xs leading-normal text-muted-foreground">
++              {t(`source${kind}`)}{" "}
++              <span aria-hidden="true" className="inline-flex gap-[3px] align-middle">
++                <i className="size-2.5 rounded-[2px] bg-foreground/15" />
++                <i className="size-2.5 rounded-[2px] bg-[#0f7a55]" />
++                <i className="size-2.5 rounded-[2px] bg-[#00a870]" />
++                <i className="size-2.5 rounded-[2px] bg-[#00d492]" />
++                <i className="size-2.5 rounded-[2px] bg-[#5eeab8]" />
++              </span>
++            </p>
++          </Reveal>
++        </div>
++      </div>
++    </AboutSection>
++  );
++}
+diff --git a/port_v2/components/about/about-architecture.tsx b/port_v2/components/about/about-architecture.tsx
+new file mode 100644
+index 0000000..a51eb18
+--- /dev/null
++++ b/port_v2/components/about/about-architecture.tsx
+@@ -0,0 +1,175 @@
++"use client";
++
++import { Check } from "lucide-react";
++import { useTranslations } from "next-intl";
++import { useEffect, useMemo, useState, type CSSProperties } from "react";
++import { ARCH_EDGES, ARCH_NODES, CONTENT_TYPES, type ArchNodeId } from "@/constants/architecture";
++import { routing } from "@/i18n/routing";
++import { Reveal, RevealGroup, RevealItem } from "./reveal";
++import { AboutSection, SectionHead } from "./section";
++import { ThreeCanvas } from "./three-canvas";
++import type { ArchitectureController } from "./three/architecture";
++
++const css = (color: number) => "#" + color.toString(16).padStart(6, "0");
++const nodeById = (id: ArchNodeId) => ARCH_NODES.find((n) => n.id === id)!;
++
++export function AboutArchitecture({ commitTotal }: { commitTotal: number }) {
++  const t = useTranslations("aboutPage.architecture");
++  const [selected, setSelected] = useState<ArchNodeId>("next");
++  const [controller, setController] = useState<ArchitectureController | null>(null);
++
++  const kinds = useMemo(
++    () =>
++      Object.fromEntries(ARCH_NODES.map((n) => [n.id, t(`nodes.${n.id}.kind`)])) as Record<ArchNodeId, string>,
++    [t],
++  );
++
++  useEffect(() => {
++    controller?.setSelected(selected);
++  }, [controller, selected]);
++
++  useEffect(() => {
++    controller?.setKinds(kinds);
++  }, [controller, kinds]);
++
++  const node = nodeById(selected);
++  const from = ARCH_EDGES.filter(([, to]) => to === selected).map(([f]) => nodeById(f).name);
++  const to = ARCH_EDGES.filter(([f]) => f === selected).map(([, dest]) => nodeById(dest).name);
++  const decisions = t.raw("decisions") as string[];
++
++  const outcome = [
++    { key: "commits", value: commitTotal },
++    { key: "languages", value: routing.locales.length },
++    { key: "types", value: CONTENT_TYPES },
++  ];
++
++  return (
++    <AboutSection labelledBy="about-architecture-heading">
++      <SectionHead
++        id="about-architecture-heading"
++        eyebrow={t("eyebrow")}
++        title={t("title")}
++        subtitle={t("subtitle")}
++      />
++
++      <div className="mt-8 grid grid-cols-1 items-stretch gap-[clamp(20px,3vw,40px)] md:mt-12 min-[1000px]:grid-cols-[minmax(0,1fr)_340px]">
++        <Reveal className="min-w-0" y={28}>
++          <ThreeCanvas<ArchitectureController>
++            className="relative h-[min(590px,150vw)] overflow-hidden rounded-2xl border border-border/80 bg-[radial-gradient(ellipse_80%_70%_at_50%_40%,color-mix(in_oklab,var(--card)_80%,transparent),color-mix(in_oklab,var(--card)_25%,transparent))] min-[700px]:h-[clamp(400px,40vw,480px)]"
++            label={t("sceneLabel")}
++            onReady={setController}
++            fallback={
++              <p className="absolute inset-0 grid place-content-center p-6 text-center font-mono text-[13px] leading-relaxed text-muted-foreground">
++                {t("fallback")}
++              </p>
++            }
++            create={async (ctx) => {
++              const { createArchitectureScene } = await import("./three/architecture");
++              return createArchitectureScene(ctx.canvas, ctx.container, {
++                reduce: ctx.reduce,
++                dark: ctx.dark,
++                selected,
++                kinds,
++                onSelect: setSelected,
++              });
++            }}
++          />
++        </Reveal>
++
++        <Reveal className="flex min-w-0 flex-col gap-[18px]" delay={0.1}>
++          <ul className="flex flex-wrap gap-2" aria-label={t("nodesLabel")}>
++            {ARCH_NODES.map((n) => (
++              <li key={n.id}>
++                <button
++                  type="button"
++                  aria-pressed={n.id === selected}
++                  onClick={() => setSelected(n.id)}
++                  style={{ "--k": css(n.color) } as CSSProperties}
++                  className="inline-flex h-[34px] cursor-pointer items-center gap-2 rounded-full border border-border bg-card/60 px-3.5 text-[13px] leading-none font-medium text-muted-foreground transition-colors hover:bg-card hover:text-foreground aria-pressed:border-(--k) aria-pressed:bg-card aria-pressed:text-foreground aria-pressed:shadow-[0_0_0_3px_color-mix(in_oklab,var(--k)_16%,transparent)]"
++                >
++                  <span aria-hidden="true" className="size-1.5 rounded-full bg-(--k)" />
++                  {n.name}
++                </button>
++              </li>
++            ))}
++          </ul>
++
++          <div
++            aria-live="polite"
++            style={{ "--k": css(node.color) } as CSSProperties}
++            className="flex-1 rounded-2xl border border-border/70 bg-card/60 px-[22px] pt-[22px] pb-6 shadow-lg backdrop-blur-lg"
++          >
++            <p className="font-mono text-[11px] leading-none font-medium tracking-[0.09em] text-(--k) uppercase">
++              {t(`nodes.${selected}.kind`)}
++            </p>
++            <h3 className="mt-3 text-2xl font-bold tracking-tight">{node.name}</h3>
++            <p className="mt-3 leading-relaxed text-pretty text-muted-foreground">
++              {t(`nodes.${selected}.description`)}
++            </p>
++            {from.length + to.length > 0 ? (
++              <ul className="mt-[18px] flex flex-wrap gap-1.5 border-t border-border pt-4 font-mono text-xs leading-none text-muted-foreground">
++                {from.length > 0 ? <li className="py-1.5">{t("from")}</li> : null}
++                {from.map((name) => (
++                  <li key={`in-${name}`} className="rounded-lg bg-foreground/[0.06] px-2 py-1.5 text-foreground">
++                    {name}
++                  </li>
++                ))}
++                {to.length > 0 ? <li className="py-1.5">{t("to")}</li> : null}
++                {to.map((name) => (
++                  <li key={`out-${name}`} className="rounded-lg bg-foreground/[0.06] px-2 py-1.5 text-foreground">
++                    {name}
++                  </li>
++                ))}
++              </ul>
++            ) : null}
++          </div>
++        </Reveal>
++      </div>
++
++      <RevealGroup
++        className="mt-10 grid grid-cols-1 gap-[clamp(28px,4vw,56px)] md:mt-16 min-[900px]:grid-cols-3"
++        stagger={0.12}
++      >
++        <RevealItem>
++          <h3 className="mb-3.5 font-mono text-xs leading-none font-medium tracking-[0.09em] text-muted-foreground uppercase">
++            {t("problemLabel")}
++          </h3>
++          <p className="leading-relaxed text-pretty">{t("problem")}</p>
++        </RevealItem>
++
++        <RevealItem>
++          <h3 className="mb-3.5 font-mono text-xs leading-none font-medium tracking-[0.09em] text-muted-foreground uppercase">
++            {t("decisionsLabel")}
++          </h3>
++          <ul className="grid gap-3">
++            {decisions.map((d) => (
++              <li key={d} className="grid grid-cols-[20px_1fr] gap-1.5 leading-normal">
++                <Check className="mt-[3px] size-4 text-emerald-700 dark:text-emerald-400" strokeWidth={2.2} aria-hidden="true" />
++                <span>{d}</span>
++              </li>
++            ))}
++          </ul>
++        </RevealItem>
++
++        <RevealItem>
++          <h3 className="mb-3.5 font-mono text-xs leading-none font-medium tracking-[0.09em] text-muted-foreground uppercase">
++            {t("outcomeLabel")}
++          </h3>
++          <dl>
++            {outcome.map((o) => (
++              <div
++                key={o.key}
++                className="flex items-baseline justify-between gap-4 border-b border-border py-3 first:pt-0"
++              >
++                <dt className="text-sm text-muted-foreground">{t(`outcomes.${o.key}`)}</dt>
++                <dd className="text-right font-mono text-[22px] leading-none font-semibold tracking-tight tabular-nums">
++                  {o.value}
++                </dd>
++              </div>
++            ))}
++          </dl>
++        </RevealItem>
++      </RevealGroup>
++    </AboutSection>
++  );
++}
+diff --git a/port_v2/components/about/about-collab.tsx b/port_v2/components/about/about-collab.tsx
+new file mode 100644
+index 0000000..a3ce0bb
+--- /dev/null
++++ b/port_v2/components/about/about-collab.tsx
+@@ -0,0 +1,111 @@
++"use client";
++
++import { ArrowRight } from "lucide-react";
++import { useTranslations } from "next-intl";
++import { Button } from "@/components/ui/button";
++import { CONTACT_HREF } from "@/constants/contact";
++import { Link } from "@/i18n/navigation";
++import type { About } from "@/types/aboutType";
++import { Reveal, RevealGroup, RevealItem } from "./reveal";
++import { AboutSection, CTA_FRAME, CTA_OUTLINE, SectionHead } from "./section";
++
++const STEPS = ["brief", "build", "ship"] as const;
++
++export function AboutCollab({ about }: { about?: About }) {
++  const t = useTranslations("aboutPage.collab");
++  const tIntro = useTranslations("aboutPage.intro");
++  const fit = t.raw("fit") as string[];
++  const location = about?.location ?? tIntro("locationDefault");
++  const timezone = about?.timezone ?? tIntro("timezoneDefault");
++
++  return (
++    <AboutSection labelledBy="about-collab-heading">
++      <SectionHead
++        id="about-collab-heading"
++        eyebrow={t("eyebrow")}
++        title={t("title")}
++        subtitle={t("subtitle")}
++      />
++
++      <RevealGroup
++        as="ol"
++        className="mt-9 grid grid-cols-1 gap-9 md:mt-14 min-[900px]:grid-cols-3 min-[900px]:gap-[clamp(24px,4vw,56px)]"
++        stagger={0.12}
++      >
++        {STEPS.map((step, i) => (
++          <RevealItem key={step} as="li" className="relative pt-14">
++            <span
++              aria-hidden="true"
++              className="absolute top-0 left-0 grid size-9 place-items-center rounded-full border border-border bg-card font-mono text-[13px] leading-none font-medium"
++            >
++              {i + 1}
++            </span>
++            {i < STEPS.length - 1 ? (
++              <span
++                aria-hidden="true"
++                className="absolute top-[18px] left-[46px] hidden h-px bg-linear-to-r from-emerald-500/60 to-indigo-500/60 min-[900px]:block min-[900px]:right-[calc(-1*clamp(24px,4vw,56px)+10px)]"
++              />
++            ) : null}
++            <h3 className="text-xl font-semibold tracking-tight">{t(`steps.${step}.title`)}</h3>
++            <p className="mt-2 leading-relaxed text-pretty text-muted-foreground">
++              {t(`steps.${step}.description`)}
++            </p>
++          </RevealItem>
++        ))}
++      </RevealGroup>
++
++      <Reveal>
++        <ul className="mt-7 flex flex-wrap gap-2" aria-label={t("fitLabel")}>
++          {fit.map((f) => (
++            <li
++              key={f}
++              className="rounded-full border border-border bg-card/60 px-3.5 py-2 text-[13.5px] leading-none font-medium"
++            >
++              {f}
++            </li>
++          ))}
++        </ul>
++      </Reveal>
++
++      <Reveal
++        className="relative mt-10 grid grid-cols-1 items-center gap-6 overflow-hidden rounded-3xl border border-border/70 bg-card/60 p-[clamp(24px,3.5vw,40px)] shadow-lg backdrop-blur-xl md:mt-16 min-[700px]:grid-cols-[minmax(0,1fr)_auto]"
++        y={28}
++      >
++        <span
++          aria-hidden="true"
++          className="absolute inset-x-[8%] top-0 h-px bg-linear-to-r from-transparent via-primary to-transparent"
++        />
++        <div>
++          <h3 className="text-[clamp(1.4rem,2.6vw,2rem)] leading-tight font-bold tracking-tight text-balance">
++            {t("ctaTitle")}
++          </h3>
++          <ul className="mt-3.5 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[12.5px] leading-tight text-muted-foreground">
++            <li className="inline-flex items-center gap-2">
++              <span className="relative flex size-2.5" aria-hidden="true">
++                <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500 opacity-75 motion-reduce:animate-none" />
++                <span className="absolute inset-0 rounded-full bg-emerald-500" />
++              </span>
++              {tIntro("available")}
++            </li>
++            <li>
++              {location} · {timezone}
++            </li>
++          </ul>
++        </div>
++        <div className="flex flex-wrap items-center gap-3">
++          <div className={CTA_FRAME}>
++            <Button asChild size="lg" className="h-10 rounded-[10px] px-6 shadow-lg">
++              <a href={CONTACT_HREF}>
++                {tIntro("contact")}
++                <ArrowRight aria-hidden="true" />
++              </a>
++            </Button>
++          </div>
++          <Button asChild variant="outline" size="lg" className={CTA_OUTLINE}>
++            <Link href="/#certifications">{t("certifications")}</Link>
++          </Button>
++        </div>
++      </Reveal>
++    </AboutSection>
++  );
++}
+diff --git a/port_v2/components/about/about-intro.tsx b/port_v2/components/about/about-intro.tsx
+new file mode 100644
+index 0000000..303efc9
+--- /dev/null
++++ b/port_v2/components/about/about-intro.tsx
+@@ -0,0 +1,144 @@
++"use client";
++
++import { ArrowRight, FileText, Sparkles } from "lucide-react";
++import { useTranslations } from "next-intl";
++import { stegaClean } from "next-sanity";
++import { Button } from "@/components/ui/button";
++import { CONTACT_HREF } from "@/constants/contact";
++import { LOGO_PATHS } from "@/constants/logo";
++import type { About } from "@/types/aboutType";
++import { Reveal, RevealGroup, RevealItem } from "./reveal";
++import { CTA_FRAME, CTA_OUTLINE } from "./section";
++import { ThreeCanvas } from "./three-canvas";
++
++const CORE_FALLBACK = ["React", "Next.js", "Node.js", "Go"];
++const INFRA_FALLBACK = ["Docker", "Kubernetes", "Keycloak"];
++
++function LogoFallback() {
++  return (
++    <div className="absolute inset-0 grid place-items-center">
++      <div className="grid aspect-square w-[min(56%,240px)] place-items-center rounded-[22%] bg-foreground shadow-[0_0_0_10px_color-mix(in_oklab,var(--color-emerald-500)_10%,transparent),0_0_0_22px_color-mix(in_oklab,var(--color-indigo-500)_8%,transparent)]">
++        <svg viewBox="14 53 149 77" aria-hidden="true" className="w-[70%] fill-background">
++          {LOGO_PATHS.map((d) => (
++            <path key={d} d={d} />
++          ))}
++        </svg>
++      </div>
++    </div>
++  );
++}
++
++export function AboutIntro({ about, plaques }: { about?: About; plaques: string[] }) {
++  const t = useTranslations("aboutPage.intro");
++
++  const name = about?.name ?? "Arya Dzaky";
++  const location = about?.location ?? t("locationDefault");
++  const timezone = about?.timezone ?? t("timezoneDefault");
++  const core = (about?.coreStack?.length ? about.coreStack : CORE_FALLBACK).map(stegaClean);
++  const infra = (about?.infrastructure?.length ? about.infrastructure : INFRA_FALLBACK).map(stegaClean);
++
++  const facts = [
++    { key: "role", label: t("roleLabel"), value: about?.jobTitle ?? t("roleDefault") },
++    { key: "based", label: t("basedLabel"), value: `${location} · ${timezone}` },
++    { key: "core", label: t("coreLabel"), value: core.join(" · ") },
++    { key: "infra", label: t("infraLabel"), value: infra.join(" · ") },
++  ];
++
++  return (
++    <section
++      aria-labelledby="about-heading"
++      className="relative z-[2] mx-auto grid w-full max-w-[1200px] items-center gap-2 px-4 pt-28 pb-14 md:px-6 md:pt-32 min-[900px]:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] min-[900px]:gap-10 min-[900px]:pb-[72px] lg:px-8"
++    >
++      <RevealGroup className="relative z-[3] flex flex-col items-start" stagger={0.08}>
++        <RevealItem as="p" className="inline-flex flex-wrap items-center gap-2.5 rounded-full border border-border/80 bg-card/70 px-4 py-2 text-[13px] font-medium shadow-md backdrop-blur-xl">
++          <span className="relative flex size-2.5" aria-hidden="true">
++            <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500 opacity-75 motion-reduce:animate-none" />
++            <span className="absolute inset-0 rounded-full bg-emerald-500" />
++          </span>
++          {t("available")}
++          <span aria-hidden="true" className="text-muted-foreground">
++            &bull;
++          </span>
++          <span className="inline-flex items-center gap-1 font-semibold">
++            <Sparkles className="size-3.5" aria-hidden="true" />
++            {t("tag")}
++          </span>
++        </RevealItem>
++
++        <RevealItem as="div">
++          <h1
++            id="about-heading"
++            className="mt-6 text-[clamp(2.25rem,4.6vw,3.6rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-balance"
++          >
++            <span>{about?.headlineA ?? t("headlineA")}</span>{" "}
++            <span className="bg-linear-to-br from-muted-foreground to-muted-foreground/55 bg-clip-text text-transparent">
++              {about?.headlineB ?? t("headlineB")}
++            </span>
++          </h1>
++        </RevealItem>
++
++        <RevealItem as="p" className="mt-5 max-w-[33em] text-[clamp(1.02rem,1.6vw,1.2rem)] leading-[1.65] text-pretty text-muted-foreground">
++          {t.rich("lead", {
++            name,
++            location,
++            strong: (chunks) => <strong className="font-semibold text-foreground">{chunks}</strong>,
++          })}
++        </RevealItem>
++
++        <RevealItem as="dl" className="mt-8 grid w-full max-w-[34em] grid-cols-1 border-t border-border min-[480px]:grid-cols-2">
++          {facts.map((f) => (
++            <div key={f.key} className="border-b border-border py-3.5 pr-4 min-[480px]:even:border-l min-[480px]:even:pl-4">
++              <dt className="font-mono text-[11px] leading-none font-medium tracking-[0.08em] text-muted-foreground uppercase">
++                {f.label}
++              </dt>
++              <dd className="mt-2 text-[14.5px] leading-snug font-medium">{f.value}</dd>
++            </div>
++          ))}
++        </RevealItem>
++
++        <RevealItem className="mt-7 flex flex-wrap items-center gap-3">
++          {about?.cvUrl ? (
++            <div className={CTA_FRAME}>
++              <Button asChild size="lg" className="h-10 rounded-[10px] px-6 shadow-lg">
++                <a href={stegaClean(about.cvUrl)} target="_blank" rel="noopener noreferrer">
++                  <FileText aria-hidden="true" />
++                  {t("cv")}
++                </a>
++              </Button>
++            </div>
++          ) : null}
++          <Button asChild variant="outline" size="lg" className={CTA_OUTLINE}>
++            <a href={CONTACT_HREF}>
++              {t("contact")}
++              <ArrowRight aria-hidden="true" />
++            </a>
++          </Button>
++        </RevealItem>
++      </RevealGroup>
++
++      <Reveal
++        delay={0.15}
++        y={0}
++        className="relative z-[1] mt-2 h-[clamp(320px,62vw,460px)] min-w-0 min-[900px]:mt-0 min-[900px]:h-auto min-[900px]:min-h-[clamp(440px,44vw,600px)] min-[900px]:self-stretch min-[900px]:-mr-[clamp(8px,3vw,32px)]"
++      >
++        <ThreeCanvas
++          className="absolute inset-0"
++          label={t("sceneLabel")}
++          fallback={<LogoFallback />}
++          create={async (ctx) => {
++            const { createIdentityScene } = await import("./three/identity");
++            return createIdentityScene(ctx.canvas, ctx.container, {
++              reduce: ctx.reduce,
++              dark: ctx.dark,
++              plaques,
++            });
++          }}
++        >
++          <p className="pointer-events-none absolute right-2 bottom-0 font-mono text-xs leading-none text-muted-foreground">
++            {t("hint")}
++          </p>
++        </ThreeCanvas>
++      </Reveal>
++    </section>
++  );
++}
+diff --git a/port_v2/components/about/about-skills.tsx b/port_v2/components/about/about-skills.tsx
+new file mode 100644
+index 0000000..508c161
+--- /dev/null
++++ b/port_v2/components/about/about-skills.tsx
+@@ -0,0 +1,105 @@
++"use client";
++
++import { useTranslations } from "next-intl";
++import { stegaClean } from "next-sanity";
++import { CATEGORY_ORDER, fallbackSkills } from "@/constants/skills-data";
++import type { Skill } from "@/types/skillType";
++import { RevealGroup, RevealItem } from "./reveal";
++import { AboutSection, SectionHead } from "./section";
++
++type Level = 1 | 2 | 3;
++
++function Dots({ level, label }: { level: Level; label: string }) {
++  return (
++    <span
++      role={label ? "img" : undefined}
++      aria-label={label || undefined}
++      aria-hidden={label ? undefined : true}
++      className="inline-flex flex-none gap-1"
++    >
++      {([1, 2, 3] as const).map((n) => (
++        <i
++          key={n}
++          className={
++            "size-2 rounded-full " +
++            (n <= level ? (level === 1 ? "bg-indigo-500" : "bg-emerald-500") : "bg-foreground/15")
++          }
++        />
++      ))}
++    </span>
++  );
++}
++
++export function AboutSkills({ skills }: { skills: Skill[] }) {
++  const t = useTranslations("aboutPage.skills");
++  const tGroups = useTranslations("skillsPage");
++
++  const items = (
++    skills.length
++      ? skills.map((s) => ({
++          name: stegaClean(s.name),
++          category: stegaClean(s.category),
++          level: s.level,
++          order: s.order ?? 0,
++        }))
++      : fallbackSkills.map((s, i) => ({ name: s.name, category: s.category, level: undefined, order: i }))
++  ) as { name: string; category: string; level?: Level; order: number }[];
++
++  // Levels are optional in Sanity. Until they are filled in, show plain names rather than invent a rating.
++  const hasLevels = items.some((s) => s.level);
++
++  const groups = CATEGORY_ORDER.map((cat) => ({
++    key: cat,
++    label: tGroups(cat),
++    items: items.filter((s) => s.category === cat).sort((a, b) => a.order - b.order),
++  })).filter((g) => g.items.length > 0);
++
++  return (
++    <AboutSection labelledBy="about-skills-heading">
++      <SectionHead
++        id="about-skills-heading"
++        eyebrow={t("eyebrow")}
++        title={t("title")}
++        subtitle={t("subtitle")}
++      />
++
++      <RevealGroup
++        className="mt-9 grid grid-cols-1 gap-[clamp(24px,3vw,44px)] md:mt-14 min-[480px]:grid-cols-2 min-[1000px]:grid-cols-4"
++        stagger={0.1}
++      >
++        {groups.map((g) => (
++          <RevealItem key={g.key}>
++            <h3 className="border-b border-foreground pb-3 font-mono text-xs leading-none font-medium tracking-[0.09em] uppercase">
++              {g.label}
++            </h3>
++            <ul>
++              {g.items.map((s) => (
++                <li
++                  key={s.name}
++                  className="flex items-center justify-between gap-3 border-b border-border py-[11px] text-[15px] font-medium"
++                >
++                  <span>{s.name}</span>
++                  {hasLevels && s.level ? <Dots level={s.level} label={t(`levels.${s.level}`)} /> : null}
++                </li>
++              ))}
++            </ul>
++          </RevealItem>
++        ))}
++      </RevealGroup>
++
++      {hasLevels ? (
++        <RevealGroup
++          className="mt-7 flex flex-wrap items-center gap-x-[22px] gap-y-2 font-mono text-xs leading-none text-muted-foreground"
++          delay={0.2}
++        >
++          {([3, 2, 1] as const).map((n) => (
++            <RevealItem key={n} className="inline-flex items-center gap-2" y={8}>
++              <Dots level={n} label="" />
++              {t(`levels.${n}`)}
++            </RevealItem>
++          ))}
++        </RevealGroup>
++      ) : null}
++    </AboutSection>
++  );
++}
+diff --git a/port_v2/components/about/about-work.tsx b/port_v2/components/about/about-work.tsx
+new file mode 100644
+index 0000000..5f9ec96
+--- /dev/null
++++ b/port_v2/components/about/about-work.tsx
+@@ -0,0 +1,64 @@
++"use client";
++
++import { ArrowRight } from "lucide-react";
++import { useTranslations } from "next-intl";
++import { Link } from "@/i18n/navigation";
++import { RevealGroup, RevealItem } from "./reveal";
++import { AboutSection, SectionHead } from "./section";
++
++const HABITS = ["backend", "interfaces", "content", "teaching"] as const;
++
++export function AboutWork() {
++  const t = useTranslations("aboutPage.work");
++
++  return (
++    <AboutSection labelledBy="about-work-heading">
++      <SectionHead
++        id="about-work-heading"
++        eyebrow={t("eyebrow")}
++        title={t("title")}
++        subtitle={t("subtitle")}
++      />
++
++      <RevealGroup
++        className="mt-9 grid grid-cols-1 gap-x-[clamp(28px,5vw,72px)] gap-y-[clamp(36px,5vw,64px)] md:mt-14 min-[700px]:grid-cols-2"
++        stagger={0.1}
++      >
++        {HABITS.map((habit) => {
++          const evidence = t.raw(`habits.${habit}.evidence`) as string[];
++          return (
++            <RevealItem key={habit} as="article" className="relative border-t border-border pt-[22px]">
++              <span
++                aria-hidden="true"
++                className="absolute -top-px left-0 h-0.5 w-11 bg-linear-to-r from-emerald-500 to-indigo-500"
++              />
++              <h3 className="text-[1.3rem] font-semibold tracking-tight text-balance">
++                {t(`habits.${habit}.title`)}
++              </h3>
++              <p className="mt-2.5 max-w-[32em] leading-relaxed text-pretty text-muted-foreground">
++                {t(`habits.${habit}.description`)}
++              </p>
++              <ul className="mt-[18px] grid gap-2 font-mono text-[12.5px] leading-[1.45]">
++                {evidence.map((line) => (
++                  <li key={line} className="grid grid-cols-[14px_1fr] items-start gap-2">
++                    <span aria-hidden="true" className="mt-[0.55em] size-[5px] rounded-full bg-emerald-500" />
++                    {line}
++                  </li>
++                ))}
++              </ul>
++              {habit === "teaching" ? (
++                <Link
++                  href="/#certifications"
++                  className="mt-4 inline-flex items-center gap-1.5 text-[13.5px] font-medium underline decoration-foreground/30 underline-offset-4 hover:decoration-emerald-500"
++                >
++                  {t("moreCerts")}
++                  <ArrowRight className="size-3.5" aria-hidden="true" />
++                </Link>
++              ) : null}
++            </RevealItem>
++          );
++        })}
++      </RevealGroup>
++    </AboutSection>
++  );
++}
+diff --git a/port_v2/components/about/reveal.tsx b/port_v2/components/about/reveal.tsx
+new file mode 100644
+index 0000000..074db32
+--- /dev/null
++++ b/port_v2/components/about/reveal.tsx
+@@ -0,0 +1,98 @@
++"use client";
++
++import { motion, useReducedMotion, type Variants } from "framer-motion";
++import type { ReactNode } from "react";
++
++/**
++ * Scroll-in entrance for the About page: fade + rise, played once when the
++ * element enters the viewport. Reduced-motion users get the fade only, with no
++ * travel and no delay.
++ */
++
++const EASE = [0.22, 1, 0.36, 1] as const;
++const VIEWPORT = { once: true, margin: "0px 0px -80px 0px" } as const;
++
++const TAGS = {
++  div: motion.div,
++  section: motion.section,
++  article: motion.article,
++  header: motion.header,
++  ul: motion.ul,
++  ol: motion.ol,
++  li: motion.li,
++  dl: motion.dl,
++  p: motion.p,
++} as const;
++
++type Tag = keyof typeof TAGS;
++
++interface RevealProps {
++  children: ReactNode;
++  className?: string;
++  as?: Tag;
++  /** Seconds to wait before playing. */
++  delay?: number;
++  /** Pixels to travel upward while fading in. */
++  y?: number;
++}
++
++export function Reveal({ children, className, as = "div", delay = 0, y = 24 }: RevealProps) {
++  const reduce = useReducedMotion();
++  const Component = TAGS[as];
++  return (
++    <Component
++      className={className}
++      initial={{ opacity: 0, y: reduce ? 0 : y }}
++      whileInView={{ opacity: 1, y: 0 }}
++      viewport={VIEWPORT}
++      transition={{ duration: reduce ? 0.01 : 0.7, delay: reduce ? 0 : delay, ease: EASE }}
++    >
++      {children}
++    </Component>
++  );
++}
++
++interface GroupProps {
++  children: ReactNode;
++  className?: string;
++  as?: Tag;
++  /** Seconds between one child and the next. */
++  stagger?: number;
++  delay?: number;
++}
++
++/** Wraps a set of <RevealItem>s so they play one after another. */
++export function RevealGroup({ children, className, as = "div", stagger = 0.09, delay = 0 }: GroupProps) {
++  const reduce = useReducedMotion();
++  const Component = TAGS[as];
++  const variants: Variants = {
++    hidden: {},
++    show: { transition: { staggerChildren: reduce ? 0 : stagger, delayChildren: reduce ? 0 : delay } },
++  };
++  return (
++    <Component className={className} variants={variants} initial="hidden" whileInView="show" viewport={VIEWPORT}>
++      {children}
++    </Component>
++  );
++}
++
++interface ItemProps {
++  children: ReactNode;
++  className?: string;
++  as?: Tag;
++  y?: number;
++}
++
++export function RevealItem({ children, className, as = "div", y = 20 }: ItemProps) {
++  const reduce = useReducedMotion();
++  const Component = TAGS[as];
++  const variants: Variants = {
++    hidden: { opacity: 0, y: reduce ? 0 : y },
++    show: { opacity: 1, y: 0, transition: { duration: reduce ? 0.01 : 0.6, ease: EASE } },
++  };
++  return (
++    <Component className={className} variants={variants}>
++      {children}
++    </Component>
++  );
++}
+diff --git a/port_v2/components/about/section.tsx b/port_v2/components/about/section.tsx
+new file mode 100644
+index 0000000..fa13295
+--- /dev/null
++++ b/port_v2/components/about/section.tsx
+@@ -0,0 +1,66 @@
++import type { ReactNode } from "react";
++import { Reveal } from "./reveal";
++
++/** Page-width section with a hairline on top, shared by every block of the About page. */
++export function AboutSection({
++  id,
++  labelledBy,
++  children,
++}: {
++  id?: string;
++  labelledBy: string;
++  children: ReactNode;
++}) {
++  return (
++    <section
++      id={id}
++      aria-labelledby={labelledBy}
++      className="relative z-[2] mx-auto w-full max-w-[1200px] px-4 py-16 md:px-6 md:py-24 lg:px-8"
++    >
++      <span
++        aria-hidden="true"
++        className="pointer-events-none absolute inset-x-4 top-0 h-px bg-linear-to-r from-transparent via-foreground/20 to-transparent md:inset-x-6 lg:inset-x-8"
++      />
++      {children}
++    </section>
++  );
++}
++
++export function SectionHead({
++  id,
++  eyebrow,
++  title,
++  subtitle,
++}: {
++  id: string;
++  eyebrow: string;
++  title: string;
++  subtitle?: string;
++}) {
++  return (
++    <Reveal className="flex flex-col items-start">
++      <p className="inline-flex items-center gap-2.5 font-mono text-xs leading-none font-medium tracking-[0.09em] text-muted-foreground uppercase">
++        <span aria-hidden="true" className="h-px w-[18px] bg-linear-to-r from-emerald-500 to-indigo-500" />
++        {eyebrow}
++      </p>
++      <h2
++        id={id}
++        className="mt-3.5 text-[clamp(1.75rem,3.6vw,2.75rem)] leading-[1.08] font-bold tracking-tight text-balance"
++      >
++        {title}
++      </h2>
++      {subtitle ? (
++        <p className="mt-4 max-w-[40em] text-[clamp(1rem,1.5vw,1.125rem)] leading-relaxed text-pretty text-muted-foreground">
++          {subtitle}
++        </p>
++      ) : null}
++    </Reveal>
++  );
++}
++
++/** Gradient hairline frame around the primary call to action. */
++export const CTA_FRAME =
++  "rounded-2xl bg-linear-to-r from-primary via-accent to-primary p-px shadow-lg shadow-primary/15";
++
++export const CTA_OUTLINE =
++  "h-[42px] rounded-full border-border bg-card/60 px-6 backdrop-blur-md hover:-translate-y-px hover:bg-card";
+diff --git a/port_v2/components/about/three-canvas.tsx b/port_v2/components/about/three-canvas.tsx
+new file mode 100644
+index 0000000..31fbda1
+--- /dev/null
++++ b/port_v2/components/about/three-canvas.tsx
+@@ -0,0 +1,129 @@
++"use client";
++
++import { useReducedMotion } from "framer-motion";
++import { useTheme } from "next-themes";
++import { useEffect, useRef, useState, type ReactNode } from "react";
++import type { SceneController } from "./three/core";
++
++export interface SceneContext {
++  canvas: HTMLCanvasElement;
++  container: HTMLElement;
++  reduce: boolean;
++  dark: boolean;
++}
++
++interface ThreeCanvasProps<T extends SceneController> {
++  /**
++   * Builds the scene. Import the scene module inside this function so three.js
++   * is only downloaded when the canvas is about to be seen. Return null when
++   * WebGL is unavailable.
++   */
++  create: (ctx: SceneContext) => Promise<T | null>;
++  /** Called with the controller once the scene exists, and with null when it is torn down. */
++  onReady?: (controller: T | null) => void;
++  /** Accessible description of the scene. */
++  label: string;
++  /** Shown instead of the canvas when WebGL is missing or the scene fails to load. */
++  fallback?: ReactNode;
++  className?: string;
++  /** Overlays such as hints and tooltips, drawn above the canvas. */
++  children?: ReactNode;
++}
++
++/**
++ * Hosts one three.js scene: creates it when the container nears the viewport,
++ * follows the site theme, and disposes it on unmount.
++ */
++export function ThreeCanvas<T extends SceneController>({
++  create,
++  onReady,
++  label,
++  fallback,
++  className,
++  children,
++}: ThreeCanvasProps<T>) {
++  const containerRef = useRef<HTMLDivElement>(null);
++  const canvasRef = useRef<HTMLCanvasElement>(null);
++  const controllerRef = useRef<T | null>(null);
++  const [failed, setFailed] = useState(false);
++
++  const { resolvedTheme } = useTheme();
++  const reduce = useReducedMotion() ?? false;
++  const dark = resolvedTheme !== "light";
++
++  // Latest values for the one-time creation effect below.
++  const latest = useRef({ create, onReady, reduce, dark });
++  useEffect(() => {
++    latest.current = { create, onReady, reduce, dark };
++  });
++
++  useEffect(() => {
++    const container = containerRef.current;
++    const canvas = canvasRef.current;
++    if (!container || !canvas) return;
++
++    let cancelled = false;
++    let started = false;
++
++    const start = async () => {
++      if (started) return;
++      started = true;
++      try {
++        const { create: build, reduce: r, dark: d } = latest.current;
++        const controller = await build({ canvas, container, reduce: r, dark: d });
++        if (cancelled) {
++          controller?.dispose();
++          return;
++        }
++        if (!controller) {
++          setFailed(true);
++          return;
++        }
++        controllerRef.current = controller;
++        controller.setDark(latest.current.dark);
++        latest.current.onReady?.(controller);
++      } catch {
++        if (!cancelled) setFailed(true);
++      }
++    };
++
++    const observer = new IntersectionObserver(
++      (entries) => {
++        if (entries.some((e) => e.isIntersecting)) {
++          observer.disconnect();
++          void start();
++        }
++      },
++      { rootMargin: "300px" },
++    );
++    observer.observe(container);
++
++    return () => {
++      cancelled = true;
++      observer.disconnect();
++      const controller = controllerRef.current;
++      controllerRef.current = null;
++      if (controller) {
++        latest.current.onReady?.(null);
++        controller.dispose();
++      }
++    };
++  }, []);
++
++  useEffect(() => {
++    controllerRef.current?.setDark(dark);
++  }, [dark]);
++
++  return (
++    <div ref={containerRef} className={className}>
++      <canvas
++        ref={canvasRef}
++        role="img"
++        aria-label={label}
++        className={failed ? "hidden" : "absolute inset-0 block size-full touch-pan-y"}
++      />
++      {failed ? fallback : null}
++      {children}
++    </div>
++  );
++}
+diff --git a/port_v2/components/about/three/architecture.ts b/port_v2/components/about/three/architecture.ts
+new file mode 100644
+index 0000000..be29dfb
+--- /dev/null
++++ b/port_v2/components/about/three/architecture.ts
+@@ -0,0 +1,260 @@
++import * as THREE from "three";
++import { ARCH_EDGES, ARCH_NODES, type ArchNodeId } from "@/constants/architecture";
++import { createStage, type SceneController } from "./core";
++import { MONO, SANS, canvasTex, hexCss, plateBg, rad, slab } from "./shapes";
++
++export interface ArchitectureOptions {
++  reduce: boolean;
++  dark: boolean;
++  selected: ArchNodeId;
++  /** Translated kind label per node, e.g. "Content", "Hosting". */
++  kinds: Record<ArchNodeId, string>;
++  onSelect: (id: ArchNodeId) => void;
++}
++
++export interface ArchitectureController extends SceneController {
++  setSelected: (id: ArchNodeId) => void;
++  setKinds: (kinds: Record<ArchNodeId, string>) => void;
++}
++
++type Mode = "landscape" | "portrait";
++
++interface NodeView {
++  group: THREE.Group;
++  halo: THREE.Mesh;
++  glow: number;
++  scale: number;
++  redraw: () => void;
++}
++
++interface EdgeView {
++  from: ArchNodeId;
++  to: ArchNodeId;
++  curve: THREE.CubicBezierCurve3;
++  tube: THREE.Mesh;
++  material: THREE.MeshBasicMaterial;
++  pulses: THREE.Mesh[];
++  phase: number;
++}
++
++export function createArchitectureScene(canvas: HTMLCanvasElement, container: HTMLElement, opts: ArchitectureOptions): ArchitectureController | null {
++  const stage = createStage(canvas, container, { fov: 30, reduce: opts.reduce, dark: opts.dark });
++  if (!stage) return null;
++  const { rig, camera } = stage;
++  const isDark = () => stage.dark;
++
++  let mode: Mode = "landscape";
++  let fitW = 12.9;
++  let fitH = 7.6;
++  let camY = -0.2;
++  let selected = opts.selected;
++  let hover: ArchNodeId | null = null;
++  let kinds = opts.kinds;
++  const raycaster = new THREE.Raycaster();
++  const pick: THREE.Object3D[] = [];
++  const nodes = {} as Record<ArchNodeId, NodeView>;
++  let edges: EdgeView[] = [];
++
++  const bodyMat = new THREE.MeshPhysicalMaterial({ color: 0x0d0f12, metalness: 0.4, roughness: 0.42, clearcoat: 0.35, clearcoatRoughness: 0.3, envMapIntensity: 0.4 });
++  const accentOf = (n: (typeof ARCH_NODES)[number]) => n.color;
++
++  ARCH_NODES.forEach((n) => {
++    const group = new THREE.Group();
++    const [w, h] = n.size;
++    const big = n.id === "next";
++    const body = slab(w, h, 0.26, 0.2, bodyMat, 0.03);
++    body.userData.id = n.id;
++    group.add(body);
++    pick.push(body);
++
++    const tex = canvasTex(640, Math.round((640 * h) / w), (c, cw, ch) => {
++      c.textBaseline = "alphabetic";
++      plateBg(c, cw, ch, Math.round(cw * 0.064));
++      c.fillStyle = hexCss(accentOf(n));
++      c.beginPath();
++      c.arc(cw * 0.085, ch * 0.2, 10, 0, Math.PI * 2);
++      c.fill();
++      c.fillStyle = "#a1a6ae";
++      c.font = "500 " + Math.round(Math.min(ch * 0.135, cw * 0.05)) + "px " + MONO;
++      c.fillText((kinds[n.id] ?? "").toUpperCase(), cw * 0.085 + 26, ch * 0.2 + 10);
++      c.fillStyle = "#f5f5f5";
++      c.font = "700 " + Math.round(ch * (big ? 0.27 : 0.25)) + "px " + SANS;
++      c.fillText(n.name, cw * 0.06, ch * 0.62, cw * 0.88);
++      c.fillStyle = "#a1a6ae";
++      c.font = "400 " + Math.round(Math.min(ch * 0.14, cw * 0.056)) + "px " + MONO;
++      c.fillText(n.sub, cw * 0.06, ch * 0.86, cw * 0.88);
++    });
++    const face = new THREE.Mesh(new THREE.PlaneGeometry(w - 0.08, h - 0.08), new THREE.MeshBasicMaterial({ map: tex.texture, transparent: true, toneMapped: false }));
++    face.position.z = 0.165;
++    face.userData.id = n.id;
++    group.add(face);
++    pick.push(face);
++
++    const halo = slab(
++      w + 0.16,
++      h + 0.16,
++      0.2,
++      0.26,
++      new THREE.MeshBasicMaterial({ color: n.id === "next" ? 0x00d492 : n.color, transparent: true, opacity: 0, toneMapped: false, depthWrite: false }),
++      0.01,
++    );
++    halo.position.z = -0.04;
++    group.add(halo);
++    rig.add(group);
++    nodes[n.id] = { group, halo, glow: 0, scale: 1, redraw: tex.redraw };
++  });
++
++  const pulseGeo = new THREE.SphereGeometry(0.085, 14, 10);
++
++  function buildEdges() {
++    edges.forEach((e) => {
++      rig.remove(e.tube);
++      e.tube.geometry.dispose();
++      e.material.dispose();
++      e.pulses.forEach((p) => {
++        rig.remove(p);
++        (p.material as THREE.Material).dispose();
++      });
++    });
++    edges = ARCH_EDGES.map(([from, to]) => {
++      const a = nodes[from].group.position;
++      const b = nodes[to].group.position;
++      const z = -0.24;
++      const A = new THREE.Vector3(a.x, a.y, z);
++      const B = new THREE.Vector3(b.x, b.y, z);
++      let c1: THREE.Vector3;
++      let c2: THREE.Vector3;
++      if (mode === "landscape") {
++        const dx = (B.x - A.x) * 0.5;
++        c1 = new THREE.Vector3(A.x + dx, A.y, z);
++        c2 = new THREE.Vector3(B.x - dx, B.y, z);
++      } else {
++        const dy = (B.y - A.y) * 0.5;
++        c1 = new THREE.Vector3(A.x, A.y + dy, z);
++        c2 = new THREE.Vector3(B.x, B.y - dy, z);
++      }
++      const curve = new THREE.CubicBezierCurve3(A, c1, c2, B);
++      const material = new THREE.MeshBasicMaterial({ color: isDark() ? 0x8b919a : 0x6b7280, transparent: true, opacity: 0.3, toneMapped: false });
++      const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 72, 0.028, 8, false), material);
++      rig.add(tube);
++      const src = ARCH_NODES.find((n) => n.id === from)!;
++      const col = from === "next" ? 0x00d492 : src.color;
++      const pulses = [0, 1].map(() => {
++        const p = new THREE.Mesh(pulseGeo, new THREE.MeshBasicMaterial({ color: col, toneMapped: false }));
++        rig.add(p);
++        return p;
++      });
++      return { from, to, curve, tube, material, pulses, phase: Math.random() };
++    });
++  }
++
++  function layout(m: Mode) {
++    mode = m;
++    ARCH_NODES.forEach((n) => {
++      const p = m === "landscape" ? n.landscape : n.portrait;
++      nodes[n.id].group.position.set(p[0], p[1], n.id === "next" ? 0.12 : 0);
++    });
++    if (m === "landscape") {
++      fitW = 12.9;
++      fitH = 7.6;
++      camY = -0.2;
++    } else {
++      fitW = 7.3;
++      fitH = 10.6;
++      camY = 0.75;
++    }
++    buildEdges();
++  }
++  layout("landscape");
++
++  stage.onResize = (a) => {
++    const m: Mode = a < 1.15 ? "portrait" : "landscape";
++    if (m !== mode) layout(m);
++  };
++  stage.place = (c, a) => {
++    const tanV = Math.tan(rad(c.fov / 2));
++    const d = Math.max(fitH / 2 / tanV, fitW / 2 / (tanV * a));
++    c.position.set(0, camY, d);
++    c.lookAt(0, camY, 0);
++  };
++  stage.applyTheme = () => {
++    stage.renderer.toneMappingExposure = stage.dark ? 1.12 : 1.0;
++    edges.forEach((e) => e.material.color.setHex(stage.dark ? 0x8b919a : 0x6b7280));
++  };
++
++  const hit = (): ArchNodeId | null => {
++    raycaster.setFromCamera(new THREE.Vector2(stage.ptr.x, stage.ptr.y), camera);
++    rig.updateMatrixWorld(true);
++    const h = raycaster.intersectObjects(pick, false)[0];
++    return h ? (h.object.userData.id as ArchNodeId) : null;
++  };
++  stage.onPointer = () => {
++    const id = hit();
++    if (id !== hover) {
++      hover = id;
++      canvas.style.cursor = id ? "pointer" : "default";
++      if (stage.reduce) stage.frame();
++    }
++  };
++  stage.onLeave = () => {
++    hover = null;
++    canvas.style.cursor = "default";
++    if (stage.reduce) stage.frame();
++  };
++  const onClick = (e: MouseEvent) => {
++    const r = container.getBoundingClientRect();
++    stage.ptr.x = ((e.clientX - r.left) / r.width) * 2 - 1;
++    stage.ptr.y = -((e.clientY - r.top) / r.height) * 2 + 1;
++    const id = hit();
++    if (id) opts.onSelect(id);
++  };
++  container.addEventListener("click", onClick);
++  stage.onDispose(() => container.removeEventListener("click", onClick));
++
++  stage.tick = (t) => {
++    rig.rotation.y = stage.px * 0.2 + Math.sin(t * 0.3) * 0.05;
++    rig.rotation.x = stage.py * 0.09;
++    (Object.keys(nodes) as ArchNodeId[]).forEach((id) => {
++      const n = nodes[id];
++      const target = id === selected ? 0.95 : id === hover ? 0.5 : 0;
++      const s = id === selected ? 1.035 : id === hover ? 1.02 : 1;
++      n.glow += (target - n.glow) * 0.14;
++      n.scale += (s - n.scale) * 0.14;
++      (n.halo.material as THREE.MeshBasicMaterial).opacity = n.glow;
++      n.group.scale.setScalar(n.scale);
++      n.group.position.z = (id === "next" ? 0.12 : 0) + n.glow * 0.12;
++    });
++    edges.forEach((e) => {
++      const linked = e.from === selected || e.to === selected;
++      e.material.opacity += ((linked ? 0.95 : 0.3) - e.material.opacity) * 0.14;
++      e.pulses.forEach((p, j) => {
++        const u = ((((t * (linked ? 0.32 : 0.16) + e.phase + j * 0.5) % 1) + 1) % 1);
++        p.position.copy(e.curve.getPointAt(u));
++        p.position.z += 0.02;
++        p.scale.setScalar(linked ? 1.25 : 0.8);
++      });
++    });
++  };
++
++  document.fonts?.ready.then(() => {
++    (Object.keys(nodes) as ArchNodeId[]).forEach((id) => nodes[id].redraw());
++    stage.frame();
++  });
++  stage.applyTheme();
++  stage.resize();
++  stage.start();
++
++  return {
++    dispose: stage.dispose,
++    setDark: stage.setDark,
++    setSelected: (id) => {
++      selected = id;
++      if (stage.reduce) stage.frame();
++    },
++    setKinds: (next) => {
++      kinds = next;
++      (Object.keys(nodes) as ArchNodeId[]).forEach((id) => nodes[id].redraw());
++      stage.frame();
++    },
++  };
++}
+diff --git a/port_v2/components/about/three/core.ts b/port_v2/components/about/three/core.ts
+new file mode 100644
+index 0000000..9e64577
+--- /dev/null
++++ b/port_v2/components/about/three/core.ts
+@@ -0,0 +1,244 @@
++import * as THREE from "three";
++
++export interface SceneController {
++  dispose: () => void;
++  setDark: (dark: boolean) => void;
++}
++
++export interface StageOptions {
++  fov?: number;
++  reduce: boolean;
++  dark: boolean;
++}
++
++/**
++ * A small render harness shared by the About page's three scenes: renderer,
++ * code-built studio lighting, resize handling, pause when off-screen or the
++ * tab is hidden, pointer parallax, and a single dispose().
++ */
++export interface Stage {
++  canvas: HTMLCanvasElement;
++  container: HTMLElement;
++  renderer: THREE.WebGLRenderer;
++  scene: THREE.Scene;
++  camera: THREE.PerspectiveCamera;
++  /** Everything the pointer parallax moves. */
++  rig: THREE.Group;
++  dark: boolean;
++  reduce: boolean;
++  /** Smoothed pointer position over the window, -1..1. */
++  px: number;
++  py: number;
++  /** Pointer position over this container, -1..1 (y up). */
++  ptr: { x: number; y: number; inside: boolean };
++  /** Called every frame with elapsed seconds. */
++  tick?: (t: number) => void;
++  /** Positions the camera; called after every resize. */
++  place?: (camera: THREE.PerspectiveCamera, aspect: number) => void;
++  /** Called on resize before place(). */
++  onResize?: (aspect: number) => void;
++  onPointer?: () => void;
++  onLeave?: () => void;
++  applyTheme?: () => void;
++  frame: () => void;
++  resize: () => void;
++  start: () => void;
++  setDark: (dark: boolean) => void;
++  /** Register a cleanup that runs in dispose(). */
++  onDispose: (fn: () => void) => void;
++  dispose: () => void;
++}
++
++let webglSupport: boolean | undefined;
++
++/** Probes once, on a throwaway canvas, so a missing WebGL never reaches three.js (which logs an error). */
++function hasWebGL(): boolean {
++  if (webglSupport === undefined) {
++    try {
++      const probe = document.createElement("canvas");
++      const gl = (probe.getContext("webgl2") || probe.getContext("webgl")) as WebGLRenderingContext | null;
++      webglSupport = !!gl;
++      gl?.getExtension("WEBGL_lose_context")?.loseContext();
++    } catch {
++      webglSupport = false;
++    }
++  }
++  return webglSupport;
++}
++
++export function createStage(canvas: HTMLCanvasElement, container: HTMLElement, opts: StageOptions): Stage | null {
++  if (!hasWebGL()) return null;
++  let renderer: THREE.WebGLRenderer;
++  try {
++    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
++  } catch {
++    return null;
++  }
++  if (!renderer.getContext()) return null;
++
++  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
++  renderer.outputEncoding = THREE.sRGBEncoding;
++  renderer.toneMapping = THREE.ACESFilmicToneMapping;
++  renderer.setClearColor(0x000000, 0);
++
++  const scene = new THREE.Scene();
++  const camera = new THREE.PerspectiveCamera(opts.fov ?? 32, 1, 0.1, 120);
++  const rig = new THREE.Group();
++  scene.add(rig);
++
++  /* image-based lighting from a tiny studio built in code */
++  const studio = new THREE.Scene();
++  studio.add(new THREE.Mesh(new THREE.BoxGeometry(24, 24, 24), new THREE.MeshBasicMaterial({ color: 0x1b1d22, side: THREE.BackSide })));
++  const panel = (w: number, h: number, col: number, k: number, x: number, y: number, z: number) => {
++    const m = new THREE.Mesh(
++      new THREE.PlaneGeometry(w, h),
++      new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(k), side: THREE.DoubleSide }),
++    );
++    m.position.set(x, y, z);
++    m.lookAt(0, 0, 0);
++    studio.add(m);
++  };
++  panel(10, 4, 0xffffff, 2.6, 0, 9, 4);
++  panel(5, 8, 0xffffff, 1.6, -9, 1, 3);
++  panel(4, 8, 0x00bc7d, 3.2, -8, -1, 5);
++  panel(4, 8, 0x615fff, 3.2, 9, 0, -3);
++  panel(8, 3, 0xffffff, 0.8, 0, -8, 5);
++  const pmrem = new THREE.PMREMGenerator(renderer);
++  const envTarget = pmrem.fromScene(studio, 0.03);
++  scene.environment = envTarget.texture;
++  pmrem.dispose();
++  studio.traverse((o) => {
++    const m = o as THREE.Mesh;
++    if (m.isMesh) {
++      m.geometry.dispose();
++      (m.material as THREE.Material).dispose();
++    }
++  });
++
++  scene.add(new THREE.HemisphereLight(0xffffff, 0x222634, 0.35));
++  const key = new THREE.DirectionalLight(0xffffff, 0.8);
++  key.position.set(3, 6, 8);
++  scene.add(key);
++  const lg = new THREE.PointLight(0x00bc7d, 2.2, 26);
++  lg.position.set(-6, 1.5, 5);
++  scene.add(lg);
++  const li = new THREE.PointLight(0x615fff, 2.4, 26);
++  li.position.set(6.5, -1.5, 3);
++  scene.add(li);
++
++  const cleanups: (() => void)[] = [];
++  let raf = 0;
++  let visible = true;
++  let disposed = false;
++  const t0 = performance.now();
++
++  const stage: Stage = {
++    canvas,
++    container,
++    renderer,
++    scene,
++    camera,
++    rig,
++    dark: opts.dark,
++    reduce: opts.reduce,
++    px: 0,
++    py: 0,
++    ptr: { x: 0, y: 0, inside: false },
++    frame: () => {
++      if (disposed) return;
++      update(performance.now());
++      renderer.render(scene, camera);
++    },
++    resize: () => {
++      const w = container.clientWidth;
++      const h = container.clientHeight;
++      if (!w || !h || disposed) return;
++      renderer.setSize(w, h, false);
++      camera.aspect = w / h;
++      stage.onResize?.(w / h);
++      stage.place?.(camera, w / h);
++      camera.updateProjectionMatrix();
++      stage.frame();
++    },
++    start: () => {
++      if (!stage.reduce && !raf && visible && !document.hidden && !disposed) raf = requestAnimationFrame(loop);
++    },
++    setDark: (dark: boolean) => {
++      stage.dark = dark;
++      stage.applyTheme?.();
++      stage.frame();
++    },
++    onDispose: (fn) => cleanups.push(fn),
++    dispose: () => {
++      if (disposed) return;
++      disposed = true;
++      cancelAnimationFrame(raf);
++      cleanups.forEach((fn) => fn());
++      scene.traverse((o) => {
++        const m = o as THREE.Mesh;
++        if (m.geometry) m.geometry.dispose();
++        const mats = m.material ? (Array.isArray(m.material) ? m.material : [m.material]) : [];
++        mats.forEach((mat) => {
++          const mm = mat as THREE.Material & { map?: THREE.Texture | null };
++          mm.map?.dispose();
++          mat.dispose();
++        });
++      });
++      envTarget.dispose();
++      renderer.dispose();
++    },
++  };
++
++  let tx = 0;
++  let ty = 0;
++  function update(now: number) {
++    stage.px += (tx - stage.px) * 0.06;
++    stage.py += (ty - stage.py) * 0.06;
++    stage.tick?.((now - t0) / 1000);
++  }
++  function loop(now: number) {
++    raf = 0;
++    if (!visible || document.hidden || disposed) return;
++    update(now);
++    renderer.render(scene, camera);
++    raf = requestAnimationFrame(loop);
++  }
++
++  const ro = new ResizeObserver(stage.resize);
++  ro.observe(container);
++  const io = new IntersectionObserver((es) => {
++    visible = es[0].isIntersecting;
++    stage.start();
++  });
++  io.observe(container);
++  const onVis = () => stage.start();
++  document.addEventListener("visibilitychange", onVis);
++  const onWindowMove = (e: PointerEvent) => {
++    tx = (e.clientX / window.innerWidth) * 2 - 1;
++    ty = (e.clientY / window.innerHeight) * 2 - 1;
++  };
++  window.addEventListener("pointermove", onWindowMove);
++  const onMove = (e: PointerEvent) => {
++    const r = container.getBoundingClientRect();
++    stage.ptr.x = ((e.clientX - r.left) / r.width) * 2 - 1;
++    stage.ptr.y = -((e.clientY - r.top) / r.height) * 2 + 1;
++    stage.ptr.inside = true;
++    stage.onPointer?.();
++  };
++  const onLeave = () => {
++    stage.ptr.inside = false;
++    stage.onLeave?.();
++  };
++  container.addEventListener("pointermove", onMove);
++  container.addEventListener("pointerleave", onLeave);
++  cleanups.push(() => {
++    ro.disconnect();
++    io.disconnect();
++    document.removeEventListener("visibilitychange", onVis);
++    window.removeEventListener("pointermove", onWindowMove);
++    container.removeEventListener("pointermove", onMove);
++    container.removeEventListener("pointerleave", onLeave);
++  });
++
++  return stage;
++}
+diff --git a/port_v2/components/about/three/identity.ts b/port_v2/components/about/three/identity.ts
+new file mode 100644
+index 0000000..8524fd1
+--- /dev/null
++++ b/port_v2/components/about/three/identity.ts
+@@ -0,0 +1,135 @@
++import * as THREE from "three";
++import { createStage, type SceneController } from "./core";
++import { LOGO_PATHS } from "@/constants/logo";
++import { SANS, canvasTex, dustPoints, hexCss, plateBg, rad, slab, svgShape } from "./shapes";
++
++const ACCENTS = [0x00d492, 0x7c86ff];
++
++export interface IdentityOptions {
++  reduce: boolean;
++  dark: boolean;
++  /** Names on the plaques that orbit the monogram (about six fit well). */
++  plaques: string[];
++}
++
++export function createIdentityScene(canvas: HTMLCanvasElement, container: HTMLElement, opts: IdentityOptions): SceneController | null {
++  const stage = createStage(canvas, container, { fov: 30, reduce: opts.reduce, dark: opts.dark });
++  if (!stage) return null;
++  const { rig, camera } = stage;
++
++  stage.place = (c, a) => {
++    const tanV = Math.tan(rad(c.fov / 2));
++    const fw = 7.9;
++    const fh = 5.8;
++    const d = Math.max(fh / 2 / tanV, fw / 2 / (tanV * a));
++    c.position.set(0.1, 3.3 + d * 0.06, d);
++    c.lookAt(0, 0.7, 0);
++  };
++
++  /* pedestal */
++  const podMat = new THREE.MeshPhysicalMaterial({ color: 0x101317, metalness: 0.6, roughness: 0.42, clearcoat: 0.4, clearcoatRoughness: 0.35, envMapIntensity: 0.55 });
++  const pod = new THREE.Group();
++  pod.position.y = -1.3;
++  rig.add(pod);
++  ([[2.7, 0], [2.2, 0.12]] as const).forEach(([r, y]) => {
++    const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r + 0.06, 0.12, 72), podMat);
++    m.position.y = y;
++    pod.add(m);
++  });
++  const podRing = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.02, 8, 160), new THREE.MeshBasicMaterial({ color: 0x00d492, toneMapped: false }));
++  podRing.rotation.x = Math.PI / 2;
++  podRing.position.y = 0.19;
++  pod.add(podRing);
++  const podRing2 = new THREE.Mesh(new THREE.TorusGeometry(2.78, 0.012, 8, 160), new THREE.MeshBasicMaterial({ color: 0x7c86ff, toneMapped: false, transparent: true, opacity: 0.7 }));
++  podRing2.rotation.x = Math.PI / 2;
++  podRing2.position.y = 0.07;
++  pod.add(podRing2);
++
++  /* badge: dark slab carrying the extruded monogram */
++  const badge = new THREE.Group();
++  badge.position.y = 1.55;
++  badge.scale.setScalar(1.1);
++  rig.add(badge);
++  const bodyMat = new THREE.MeshPhysicalMaterial({ color: 0x0b0d10, metalness: 0.3, roughness: 0.55, clearcoat: 0.12, clearcoatRoughness: 0.4, envMapIntensity: 0.16 });
++  badge.add(slab(3.3, 2.2, 0.3, 0.34, bodyMat));
++  const k = 2.35 / 148.7;
++  const logoMat = new THREE.MeshPhysicalMaterial({ color: 0xf3f4f6, metalness: 0.25, roughness: 0.34, emissive: 0x9aa0aa, emissiveIntensity: 0.22, clearcoat: 0.4, envMapIntensity: 0.8 });
++  const shapes = LOGO_PATHS.map((d) => svgShape(d, k, 88.3, 90.2));
++  const logo = new THREE.Mesh(
++    new THREE.ExtrudeGeometry(shapes, { depth: 0.14, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 3, curveSegments: 14 }),
++    logoMat,
++  );
++  logo.position.z = 0.19;
++  badge.add(logo);
++  const glow = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 0.02), new THREE.MeshBasicMaterial({ color: 0x00d492, toneMapped: false, transparent: true, opacity: 0.9 }));
++  glow.position.set(0, -0.96, 0.19);
++  badge.add(glow);
++
++  /* orbiting name plaques */
++  const plateMat = new THREE.MeshPhysicalMaterial({ color: 0x0d0f12, metalness: 0.4, roughness: 0.42, clearcoat: 0.35, clearcoatRoughness: 0.3, envMapIntensity: 0.4 });
++  const redraws: (() => void)[] = [];
++  const names = opts.plaques.length > 0 ? opts.plaques : ["Next.js", "Node.js", "Go", "PostgreSQL", "Docker", "Kubernetes"];
++  const plaques = names.map((name, i) => {
++    const g = new THREE.Group();
++    const w = 1.5;
++    const h = 0.54;
++    g.add(slab(w, h, 0.12, 0.18, plateMat, 0.02));
++    const accent = ACCENTS[i % ACCENTS.length];
++    const tex = canvasTex(512, 184, (c, cw, ch) => {
++      plateBg(c, cw, ch, 46);
++      c.fillStyle = hexCss(accent);
++      c.beginPath();
++      c.arc(56, ch / 2, 13, 0, Math.PI * 2);
++      c.fill();
++      c.fillStyle = "#f5f5f5";
++      c.font = "600 62px " + SANS;
++      c.textBaseline = "middle";
++      c.fillText(name, 90, ch / 2 + 3, cw - 110);
++    });
++    redraws.push(tex.redraw);
++    const face = new THREE.Mesh(new THREE.PlaneGeometry(w - 0.06, h - 0.06), new THREE.MeshBasicMaterial({ map: tex.texture, transparent: true, toneMapped: false }));
++    face.position.z = 0.09;
++    g.add(face);
++    rig.add(g);
++    return { g, a: (i / names.length) * Math.PI * 2 };
++  });
++  const orbitG = new THREE.Group();
++  orbitG.position.y = -0.35;
++  orbitG.scale.set(1, 1, 0.62);
++  const orbit = new THREE.Mesh(new THREE.TorusGeometry(3.05, 0.011, 8, 240), new THREE.MeshBasicMaterial({ color: 0x00d492, transparent: true, opacity: 0.55, toneMapped: false }));
++  orbit.rotation.x = Math.PI / 2;
++  orbitG.add(orbit);
++  rig.add(orbitG);
++
++  const dust = dustPoints(200, [4.2, 3.4]);
++  rig.add(dust.points);
++
++  stage.applyTheme = () => {
++    const d = stage.dark;
++    dust.material.color.setHex(d ? 0xa3a3a3 : 0x525252);
++    dust.material.opacity = d ? 0.7 : 0.55;
++    stage.renderer.toneMappingExposure = d ? 1.12 : 1.0;
++  };
++  stage.tick = (t) => {
++    rig.rotation.y = stage.px * 0.3 + Math.sin(t * 0.3) * 0.08;
++    rig.rotation.x = stage.py * 0.1;
++    badge.position.y = 1.55 + Math.sin(t * 0.9) * 0.06;
++    badge.rotation.y = Math.sin(t * 0.5) * 0.22;
++    rig.updateMatrixWorld(true);
++    plaques.forEach((p) => {
++      const a = p.a + t * 0.16;
++      p.g.position.set(Math.cos(a) * 3.05, -0.35 + Math.sin(a * 2 + p.a) * 0.06, Math.sin(a) * 3.05 * 0.62);
++      p.g.lookAt(camera.position);
++    });
++  };
++
++  document.fonts?.ready.then(() => {
++    redraws.forEach((f) => f());
++    stage.frame();
++  });
++  stage.applyTheme();
++  stage.resize();
++  stage.start();
++
++  return { dispose: stage.dispose, setDark: stage.setDark };
++}
+diff --git a/port_v2/components/about/three/shapes.ts b/port_v2/components/about/three/shapes.ts
+new file mode 100644
+index 0000000..fb6b2e1
+--- /dev/null
++++ b/port_v2/components/about/three/shapes.ts
+@@ -0,0 +1,149 @@
++import * as THREE from "three";
++
++export const SANS = 'ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif';
++export const MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
++
++export function hexCss(h: number): string {
++  return "#" + ("000000" + h.toString(16)).slice(-6);
++}
++
++export function roundedRect(w: number, h: number, r: number): THREE.Shape {
++  const x = -w / 2;
++  const y = -h / 2;
++  const s = new THREE.Shape();
++  s.moveTo(x + r, y);
++  s.lineTo(x + w - r, y);
++  s.absarc(x + w - r, y + r, r, -Math.PI / 2, 0, false);
++  s.lineTo(x + w, y + h - r);
++  s.absarc(x + w - r, y + h - r, r, 0, Math.PI / 2, false);
++  s.lineTo(x + r, y + h);
++  s.absarc(x + r, y + h - r, r, Math.PI / 2, Math.PI, false);
++  s.lineTo(x, y + r);
++  s.absarc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
++  return s;
++}
++
++/** A rounded slab of depth `d`, centred on the origin. */
++export function slab(w: number, h: number, d: number, r: number, mat: THREE.Material, bevel = 0.03): THREE.Mesh {
++  const g = new THREE.ExtrudeGeometry(roundedRect(w, h, r), {
++    depth: d,
++    bevelEnabled: true,
++    bevelThickness: bevel,
++    bevelSize: bevel,
++    bevelSegments: 4,
++    curveSegments: 14,
++  });
++  g.translate(0, 0, -d / 2);
++  return new THREE.Mesh(g, mat);
++}
++
++export function rrPath(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
++  g.beginPath();
++  g.moveTo(x + r, y);
++  g.arcTo(x + w, y, x + w, y + h, r);
++  g.arcTo(x + w, y + h, x, y + h, r);
++  g.arcTo(x, y + h, x, y, r);
++  g.arcTo(x, y, x + w, y, r);
++  g.closePath();
++}
++
++/** Opaque dark rounded background so plate text never depends on the lighting. */
++export function plateBg(c: CanvasRenderingContext2D, cw: number, ch: number, rpx: number): void {
++  c.fillStyle = "#0d0f12";
++  rrPath(c, 0, 0, cw, ch, rpx);
++  c.fill();
++  c.strokeStyle = "rgba(255,255,255,.09)";
++  c.lineWidth = 3;
++  rrPath(c, 2, 2, cw - 4, ch - 4, rpx - 2);
++  c.stroke();
++}
++
++export interface CanvasTex {
++  texture: THREE.CanvasTexture;
++  redraw: () => void;
++}
++
++/** A canvas-backed texture whose drawing can be re-run (fonts loaded, text changed). */
++export function canvasTex(
++  cw: number,
++  ch: number,
++  draw: (g: CanvasRenderingContext2D, cw: number, ch: number) => void,
++): CanvasTex {
++  const c = document.createElement("canvas");
++  c.width = cw;
++  c.height = ch;
++  const texture = new THREE.CanvasTexture(c);
++  texture.encoding = THREE.sRGBEncoding;
++  texture.anisotropy = 8;
++  const redraw = () => {
++    const g = c.getContext("2d");
++    if (!g) return;
++    g.clearRect(0, 0, cw, ch);
++    draw(g, cw, ch);
++    texture.needsUpdate = true;
++  };
++  redraw();
++  return { texture, redraw };
++}
++
++export function dustPoints(n: number, spread: [number, number]): { points: THREE.Points; material: THREE.PointsMaterial } {
++  const pos = new Float32Array(n * 3);
++  for (let p = 0; p < n; p++) {
++    const r = spread[0] + Math.random() * spread[1];
++    const th = Math.random() * Math.PI * 2;
++    const ph = Math.acos(2 * Math.random() - 1);
++    pos[p * 3] = r * Math.sin(ph) * Math.cos(th);
++    pos[p * 3 + 1] = r * Math.sin(ph) * Math.sin(th) * 0.7;
++    pos[p * 3 + 2] = r * Math.cos(ph) * 0.7 - 1;
++  }
++  const g = new THREE.BufferGeometry();
++  g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
++  const material = new THREE.PointsMaterial({ size: 0.055, color: 0xa3a3a3, transparent: true, opacity: 0.7, sizeAttenuation: true, depthWrite: false });
++  return { points: new THREE.Points(g, material), material };
++}
++
++/**
++ * Builds a THREE.Shape from an SVG path made of absolute M, L, H, V, C, Z
++ * commands (the site's monogram uses only these). y is flipped.
++ */
++export function svgShape(d: string, k: number, cx: number, cy: number): THREE.Shape {
++  const t = d.match(/[MLHVCZ]|-?\d*\.?\d+/g) ?? [];
++  const s = new THREE.Shape();
++  const X = (v: number) => (v - cx) * k;
++  const Y = (v: number) => -(v - cy) * k;
++  let i = 0;
++  let x = 0;
++  let y = 0;
++  let cmd = "";
++  const num = () => parseFloat(t[i++]);
++  while (i < t.length) {
++    if (/^[MLHVCZ]$/.test(t[i])) {
++      cmd = t[i++];
++      if (cmd === "Z") continue;
++    }
++    if (cmd === "M") {
++      x = num();
++      y = num();
++      s.moveTo(X(x), Y(y));
++      cmd = "L";
++    } else if (cmd === "L") {
++      x = num();
++      y = num();
++      s.lineTo(X(x), Y(y));
++    } else if (cmd === "H") {
++      x = num();
++      s.lineTo(X(x), Y(y));
++    } else if (cmd === "V") {
++      y = num();
++      s.lineTo(X(x), Y(y));
++    } else if (cmd === "C") {
++      const q = [num(), num(), num(), num(), num(), num()];
++      s.bezierCurveTo(X(q[0]), Y(q[1]), X(q[2]), Y(q[3]), X(q[4]), Y(q[5]));
++      x = q[4];
++      y = q[5];
++    } else break;
++  }
++  return s;
++}
++
++export const rad = (d: number) => (d * Math.PI) / 180;
+diff --git a/port_v2/components/about/three/skyline.ts b/port_v2/components/about/three/skyline.ts
+new file mode 100644
+index 0000000..e959de0
+--- /dev/null
++++ b/port_v2/components/about/three/skyline.ts
+@@ -0,0 +1,204 @@
++import * as THREE from "three";
++import { createStage, type SceneController } from "./core";
++import { MONO, canvasTex, dustPoints, rad } from "./shapes";
++
++export interface SkylineHover {
++  index: number;
++  /** Pixel position of the top of the hovered bar, relative to the container. */
++  x: number;
++  y: number;
++}
++
++export interface SkylineOptions {
++  reduce: boolean;
++  dark: boolean;
++  days: number[];
++  startLabel: string;
++  onHover: (h: SkylineHover | null) => void;
++}
++
++export interface SkylineController extends SceneController {
++  setStartLabel: (label: string) => void;
++}
++
++const PALETTE = {
++  dark: [0x0f7a55, 0x00a870, 0x00d492, 0x5eeab8],
++  light: [0x0a6b4b, 0x078a5f, 0x009e69, 0x00b47a],
++};
++
++export function createSkylineScene(canvas: HTMLCanvasElement, container: HTMLElement, opts: SkylineOptions): SkylineController | null {
++  const stage = createStage(canvas, container, { fov: 32, reduce: opts.reduce, dark: opts.dark });
++  if (!stage) return null;
++  const { rig, camera } = stage;
++
++  const days = opts.days;
++  const N = days.length;
++  const WEEKS = Math.max(1, Math.ceil(N / 7));
++  const max = Math.max(1, ...days);
++  const unit = Math.min(0.3, 2.6 / max);
++  const tangent = Math.min(0.2, ((Math.PI * 2 * 2.55) / WEEKS) * 0.78);
++
++  stage.place = (c, a) => {
++    const tanV = Math.tan(rad(c.fov / 2));
++    const d = Math.max(4.4 / tanV, 5.0 / (tanV * a)) * 1.12;
++    const el = rad(36);
++    c.position.set(0, Math.sin(el) * d, Math.cos(el) * d);
++    c.lookAt(0, 0.35, 0);
++  };
++
++  const geo = new THREE.BoxGeometry(1, 1, 1);
++  geo.translate(0, 0.5, 0);
++  const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55, metalness: 0.1, envMapIntensity: 0.45 });
++  const mesh = new THREE.InstancedMesh(geo, mat, N);
++  rig.add(mesh);
++
++  const m4 = new THREE.Matrix4();
++  const q = new THREE.Quaternion();
++  const e = new THREE.Euler();
++  const pos = new THREE.Vector3();
++  const scl = new THREE.Vector3();
++  const tmp = new THREE.Color();
++  const zero = new THREE.Color(0x24282e);
++  const heights: number[] = [];
++  const bucket: number[] = [];
++  for (let i = 0; i < N; i++) {
++    const w = Math.floor(i / 7);
++    const d = i % 7;
++    const th = (w / WEEKS) * Math.PI * 2;
++    const r = 2.55 + d * 0.25;
++    const h = days[i] ? 0.18 + days[i] * unit : 0.035;
++    pos.set(Math.sin(th) * r, 0, Math.cos(th) * r);
++    e.set(0, th, 0);
++    q.setFromEuler(e);
++    scl.set(tangent, h, 0.2);
++    m4.compose(pos, q, scl);
++    mesh.setMatrixAt(i, m4);
++    heights.push(h);
++    bucket.push(days[i] ? Math.min(4, Math.max(1, Math.ceil((days[i] / max) * 4))) : 0);
++  }
++  const barHex = (i: number) => (bucket[i] ? PALETTE[stage.dark ? "dark" : "light"][bucket[i] - 1] : 0);
++  const colorOf = (i: number) => (bucket[i] ? tmp.setHex(barHex(i)) : zero);
++  const paint = () => {
++    for (let i = 0; i < N; i++) mesh.setColorAt(i, colorOf(i));
++    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
++  };
++  paint();
++
++  const ring1 = new THREE.Mesh(new THREE.TorusGeometry(2.25, 0.02, 8, 160), new THREE.MeshBasicMaterial({ color: 0x00d492, toneMapped: false }));
++  ring1.rotation.x = Math.PI / 2;
++  ring1.position.y = 0.01;
++  rig.add(ring1);
++  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(4.35, 0.012, 8, 200), new THREE.MeshBasicMaterial({ color: 0x7c86ff, toneMapped: false, transparent: true, opacity: 0.7 }));
++  ring2.rotation.x = Math.PI / 2;
++  ring2.position.y = 0.01;
++  rig.add(ring2);
++
++  const cube = new THREE.Group();
++  const cg = new THREE.BoxGeometry(0.9, 0.9, 0.9);
++  cube.add(new THREE.Mesh(cg, new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.06, transparent: true, opacity: 0.22, clearcoat: 1, envMapIntensity: 1.5, depthWrite: false })));
++  cube.add(new THREE.LineSegments(new THREE.EdgesGeometry(cg), new THREE.LineBasicMaterial({ color: 0x00d492, transparent: true, opacity: 0.95 })));
++  cube.position.y = 0.9;
++  rig.add(cube);
++  const core = new THREE.Mesh(new THREE.SphereGeometry(0.18, 20, 14), new THREE.MeshBasicMaterial({ color: 0x7c86ff, toneMapped: false }));
++  core.position.y = 0.9;
++  rig.add(core);
++
++  let startLabel = opts.startLabel;
++  const startTex = canvasTex(512, 96, (c, cw, ch) => {
++    c.font = "500 40px " + MONO;
++    c.textAlign = "center";
++    c.textBaseline = "middle";
++    c.fillStyle = stage.dark ? "#d4d4d8" : "#3f3f46";
++    c.fillText(startLabel, cw / 2, ch / 2, cw - 20);
++  });
++  const startSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: startTex.texture, transparent: true, depthWrite: false, toneMapped: false }));
++  startSprite.scale.set(2.4, 0.45, 1);
++  startSprite.position.set(0, 0.25, 4.95);
++  rig.add(startSprite);
++
++  const dust = dustPoints(140, [5.2, 3]);
++  dust.points.position.y = 1.4;
++  rig.add(dust.points);
++
++  stage.applyTheme = () => {
++    const d = stage.dark;
++    zero.setHex(d ? 0x24282e : 0xc3c6cc);
++    paint();
++    dust.material.color.setHex(d ? 0xa3a3a3 : 0x525252);
++    dust.material.opacity = d ? 0.6 : 0.5;
++    stage.renderer.toneMappingExposure = d ? 1.12 : 1.0;
++    startTex.redraw();
++  };
++
++  let spin = 0.3;
++  let last = 0;
++  let hoverId = -1;
++  const raycaster = new THREE.Raycaster();
++  const setHover = (id: number) => {
++    if (id === hoverId) return;
++    if (hoverId >= 0) mesh.setColorAt(hoverId, colorOf(hoverId));
++    hoverId = id;
++    if (id >= 0) mesh.setColorAt(id, tmp.setHex(stage.dark ? 0xffffff : 0x111111));
++    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
++  };
++  const report = () => {
++    if (hoverId < 0) {
++      opts.onHover(null);
++      return;
++    }
++    mesh.getMatrixAt(hoverId, m4);
++    pos.setFromMatrixPosition(m4);
++    pos.y += heights[hoverId];
++    mesh.localToWorld(pos);
++    pos.project(camera);
++    opts.onHover({ index: hoverId, x: (pos.x * 0.5 + 0.5) * container.clientWidth, y: (-pos.y * 0.5 + 0.5) * container.clientHeight });
++  };
++
++  stage.onPointer = () => {
++    if (stage.reduce) stage.frame();
++  };
++  stage.onLeave = () => {
++    setHover(-1);
++    report();
++    if (stage.reduce) stage.frame();
++  };
++  stage.tick = (t) => {
++    const dt = Math.min(0.1, t - last);
++    last = t;
++    if (!stage.ptr.inside && !stage.reduce) spin += dt * 0.09;
++    rig.rotation.y = spin;
++    rig.rotation.x = stage.py * 0.05;
++    cube.rotation.y = t * 0.5;
++    cube.rotation.x = t * 0.3;
++    cube.position.y = 0.9 + Math.sin(t * 0.8) * 0.08;
++    core.position.y = cube.position.y;
++    if (stage.ptr.inside) {
++      raycaster.setFromCamera(new THREE.Vector2(stage.ptr.x, stage.ptr.y), camera);
++      rig.updateMatrixWorld(true);
++      const h = raycaster.intersectObject(mesh, false)[0];
++      setHover(h && h.instanceId != null ? h.instanceId : -1);
++    }
++    report();
++  };
++
++  document.fonts?.ready.then(() => {
++    startTex.redraw();
++    stage.frame();
++  });
++  stage.applyTheme();
++  stage.resize();
++  stage.start();
++
++  return {
++    dispose: () => {
++      opts.onHover(null);
++      stage.dispose();
++    },
++    setDark: stage.setDark,
++    setStartLabel: (label) => {
++      startLabel = label;
++      startTex.redraw();
++      stage.frame();
++    },
++  };
++}
+diff --git a/port_v2/components/certifications-section.tsx b/port_v2/components/certifications-section.tsx
+index bd848f8..b4d194b 100644
+--- a/port_v2/components/certifications-section.tsx
++++ b/port_v2/components/certifications-section.tsx
+@@ -43,6 +43,7 @@ export function CertificationsSection({
+ 
+   return (
+     <section
++      id="certifications"
+       aria-labelledby="certifications-heading"
+       className="relative py-20 overflow-hidden md:py-32"
+     >
+diff --git a/port_v2/constants/architecture.ts b/port_v2/constants/architecture.ts
+new file mode 100644
+index 0000000..3c55ec5
+--- /dev/null
++++ b/port_v2/constants/architecture.ts
+@@ -0,0 +1,47 @@
++// Topology of the "This site, taken apart" diagram on the About page.
++// Positions, colors and edges are tied to the 3D scene, so they live in code.
++// The visible text (kind, description) lives in messages/*.json under
++// aboutPage.architecture.nodes.<id>.
++
++export type ArchNodeId =
++  | "sanity"
++  | "spotify"
++  | "next"
++  | "browser"
++  | "vercel"
++  | "sentry";
++
++export interface ArchNode {
++  id: ArchNodeId;
++  name: string; // product name, not translated
++  sub: string; // short mono caption, not translated
++  color: number; // accent used for the dot, halo and data pulses
++  /** [x, y] when the diagram is wide (landscape) and when it is narrow (portrait). */
++  landscape: [number, number];
++  portrait: [number, number];
++  size: [number, number]; // plate width, height
++}
++
++const SMALL: [number, number] = [2.9, 1.35];
++
++export const ARCH_NODES: ArchNode[] = [
++  { id: "sanity", name: "Sanity CMS", sub: "GROQ · live preview", color: 0x00bc7d, landscape: [-4.7, 1.55], portrait: [-1.8, 5.0], size: SMALL },
++  { id: "spotify", name: "Spotify API", sub: "now-playing route", color: 0x00bc7d, landscape: [-4.7, -1.65], portrait: [1.8, 5.0], size: SMALL },
++  { id: "next", name: "Next.js 16", sub: "App Router · SSR · i18n", color: 0x00d492, landscape: [-0.2, 0], portrait: [0, 2.1], size: [3.6, 1.8] },
++  { id: "browser", name: "Browser", sub: "client components", color: 0x7c86ff, landscape: [4.6, 1.55], portrait: [-1.8, -1.0], size: SMALL },
++  { id: "vercel", name: "Vercel", sub: "hosting · analytics", color: 0x7c86ff, landscape: [-0.2, -3.0], portrait: [1.8, -1.0], size: SMALL },
++  { id: "sentry", name: "Sentry", sub: "error tracking", color: 0x7c86ff, landscape: [4.6, -1.65], portrait: [0, -3.5], size: SMALL },
++];
++
++/** [from, to]: the direction data flows in. */
++export const ARCH_EDGES: [ArchNodeId, ArchNodeId][] = [
++  ["sanity", "next"],
++  ["spotify", "next"],
++  ["next", "browser"],
++  ["next", "vercel"],
++  ["browser", "sentry"],
++  ["next", "sentry"],
++];
++
++/** Document types an editor can change in Studio (sanity/schemaTypes, without the two embedded object types). */
++export const CONTENT_TYPES = 10;
+diff --git a/port_v2/constants/commit-activity.json b/port_v2/constants/commit-activity.json
+new file mode 100644
+index 0000000..61f159d
+--- /dev/null
++++ b/port_v2/constants/commit-activity.json
+@@ -0,0 +1 @@
++{"source":"repository","start":"2025-04-13","days":[0,0,0,1,0,3,0,0,0,2,7,3,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,4,1,0,4,0,0,3,1,0,2,4,0,0,0,0,0,0,0,1,0,11,0,0,4,1,2,2,1,0,0,0,0,0,4,0,0,0,0,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,2,6,3,3,4,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,6,2,2,0,0,0,1,0,2,3,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,5,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]}
+diff --git a/port_v2/constants/contact.ts b/port_v2/constants/contact.ts
+new file mode 100644
+index 0000000..1c4e820
+--- /dev/null
++++ b/port_v2/constants/contact.ts
+@@ -0,0 +1,4 @@
++// Where the About page's "Get in touch" buttons go. This is the same address
++// the footer shows. If the home page's contact form comes back, point this at
++// "/#contact" instead.
++export const CONTACT_HREF = "mailto:aryadzaky8494@gmail.com";
+diff --git a/port_v2/constants/logo.ts b/port_v2/constants/logo.ts
+new file mode 100644
+index 0000000..983b910
+--- /dev/null
++++ b/port_v2/constants/logo.ts
+@@ -0,0 +1,6 @@
++// The site's own monogram (same paths as the navbar logo), in a 180x180 box.
++// Shared by the About page's 3D badge and its no-WebGL fallback.
++export const LOGO_PATHS = [
++  "M101.141 53H136.632C151.023 53 162.689 64.6662 162.689 79.0573V112.904H148.112V79.0573C148.112 78.7105 148.098 78.3662 148.072 78.0251L112.581 112.898C112.701 112.902 112.821 112.904 112.941 112.904H148.112V126.672H112.941C98.5504 126.672 86.5638 114.891 86.5638 100.5V66.7434H101.141V100.5C101.141 101.15 101.191 101.792 101.289 102.422L137.56 66.7816C137.255 66.7563 136.945 66.7434 136.632 66.7434H101.141V53Z",
++  "M65.2926 124.136L14 66.7372H34.6355L64.7495 100.436V66.7372H80.1365V118.47C80.1365 126.278 70.4953 129.958 65.2926 124.136Z",
++];
+diff --git a/port_v2/constants/shipped.ts b/port_v2/constants/shipped.ts
+new file mode 100644
+index 0000000..469f053
+--- /dev/null
++++ b/port_v2/constants/shipped.ts
+@@ -0,0 +1,12 @@
++// Notable features shipped on this portfolio, newest first.
++// Each `key` maps to aboutPage.activity.shipped.<key> in messages/*.json.
++export const SHIPPED: { date: string; key: string }[] = [
++  { date: "2026-09-18", key: "certificateModal" },
++  { date: "2026-06-15", key: "skillsUses" },
++  { date: "2026-04-11", key: "seo" },
++  { date: "2026-03-08", key: "categories" },
++  { date: "2026-01-31", key: "docker" },
++  { date: "2026-01-11", key: "livePreview" },
++  { date: "2025-11-18", key: "i18n" },
++  { date: "2025-06-14", key: "sentry" },
++];
+diff --git a/port_v2/lib/getActivity.ts b/port_v2/lib/getActivity.ts
+new file mode 100644
+index 0000000..2fcaa15
+--- /dev/null
++++ b/port_v2/lib/getActivity.ts
+@@ -0,0 +1,79 @@
++import snapshot from "@/constants/commit-activity.json";
++import type { Activity } from "@/types/activityType";
++
++const GITHUB_LOGIN = process.env.GITHUB_USERNAME || "aryadzar";
++
++const QUERY = `
++  query ($login: String!) {
++    user(login: $login) {
++      contributionsCollection {
++        contributionCalendar {
++          weeks { contributionDays { date contributionCount weekday } }
++        }
++      }
++    }
++  }
++`;
++
++interface CalendarResponse {
++  data?: {
++    user?: {
++      contributionsCollection: {
++        contributionCalendar: {
++          weeks: {
++            contributionDays: { date: string; contributionCount: number; weekday: number }[];
++          }[];
++        };
++      };
++    } | null;
++  };
++}
++
++/**
++ * Daily contribution counts for the About page's skyline.
++ *
++ * With GITHUB_TOKEN set, this reads the profile's contribution calendar
++ * (last 12 months) from the GitHub GraphQL API and caches it for a day.
++ * Without a token, or if GitHub fails, it falls back to the committed
++ * snapshot of this repository's history (see scripts/commit-activity.mjs).
++ */
++export async function getActivity(): Promise<Activity> {
++  const token = process.env.GITHUB_TOKEN;
++  if (!token) return snapshot as Activity;
++
++  try {
++    const res = await fetch("https://api.github.com/graphql", {
++      method: "POST",
++      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
++      body: JSON.stringify({ query: QUERY, variables: { login: GITHUB_LOGIN } }),
++      next: { revalidate: 60 * 60 * 24 },
++    });
++    if (!res.ok) return snapshot as Activity;
++
++    const json = (await res.json()) as CalendarResponse;
++    const weeks = json.data?.user?.contributionsCollection.contributionCalendar.weeks;
++    if (!weeks || weeks.length === 0) return snapshot as Activity;
++
++    // Flatten to Sunday-first weeks, padding the first and last week to 7 days.
++    const days: number[] = [];
++    let start = "";
++    weeks.forEach((week, i) => {
++      const byWeekday = new Array<number>(7).fill(0);
++      week.contributionDays.forEach((d) => {
++        byWeekday[d.weekday] = d.contributionCount;
++        if (i === 0 && !start) {
++          const first = new Date(d.date + "T00:00:00Z");
++          start = new Date(first.getTime() - d.weekday * 86400000).toISOString().slice(0, 10);
++        }
++      });
++      days.push(...byWeekday);
++    });
++
++    return { source: "github", start, days };
++  } catch {
++    return snapshot as Activity;
++  }
++}
++
++/** Commits recorded in the committed snapshot of this repository (see scripts/commit-activity.mjs). */
++export const REPOSITORY_COMMITS = (snapshot as Activity).days.reduce((sum, n) => sum + n, 0);
+diff --git a/port_v2/lib/getHome.ts b/port_v2/lib/getHome.ts
+index 73d1f6f..4145a5d 100644
+--- a/port_v2/lib/getHome.ts
++++ b/port_v2/lib/getHome.ts
+@@ -33,6 +33,12 @@ export const getAbout = async (lang: string): Promise<About> => {
+       name,
+       jobTitle,
+       description,
++      headlineA,
++      headlineB,
++      location,
++      timezone,
++      coreStack,
++      infrastructure,
+       "imageUrl": profileImage.asset->url,
+       "cvUrl": cvFile.asset->url,
+       "certificateUrl": certificateFile.asset->url
+@@ -212,6 +218,7 @@ export const getSkills = async (): Promise<Skill[]> => {
+       category,
+       "iconUrl": icon.asset->url,
+       color,
++      level,
+       order
+     }`
+   });
+diff --git a/port_v2/messages/de.json b/port_v2/messages/de.json
+index 085282f..8af01e2 100644
+--- a/port_v2/messages/de.json
++++ b/port_v2/messages/de.json
+@@ -152,7 +152,187 @@
+         "skillsTitle": "Fähigkeiten",
+         "headingAction": "Aktionen",
+         "contact": "Kontaktieren Sie mich",
+-        "viewProjects": "Alle Projekte anzeigen"
++        "viewProjects": "Alle Projekte anzeigen",
++        "intro": {
++            "available": "Verfügbar für Projekte",
++            "tag": "Backend & Fullstack",
++            "headlineA": "Backends, die halten.",
++            "headlineB": "Oberflächen, die nicht im Weg stehen.",
++            "lead": "Ich bin <strong>{name}</strong>, Fullstack- und Backend-Entwickler in {location}. Ich entwerfe Webanwendungen, die leistungsfähig bleiben, wenn Nutzer und Funktionen wachsen, und mir liegt auch die letzte Meile am Herzen: die Oberfläche, die Menschen tatsächlich berühren.",
++            "roleLabel": "Rolle",
++            "roleDefault": "Fullstack- / Backend-Entwickler",
++            "basedLabel": "Standort",
++            "locationDefault": "Bandar Lampung, Indonesien",
++            "timezoneDefault": "UTC+7",
++            "coreLabel": "Kern-Stack",
++            "infraLabel": "Infrastruktur",
++            "cv": "Lebenslauf ansehen",
++            "contact": "Kontakt aufnehmen",
++            "hint": "Bewegen Sie den Cursor",
++            "sceneLabel": "Interaktive 3D-Szene: das AD-Monogramm auf einem Sockel, umkreist von Plaketten mit Technologienamen"
++        },
++        "work": {
++            "eyebrow": "Wie ich arbeite",
++            "title": "Vier Gewohnheiten, die Sie im Code nachprüfen können.",
++            "subtitle": "Behauptungen sind billig. Jede Gewohnheit unten verweist auf etwas, das im Repository dieser Website sichtbar ist.",
++            "moreCerts": "Alle Zertifikate ansehen",
++            "habits": {
++                "backend": {
++                    "title": "Backends, die leistungsfähig bleiben",
++                    "description": "Skalierbare Systeme, die schnell, sicher und zuverlässig bleiben, wenn Nutzer und Funktionen wachsen.",
++                    "evidence": [
++                        "Container-Build mit Health-Checks (Docker Compose)",
++                        "Fehlerüberwachung in Produktion mit Sentry seit Juni 2025",
++                        "Server-Side-Rendering sowie dynamische Sitemap und robots für jede Sprache"
++                    ]
++                },
++                "interfaces": {
++                    "title": "Oberflächen, die zugänglich bleiben",
++                    "description": "Klare, schnelle Bildschirme auf Basis von Bausteinen, die Fokus, Tastatur und Screenreader bereits abdecken.",
++                    "evidence": [
++                        "Radix-UI-Bausteine hinter jeder shadcn/ui-Komponente",
++                        "Ein Komponentenbaum für Englisch, Indonesisch und Deutsch",
++                        "Theme-Tokens mit passendem hellem und dunklem Modus"
++                    ]
++                },
++                "content": {
++                    "title": "Inhalte getrennt vom Code",
++                    "description": "Redakteure ändern Texte und Bilder im Sanity Studio; Entwickler ändern das Verhalten im Code. Keiner blockiert den anderen.",
++                    "evidence": [
++                        "Typisierte Content-Schemas für Projekte, Skills, Erfahrung und mehr",
++                        "Live-Vorschau und Visual Editing mit dem Studio verbunden",
++                        "Server-Komponenten laden Daten; Client-Komponenten animieren nur"
++                    ]
++                },
++                "teaching": {
++                    "title": "Erklärt, was es baut",
++                    "description": "Lehren erzwingt Klarheit. Ich war Tutor für Webprogrammierung, Grundlagen der Programmierung und OOP.",
++                    "evidence": [
++                        "Tutor für Webprogrammierung, Himakom, 2025",
++                        "Tutor für Grundlagen der Programmierung und OOP, 2024",
++                        "BNSP-zertifizierter Junior Web Developer, 2024"
++                    ]
++                }
++            }
++        },
++        "architecture": {
++            "eyebrow": "Fallstudie",
++            "title": "Diese Website, auseinandergenommen.",
++            "subtitle": "Von einer clientseitig gerenderten React-App zu einer serverseitig gerenderten, mehrsprachigen, CMS-gesteuerten Website. Wählen Sie einen Knoten in der Szene oder über die Schaltflächen, um seine Funktion zu sehen.",
++            "sceneLabel": "Interaktives 3D-Diagramm der Architektur dieser Website: Sanity, Spotify, Next.js, Browser, Vercel und Sentry, verbunden durch animierte Datenflüsse",
++            "nodesLabel": "Architekturknoten",
++            "from": "von",
++            "to": "an",
++            "fallback": "Sanity → Next.js → Browser, gehostet auf Vercel, überwacht von Sentry.",
++            "problemLabel": "Problem",
++            "problem": "Das erste Portfolio war eine clientseitig gerenderte React-App, deren Inhalte in Komponenten geschrieben waren, und es sprach nur eine Sprache.",
++            "decisionsLabel": "Entscheidungen",
++            "decisions": [
++                "Auf dem Server rendern, im Client animieren",
++                "Inhalte in Sanity verlagern, hinter typisierten Schemas",
++                "Routing nach Sprache mit next-intl: Englisch, Indonesisch, Deutsch",
++                "Fehler verfolgen und einen Container-Pfad offenhalten"
++            ],
++            "outcomeLabel": "Ergebnis",
++            "outcomes": {
++                "commits": "Commits",
++                "languages": "Sprachen",
++                "types": "Inhaltstypen im Studio bearbeitbar"
++            },
++            "nodes": {
++                "sanity": {
++                    "kind": "Inhalt",
++                    "description": "Die einzige Quelle für Inhalte. Server-Komponenten fragen sie mit GROQ ab, nach Sprache gefiltert; Draft-Modus und Content Source Maps treiben die Live-Vorschau an."
++                },
++                "spotify": {
++                    "kind": "Integration",
++                    "description": "Ein Route Handler leitet Anfragen an die Spotify-API weiter, sodass das Now-Playing-Widget nie Zugangsdaten an den Browser preisgibt."
++                },
++                "next": {
++                    "kind": "Anwendung",
++                    "description": "App Router mit serverseitigem Rendering. Sprach-Routing über next-intl (Englisch, Indonesisch, Deutsch), eine lokalisierte 404-Seite sowie dynamische Sitemap und robots-Datei."
++                },
++                "browser": {
++                    "kind": "Client",
++                    "description": "Client-Komponenten übernehmen Bewegung und Interaktion mit Framer Motion. Inhalte kommen bereits gerendert an, sodass Suchmaschinen und langsame Handys echtes HTML erhalten."
++                },
++                "vercel": {
++                    "kind": "Hosting",
++                    "description": "Auf Vercel mit Analytics bereitgestellt. Ein Dockerfile und eine Compose-Datei mit Health-Checks halten eine Self-Hosting-Option offen."
++                },
++                "sentry": {
++                    "kind": "Observability",
++                    "description": "Fehler von Server und Browser werden an Sentry gemeldet. Eingebunden im Juni 2025, zwei Monate nach dem ersten Commit."
++                }
++            }
++        },
++        "skills": {
++            "eyebrow": "Tiefe",
++            "title": "Was ich täglich nutze und was ich noch lerne.",
++            "subtitle": "Dieselben Gruppen wie auf der Seite Fähigkeiten, mit einer ehrlichen Einschätzung, wie tief jede geht.",
++            "levels": {
++                "1": "Lernend",
++                "2": "Sicher",
++                "3": "Täglich"
++            }
++        },
++        "activity": {
++            "eyebrow": "Aktivität",
++            "titleRepository": "Jeder Commit dieses Portfolios als Skyline.",
++            "titleGithub": "Ein Jahr Beiträge als Skyline.",
++            "subtitleRepository": "Jeder Balken ist ein Tag der Repository-Historie, angeordnet in einem Ring aus {weeks} Wochen. Höher bedeutet mehr Commits. Fahren Sie mit dem Cursor über einen Balken.",
++            "subtitleGithub": "Jeder Balken ist ein Tag des letzten Jahres auf GitHub, angeordnet in einem Ring aus {weeks} Wochen. Höher bedeutet mehr Beiträge. Fahren Sie mit dem Cursor über einen Balken.",
++            "sceneLabel": "Ring aus 3D-Balken, einer pro Tag, höher bei Tagen mit mehr Aktivität",
++            "start": "START",
++            "tipRepository": "{count, plural, =0 {Keine Commits} one {# Commit} other {# Commits}}",
++            "tipGithub": "{count, plural, =0 {Keine Beiträge} one {# Beitrag} other {# Beiträge}}",
++            "totalRepository": "Commits",
++            "totalGithub": "Beiträge",
++            "activeDays": "Tage mit Aktivität",
++            "busiest": "Meiste an einem Tag",
++            "shippedTitle": "Veröffentlicht, neueste zuerst",
++            "sourceRepository": "Quelle: Git-Historie des Portfolio-Repositorys.",
++            "sourceGithub": "Quelle: GitHub-Beitragskalender.",
++            "shipped": {
++                "certificateModal": "Zertifikatsvorschau als Modal und animierter Bildzoom",
++                "skillsUses": "Skills- und Uses-Seiten mit Sanity",
++                "seo": "Dynamische Sitemap und robots.txt für jede Sprache",
++                "categories": "Kategoriefilter und Kategorieseiten",
++                "docker": "Docker-Unterstützung",
++                "livePreview": "Sanity Content Source Maps für die Live-Vorschau",
++                "i18n": "i18n auf allen Seiten integriert",
++                "sentry": "Fehlerüberwachung mit Sentry"
++            }
++        },
++        "collab": {
++            "eyebrow": "Zusammenarbeit",
++            "title": "Was nach Ihrer ersten Nachricht passiert.",
++            "subtitle": "Keine Pitch-Deck-Show und keine Überraschung am Ende. Drei Schritte, in dieser Reihenfolge.",
++            "steps": {
++                "brief": {
++                    "title": "Briefing",
++                    "description": "Eine kurze Nachricht oder ein Gespräch über Ziele, Nutzer und Rahmenbedingungen. Sie erhalten Umfang und groben Zeitplan zurück."
++                },
++                "build": {
++                    "title": "Offen bauen",
++                    "description": "Kleine Releases auf einem Vorschau-Link zum Durchklicken, statt einer großen Enthüllung am Ende."
++                },
++                "ship": {
++                    "title": "Ausliefern und übergeben",
++                    "description": "Bereitgestellt, mit aktiver Fehlerüberwachung und genug Dokumentation, damit Ihr Team ohne mich weitermachen kann."
++                }
++            },
++            "fitLabel": "Gute Passung",
++            "fit": [
++                "Backend- und API-Design",
++                "Fullstack-Apps mit Next.js",
++                "Container mit Docker und Kubernetes",
++                "Authentifizierung mit Keycloak",
++                "Mehrsprachige, CMS-gesteuerte Websites"
++            ],
++            "ctaTitle": "Ein System, das skalieren muss, oder eine Oberfläche, die Sorgfalt braucht?",
++            "certifications": "Zertifikate"
++        }
+     },
+     "projectDetail": {
+         "altImage": "Titelbild für {title}",
+diff --git a/port_v2/messages/en.json b/port_v2/messages/en.json
+index 4778654..9dddd7d 100644
+--- a/port_v2/messages/en.json
++++ b/port_v2/messages/en.json
+@@ -152,7 +152,187 @@
+         "skillsTitle": "Skills",
+         "headingAction": "Actions",
+         "contact": "Contact Me",
+-        "viewProjects": "View All Projects"
++        "viewProjects": "View All Projects",
++        "intro": {
++            "available": "Available for work",
++            "tag": "Backend & Fullstack",
++            "headlineA": "Backends that hold up.",
++            "headlineB": "Interfaces that stay out of the way.",
++            "lead": "I’m <strong>{name}</strong>, a fullstack and backend developer in {location}. I design web applications that keep performing as users and features grow, and I still care about the last mile: the interface people actually touch.",
++            "roleLabel": "Role",
++            "roleDefault": "Fullstack / Backend Developer",
++            "basedLabel": "Based in",
++            "locationDefault": "Bandar Lampung, Indonesia",
++            "timezoneDefault": "UTC+7",
++            "coreLabel": "Core stack",
++            "infraLabel": "Infrastructure",
++            "cv": "View CV",
++            "contact": "Get in touch",
++            "hint": "Move your cursor",
++            "sceneLabel": "Interactive 3D scene: the AD monogram on a pedestal, orbited by technology name plaques"
++        },
++        "work": {
++            "eyebrow": "How I work",
++            "title": "Four habits you can check in the code.",
++            "subtitle": "Claims are cheap. Each habit below points to something visible in this site’s repository.",
++            "moreCerts": "See all certifications",
++            "habits": {
++                "backend": {
++                    "title": "Backends that keep performing",
++                    "description": "Scalable systems that stay fast, secure and reliable as users and features grow.",
++                    "evidence": [
++                        "Container build with health checks (Docker Compose)",
++                        "Production error tracking with Sentry since June 2025",
++                        "Server-side rendering, plus a dynamic sitemap and robots for every locale"
++                    ]
++                },
++                "interfaces": {
++                    "title": "Interfaces that stay accessible",
++                    "description": "Clean, fast screens built on primitives that already handle focus, keyboard and screen readers.",
++                    "evidence": [
++                        "Radix UI primitives behind each shadcn/ui component",
++                        "One component tree serving English, Indonesian and German",
++                        "Theme tokens with matching light and dark modes"
++                    ]
++                },
++                "content": {
++                    "title": "Content kept apart from code",
++                    "description": "Editors change words and images in Sanity Studio; developers change behaviour in code. Neither blocks the other.",
++                    "evidence": [
++                        "Typed content schemas for projects, skills, experience and more",
++                        "Live preview and visual editing wired to the Studio",
++                        "Server components fetch; client components only animate"
++                    ]
++                },
++                "teaching": {
++                    "title": "Explains what it builds",
++                    "description": "Teaching forces clarity. I have been a lecturer assistant for web programming, basic programming and OOP.",
++                    "evidence": [
++                        "Web Programming lecturer assistant, Himakom, 2025",
++                        "Basic Programming and OOP lecturer assistant, 2024",
++                        "BNSP-certified Junior Web Developer, 2024"
++                    ]
++                }
++            }
++        },
++        "architecture": {
++            "eyebrow": "Case study",
++            "title": "This site, taken apart.",
++            "subtitle": "From a client-rendered React app to a server-rendered, multilingual, CMS-driven site. Pick a node, in the scene or from the buttons, to see what it does.",
++            "sceneLabel": "Interactive 3D diagram of this site’s architecture: Sanity, Spotify, Next.js, the browser, Vercel and Sentry, connected by animated data flows",
++            "nodesLabel": "Architecture nodes",
++            "from": "from",
++            "to": "to",
++            "fallback": "Sanity → Next.js → Browser, hosted on Vercel, monitored by Sentry.",
++            "problemLabel": "Problem",
++            "problem": "The first portfolio was a client-rendered React app with its content written into components, and it spoke one language.",
++            "decisionsLabel": "Decisions",
++            "decisions": [
++                "Render on the server, animate on the client",
++                "Move content into Sanity, behind typed schemas",
++                "Route by locale with next-intl: English, Indonesian, German",
++                "Track errors and keep a container path open"
++            ],
++            "outcomeLabel": "Outcome",
++            "outcomes": {
++                "commits": "Commits",
++                "languages": "Languages",
++                "types": "Content types edited in Studio"
++            },
++            "nodes": {
++                "sanity": {
++                    "kind": "Content",
++                    "description": "The single source of content. Server components query it with GROQ, filtered by language; draft mode and content source maps power live preview."
++                },
++                "spotify": {
++                    "kind": "Integration",
++                    "description": "A route handler proxies the Spotify API, so the now-playing widget never exposes credentials to the browser."
++                },
++                "next": {
++                    "kind": "Application",
++                    "description": "App Router with server-side rendering. Locale routing through next-intl (English, Indonesian, German), a localized 404, and a dynamic sitemap and robots file."
++                },
++                "browser": {
++                    "kind": "Client",
++                    "description": "Client components handle motion and interaction with Framer Motion. Content arrives already rendered, so search engines and slow phones both get real HTML."
++                },
++                "vercel": {
++                    "kind": "Hosting",
++                    "description": "Deployed on Vercel with Analytics. A Dockerfile and a Compose file with health checks keep a self-hosted option open."
++                },
++                "sentry": {
++                    "kind": "Observability",
++                    "description": "Errors from the server and the browser are reported to Sentry. It was wired in during June 2025, two months after the first commit."
++                }
++            }
++        },
++        "skills": {
++            "eyebrow": "Depth",
++            "title": "What I reach for daily, and what I’m still learning.",
++            "subtitle": "The same groups as the Skills page, with an honest read on how deep each one goes.",
++            "levels": {
++                "1": "Learning",
++                "2": "Comfortable",
++                "3": "Daily"
++            }
++        },
++        "activity": {
++            "eyebrow": "Activity",
++            "titleRepository": "Every commit on this portfolio, as a skyline.",
++            "titleGithub": "A year of contributions, as a skyline.",
++            "subtitleRepository": "Each bar is one day in the repository’s history, laid out in a ring of {weeks} weeks. Taller means more commits. Hover a bar.",
++            "subtitleGithub": "Each bar is one day of the last year on GitHub, laid out in a ring of {weeks} weeks. Taller means more contributions. Hover a bar.",
++            "sceneLabel": "Ring of 3D bars, one per day, taller for days with more activity",
++            "start": "START",
++            "tipRepository": "{count, plural, =0 {No commits} one {# commit} other {# commits}}",
++            "tipGithub": "{count, plural, =0 {No contributions} one {# contribution} other {# contributions}}",
++            "totalRepository": "Commits",
++            "totalGithub": "Contributions",
++            "activeDays": "Days with activity",
++            "busiest": "Most in a single day",
++            "shippedTitle": "Shipped, newest first",
++            "sourceRepository": "Source: git history of the portfolio repository.",
++            "sourceGithub": "Source: GitHub contribution calendar.",
++            "shipped": {
++                "certificateModal": "Certificate preview modal and animated image zoom",
++                "skillsUses": "Skills and Uses pages powered by Sanity",
++                "seo": "Dynamic sitemap and robots.txt for every locale",
++                "categories": "Category filtering and category pages",
++                "docker": "Docker support",
++                "livePreview": "Sanity content source maps for live preview",
++                "i18n": "i18n integrated across every page",
++                "sentry": "Sentry error tracking"
++            }
++        },
++        "collab": {
++            "eyebrow": "Working together",
++            "title": "What happens after you say hello.",
++            "subtitle": "No pitch deck and no surprise at the end. Three steps, in this order.",
++            "steps": {
++                "brief": {
++                    "title": "Brief",
++                    "description": "A short message or call about goals, users and constraints. You get a scope and a rough timeline back."
++                },
++                "build": {
++                    "title": "Build in the open",
++                    "description": "Small releases on a preview link you can click through, instead of one big reveal at the end."
++                },
++                "ship": {
++                    "title": "Ship and hand over",
++                    "description": "Deployed, with error tracking on and enough documentation for your team to keep going without me."
++                }
++            },
++            "fitLabel": "Good fit",
++            "fit": [
++                "Backend and API design",
++                "Fullstack apps with Next.js",
++                "Containers with Docker and Kubernetes",
++                "Auth with Keycloak",
++                "Multilingual, CMS-driven sites"
++            ],
++            "ctaTitle": "Have a system that needs to scale, or an interface that needs care?",
++            "certifications": "Certifications"
++        }
+     },
+     "projectDetail": {
+         "altImage": "Cover image for {title}",
+diff --git a/port_v2/messages/id.json b/port_v2/messages/id.json
+index 8710a5a..76d5768 100644
+--- a/port_v2/messages/id.json
++++ b/port_v2/messages/id.json
+@@ -152,7 +152,187 @@
+         "skillsTitle": "Keahlian",
+         "headingAction": "Aksi",
+         "contact": "Hubungi Saya",
+-        "viewProjects": "Lihat Semua Proyek"
++        "viewProjects": "Lihat Semua Proyek",
++        "intro": {
++            "available": "Tersedia untuk bekerja",
++            "tag": "Backend & Fullstack",
++            "headlineA": "Backend yang tahan banting.",
++            "headlineB": "Antarmuka yang tak menghalangi.",
++            "lead": "Saya <strong>{name}</strong>, developer fullstack dan backend di {location}. Saya merancang aplikasi web yang tetap kencang saat pengguna dan fitur bertambah, dan saya tetap peduli pada langkah terakhir: antarmuka yang benar-benar disentuh orang.",
++            "roleLabel": "Peran",
++            "roleDefault": "Fullstack / Backend Developer",
++            "basedLabel": "Berbasis di",
++            "locationDefault": "Bandar Lampung, Indonesia",
++            "timezoneDefault": "UTC+7",
++            "coreLabel": "Stack utama",
++            "infraLabel": "Infrastruktur",
++            "cv": "Lihat CV",
++            "contact": "Hubungi saya",
++            "hint": "Gerakkan kursor",
++            "sceneLabel": "Scene 3D interaktif: monogram AD di atas alas, dikelilingi plakat nama teknologi"
++        },
++        "work": {
++            "eyebrow": "Cara saya bekerja",
++            "title": "Empat kebiasaan yang bisa Anda periksa di kodenya.",
++            "subtitle": "Klaim itu murah. Setiap kebiasaan di bawah menunjuk ke sesuatu yang terlihat di repositori situs ini.",
++            "moreCerts": "Lihat semua sertifikasi",
++            "habits": {
++                "backend": {
++                    "title": "Backend yang tetap kencang",
++                    "description": "Sistem skalabel yang tetap cepat, aman, dan andal saat pengguna dan fitur bertambah.",
++                    "evidence": [
++                        "Build container dengan health check (Docker Compose)",
++                        "Pelacakan error produksi dengan Sentry sejak Juni 2025",
++                        "Server-side rendering, plus sitemap dan robots dinamis untuk setiap locale"
++                    ]
++                },
++                "interfaces": {
++                    "title": "Antarmuka yang tetap aksesibel",
++                    "description": "Layar yang rapi dan cepat, dibangun di atas primitif yang sudah menangani fokus, keyboard, dan screen reader.",
++                    "evidence": [
++                        "Primitif Radix UI di balik setiap komponen shadcn/ui",
++                        "Satu pohon komponen untuk bahasa Inggris, Indonesia, dan Jerman",
++                        "Token tema dengan mode terang dan gelap yang serasi"
++                    ]
++                },
++                "content": {
++                    "title": "Konten dipisah dari kode",
++                    "description": "Editor mengubah teks dan gambar di Sanity Studio; developer mengubah perilaku di kode. Tidak saling menghambat.",
++                    "evidence": [
++                        "Skema konten bertipe untuk proyek, keahlian, pengalaman, dan lainnya",
++                        "Live preview dan visual editing terhubung ke Studio",
++                        "Server component mengambil data; client component hanya menganimasikan"
++                    ]
++                },
++                "teaching": {
++                    "title": "Bisa menjelaskan yang dibangunnya",
++                    "description": "Mengajar memaksa jelas. Saya pernah menjadi asisten dosen pemrograman web, pemrograman dasar, dan PBO.",
++                    "evidence": [
++                        "Asisten dosen Pemrograman Web, Himakom, 2025",
++                        "Asisten dosen Pemrograman Dasar dan PBO, 2024",
++                        "Junior Web Developer tersertifikasi BNSP, 2024"
++                    ]
++                }
++            }
++        },
++        "architecture": {
++            "eyebrow": "Studi kasus",
++            "title": "Situs ini, dibongkar.",
++            "subtitle": "Dari aplikasi React sisi klien menjadi situs multibahasa yang dirender di server dan digerakkan CMS. Pilih sebuah node, di scene atau lewat tombol, untuk melihat fungsinya.",
++            "sceneLabel": "Diagram arsitektur 3D interaktif situs ini: Sanity, Spotify, Next.js, browser, Vercel, dan Sentry, dihubungkan aliran data beranimasi",
++            "nodesLabel": "Node arsitektur",
++            "from": "dari",
++            "to": "ke",
++            "fallback": "Sanity → Next.js → Browser, di-host di Vercel, dipantau Sentry.",
++            "problemLabel": "Masalah",
++            "problem": "Portofolio pertama adalah aplikasi React yang dirender di sisi klien, kontennya tertulis di dalam komponen, dan hanya satu bahasa.",
++            "decisionsLabel": "Keputusan",
++            "decisions": [
++                "Render di server, animasikan di klien",
++                "Pindahkan konten ke Sanity, dengan skema bertipe",
++                "Routing per locale dengan next-intl: Inggris, Indonesia, Jerman",
++                "Lacak error dan sediakan jalur container"
++            ],
++            "outcomeLabel": "Hasil",
++            "outcomes": {
++                "commits": "Commit",
++                "languages": "Bahasa",
++                "types": "Tipe konten diedit di Studio"
++            },
++            "nodes": {
++                "sanity": {
++                    "kind": "Konten",
++                    "description": "Satu-satunya sumber konten. Server component menanyakannya dengan GROQ, difilter per bahasa; draft mode dan content source maps menggerakkan live preview."
++                },
++                "spotify": {
++                    "kind": "Integrasi",
++                    "description": "Sebuah route handler memproksi API Spotify, sehingga widget now-playing tidak pernah membuka kredensial ke browser."
++                },
++                "next": {
++                    "kind": "Aplikasi",
++                    "description": "App Router dengan server-side rendering. Routing locale lewat next-intl (Inggris, Indonesia, Jerman), 404 yang dilokalkan, serta sitemap dan file robots dinamis."
++                },
++                "browser": {
++                    "kind": "Klien",
++                    "description": "Client component menangani gerak dan interaksi dengan Framer Motion. Konten tiba sudah dirender, sehingga mesin pencari dan ponsel lambat sama-sama menerima HTML asli."
++                },
++                "vercel": {
++                    "kind": "Hosting",
++                    "description": "Di-deploy di Vercel dengan Analytics. Dockerfile dan file Compose dengan health check menjaga opsi self-hosting tetap terbuka."
++                },
++                "sentry": {
++                    "kind": "Observabilitas",
++                    "description": "Error dari server dan browser dilaporkan ke Sentry. Dipasang pada Juni 2025, dua bulan setelah commit pertama."
++                }
++            }
++        },
++        "skills": {
++            "eyebrow": "Kedalaman",
++            "title": "Yang saya pakai setiap hari, dan yang masih saya pelajari.",
++            "subtitle": "Kelompok yang sama dengan halaman Keahlian, dengan gambaran jujur seberapa dalam masing-masing.",
++            "levels": {
++                "1": "Belajar",
++                "2": "Nyaman",
++                "3": "Harian"
++            }
++        },
++        "activity": {
++            "eyebrow": "Aktivitas",
++            "titleRepository": "Setiap commit di portofolio ini, sebagai cakrawala.",
++            "titleGithub": "Setahun kontribusi, sebagai cakrawala.",
++            "subtitleRepository": "Setiap batang adalah satu hari dalam riwayat repositori, disusun dalam cincin {weeks} minggu. Lebih tinggi berarti lebih banyak commit. Arahkan kursor ke sebuah batang.",
++            "subtitleGithub": "Setiap batang adalah satu hari dalam setahun terakhir di GitHub, disusun dalam cincin {weeks} minggu. Lebih tinggi berarti lebih banyak kontribusi. Arahkan kursor ke sebuah batang.",
++            "sceneLabel": "Cincin batang 3D, satu per hari, lebih tinggi untuk hari dengan lebih banyak aktivitas",
++            "start": "MULAI",
++            "tipRepository": "{count, plural, =0 {Tanpa commit} other {# commit}}",
++            "tipGithub": "{count, plural, =0 {Tanpa kontribusi} other {# kontribusi}}",
++            "totalRepository": "Commit",
++            "totalGithub": "Kontribusi",
++            "activeDays": "Hari dengan aktivitas",
++            "busiest": "Terbanyak dalam sehari",
++            "shippedTitle": "Dirilis, terbaru dulu",
++            "sourceRepository": "Sumber: riwayat git repositori portofolio.",
++            "sourceGithub": "Sumber: kalender kontribusi GitHub.",
++            "shipped": {
++                "certificateModal": "Modal pratinjau sertifikat dan zoom gambar beranimasi",
++                "skillsUses": "Halaman Skills dan Uses yang digerakkan Sanity",
++                "seo": "Sitemap dan robots.txt dinamis untuk setiap locale",
++                "categories": "Filter kategori dan halaman kategori",
++                "docker": "Dukungan Docker",
++                "livePreview": "Content source maps Sanity untuk live preview",
++                "i18n": "i18n terintegrasi di semua halaman",
++                "sentry": "Pelacakan error Sentry"
++            }
++        },
++        "collab": {
++            "eyebrow": "Bekerja sama",
++            "title": "Apa yang terjadi setelah Anda menyapa.",
++            "subtitle": "Tanpa pitch deck dan tanpa kejutan di akhir. Tiga langkah, dalam urutan ini.",
++            "steps": {
++                "brief": {
++                    "title": "Brief",
++                    "description": "Pesan singkat atau panggilan tentang tujuan, pengguna, dan batasan. Anda mendapat cakupan dan perkiraan waktu."
++                },
++                "build": {
++                    "title": "Membangun terbuka",
++                    "description": "Rilis kecil di tautan pratinjau yang bisa Anda coba, bukan satu pengungkapan besar di akhir."
++                },
++                "ship": {
++                    "title": "Rilis dan serah terima",
++                    "description": "Ter-deploy, dengan pelacakan error menyala dan dokumentasi cukup agar tim Anda bisa lanjut tanpa saya."
++                }
++            },
++            "fitLabel": "Cocok untuk",
++            "fit": [
++                "Desain backend dan API",
++                "Aplikasi fullstack dengan Next.js",
++                "Container dengan Docker dan Kubernetes",
++                "Autentikasi dengan Keycloak",
++                "Situs multibahasa berbasis CMS"
++            ],
++            "ctaTitle": "Punya sistem yang perlu diskalakan, atau antarmuka yang perlu dirawat?",
++            "certifications": "Sertifikasi"
++        }
+     },
+     "projectDetail": {
+         "altImage": "Gambar sampul untuk {title}",
+diff --git a/port_v2/package.json b/port_v2/package.json
+index db197f4..93f2042 100644
+--- a/port_v2/package.json
++++ b/port_v2/package.json
+@@ -77,6 +77,7 @@
+     "swr": "2.3.6",
+     "tailwind-merge": "^3.3.1",
+     "tailwindcss-animate": "^1.0.7",
++    "three": "0.128.0",
+     "zod": "3.25.67"
+   },
+   "devDependencies": {
+@@ -85,6 +86,7 @@
+     "@types/node": "^22",
+     "@types/react": "^19.2.6",
+     "@types/react-dom": "^19.2.3",
++    "@types/three": "0.128.0",
+     "postcss": "^8.5",
+     "tailwindcss": "^4.1.9",
+     "tw-animate-css": "1.3.3",
+diff --git a/port_v2/sanity/schemaTypes/about.ts b/port_v2/sanity/schemaTypes/about.ts
+index 67064ed..bbf8e9c 100644
+--- a/port_v2/sanity/schemaTypes/about.ts
++++ b/port_v2/sanity/schemaTypes/about.ts
+@@ -38,6 +38,51 @@ export default defineType({
+       validation: (Rule) => Rule.required(),
+     }),
+ 
++    // ---- Fields used by the About page (all optional; the page falls back to translations) ----
++    defineField({
++      name: "headlineA",
++      title: "Headline, first line",
++      type: "string",
++      description: "e.g. Backends that hold up.",
++    }),
++
++    defineField({
++      name: "headlineB",
++      title: "Headline, second line (shown softer)",
++      type: "string",
++      description: "e.g. Interfaces that stay out of the way.",
++    }),
++
++    defineField({
++      name: "location",
++      title: "Location",
++      type: "string",
++      description: "e.g. Bandar Lampung, Indonesia",
++    }),
++
++    defineField({
++      name: "timezone",
++      title: "Time zone",
++      type: "string",
++      description: "e.g. UTC+7 (WIB)",
++    }),
++
++    defineField({
++      name: "coreStack",
++      title: "Core stack",
++      type: "array",
++      of: [{ type: "string" }],
++      description: "Shown in the facts grid, e.g. React, Next.js, Node.js, Go",
++    }),
++
++    defineField({
++      name: "infrastructure",
++      title: "Infrastructure",
++      type: "array",
++      of: [{ type: "string" }],
++      description: "Shown in the facts grid, e.g. Docker, Kubernetes, Keycloak",
++    }),
++
+     defineField({
+       name: "cvFile",
+       title: "Upload CV (PDF)",
+diff --git a/port_v2/sanity/schemaTypes/skill.ts b/port_v2/sanity/schemaTypes/skill.ts
+index 105e331..e6de78b 100644
+--- a/port_v2/sanity/schemaTypes/skill.ts
++++ b/port_v2/sanity/schemaTypes/skill.ts
+@@ -51,6 +51,22 @@ export default defineType({
+         }),
+     }),
+ 
++    defineField({
++      name: "level",
++      title: "Depth (About page)",
++      type: "number",
++      description: "How deep this skill goes. Used by the About page.",
++      options: {
++        list: [
++          { title: "Learning", value: 1 },
++          { title: "Comfortable", value: 2 },
++          { title: "Daily", value: 3 },
++        ],
++        layout: "radio",
++      },
++      initialValue: 2,
++    }),
++
+     defineField({
+       name: "order",
+       title: "Display Order",
+diff --git a/port_v2/scripts/commit-activity.mjs b/port_v2/scripts/commit-activity.mjs
+new file mode 100644
+index 0000000..92e1aec
+--- /dev/null
++++ b/port_v2/scripts/commit-activity.mjs
+@@ -0,0 +1,30 @@
++// Regenerates constants/commit-activity.json from this repository's git history.
++// Usage (from port_v2/):  node scripts/commit-activity.mjs
++// The About page uses that snapshot when GITHUB_TOKEN is not set.
++import { execSync } from "node:child_process";
++import { writeFileSync } from "node:fs";
++
++const dates = execSync("git log --format=%ad --date=short", { encoding: "utf8" })
++  .split("\n")
++  .filter(Boolean);
++if (dates.length === 0) throw new Error("No git history found. Run this from inside the repository.");
++
++const counts = new Map();
++for (const d of dates) counts.set(d, (counts.get(d) ?? 0) + 1);
++
++const day = 24 * 3600 * 1000;
++const first = new Date(dates[dates.length - 1] + "T00:00:00Z");
++const start = new Date(first.getTime() - first.getUTCDay() * day); // back to Sunday
++const last = new Date(dates[0] + "T00:00:00Z");
++const end = new Date(last.getTime() + (6 - last.getUTCDay()) * day); // forward to Saturday
++
++const days = [];
++for (let t = start.getTime(); t <= end.getTime(); t += day) {
++  days.push(counts.get(new Date(t).toISOString().slice(0, 10)) ?? 0);
++}
++
++writeFileSync(
++  new URL("../constants/commit-activity.json", import.meta.url),
++  JSON.stringify({ source: "repository", start: start.toISOString().slice(0, 10), days }) + "\n",
++);
++console.log(`${dates.length} commits over ${days.length / 7} weeks`);
+diff --git a/port_v2/types/aboutType.d.ts b/port_v2/types/aboutType.d.ts
+index 530fe64..d41eca2 100644
+--- a/port_v2/types/aboutType.d.ts
++++ b/port_v2/types/aboutType.d.ts
+@@ -7,4 +7,10 @@ export interface About {
+   imageUrl: string;
+   jobTitle: string;
+   name: string;
++  headlineA?: string;
++  headlineB?: string;
++  location?: string;
++  timezone?: string;
++  coreStack?: string[];
++  infrastructure?: string[];
+ }
+diff --git a/port_v2/types/activityType.d.ts b/port_v2/types/activityType.d.ts
+new file mode 100644
+index 0000000..18d67ac
+--- /dev/null
++++ b/port_v2/types/activityType.d.ts
+@@ -0,0 +1,8 @@
++export interface Activity {
++  /** "github": the profile's contribution calendar. "repository": a snapshot of this repo's git history. */
++  source: "github" | "repository";
++  /** ISO date (YYYY-MM-DD) of the first day, always a Sunday. */
++  start: string;
++  /** One entry per day from `start`; length is a multiple of 7. */
++  days: number[];
++}
+diff --git a/port_v2/types/skillType.d.ts b/port_v2/types/skillType.d.ts
+index 244dcc6..dc19ca6 100644
+--- a/port_v2/types/skillType.d.ts
++++ b/port_v2/types/skillType.d.ts
+@@ -5,4 +5,6 @@ export interface Skill {
+   iconUrl?: string;
+   color?: string;
+   order?: number;
++  /** 1 = learning, 2 = comfortable, 3 = daily. Used by the About page. */
++  level?: 1 | 2 | 3;
+ }

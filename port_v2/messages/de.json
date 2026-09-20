@@ -152,7 +152,187 @@
         "skillsTitle": "Fähigkeiten",
         "headingAction": "Aktionen",
         "contact": "Kontaktieren Sie mich",
-        "viewProjects": "Alle Projekte anzeigen"
+        "viewProjects": "Alle Projekte anzeigen",
+        "intro": {
+            "available": "Verfügbar für Projekte",
+            "tag": "Backend & Fullstack",
+            "headlineA": "Backends, die halten.",
+            "headlineB": "Oberflächen, die nicht im Weg stehen.",
+            "lead": "Ich bin <strong>{name}</strong>, Fullstack- und Backend-Entwickler in {location}. Ich entwerfe Webanwendungen, die leistungsfähig bleiben, wenn Nutzer und Funktionen wachsen, und mir liegt auch die letzte Meile am Herzen: die Oberfläche, die Menschen tatsächlich berühren.",
+            "roleLabel": "Rolle",
+            "roleDefault": "Fullstack- / Backend-Entwickler",
+            "basedLabel": "Standort",
+            "locationDefault": "Bandar Lampung, Indonesien",
+            "timezoneDefault": "UTC+7",
+            "coreLabel": "Kern-Stack",
+            "infraLabel": "Infrastruktur",
+            "cv": "Lebenslauf ansehen",
+            "contact": "Kontakt aufnehmen",
+            "hint": "Bewegen Sie den Cursor",
+            "sceneLabel": "Interaktive 3D-Szene: das AD-Monogramm auf einem Sockel, umkreist von Plaketten mit Technologienamen"
+        },
+        "work": {
+            "eyebrow": "Wie ich arbeite",
+            "title": "Vier Gewohnheiten, die Sie im Code nachprüfen können.",
+            "subtitle": "Behauptungen sind billig. Jede Gewohnheit unten verweist auf etwas, das im Repository dieser Website sichtbar ist.",
+            "moreCerts": "Alle Zertifikate ansehen",
+            "habits": {
+                "backend": {
+                    "title": "Backends, die leistungsfähig bleiben",
+                    "description": "Skalierbare Systeme, die schnell, sicher und zuverlässig bleiben, wenn Nutzer und Funktionen wachsen.",
+                    "evidence": [
+                        "Container-Build mit Health-Checks (Docker Compose)",
+                        "Fehlerüberwachung in Produktion mit Sentry seit Juni 2025",
+                        "Server-Side-Rendering sowie dynamische Sitemap und robots für jede Sprache"
+                    ]
+                },
+                "interfaces": {
+                    "title": "Oberflächen, die zugänglich bleiben",
+                    "description": "Klare, schnelle Bildschirme auf Basis von Bausteinen, die Fokus, Tastatur und Screenreader bereits abdecken.",
+                    "evidence": [
+                        "Radix-UI-Bausteine hinter jeder shadcn/ui-Komponente",
+                        "Ein Komponentenbaum für Englisch, Indonesisch und Deutsch",
+                        "Theme-Tokens mit passendem hellem und dunklem Modus"
+                    ]
+                },
+                "content": {
+                    "title": "Inhalte getrennt vom Code",
+                    "description": "Redakteure ändern Texte und Bilder im Sanity Studio; Entwickler ändern das Verhalten im Code. Keiner blockiert den anderen.",
+                    "evidence": [
+                        "Typisierte Content-Schemas für Projekte, Skills, Erfahrung und mehr",
+                        "Live-Vorschau und Visual Editing mit dem Studio verbunden",
+                        "Server-Komponenten laden Daten; Client-Komponenten animieren nur"
+                    ]
+                },
+                "teaching": {
+                    "title": "Erklärt, was es baut",
+                    "description": "Lehren erzwingt Klarheit. Ich war Tutor für Webprogrammierung, Grundlagen der Programmierung und OOP.",
+                    "evidence": [
+                        "Tutor für Webprogrammierung, Himakom, 2025",
+                        "Tutor für Grundlagen der Programmierung und OOP, 2024",
+                        "BNSP-zertifizierter Junior Web Developer, 2024"
+                    ]
+                }
+            }
+        },
+        "architecture": {
+            "eyebrow": "Fallstudie",
+            "title": "Diese Website, auseinandergenommen.",
+            "subtitle": "Von einer clientseitig gerenderten React-App zu einer serverseitig gerenderten, mehrsprachigen, CMS-gesteuerten Website. Wählen Sie einen Knoten in der Szene oder über die Schaltflächen, um seine Funktion zu sehen.",
+            "sceneLabel": "Interaktives 3D-Diagramm der Architektur dieser Website: Sanity, Spotify, Next.js, Browser, Vercel und Sentry, verbunden durch animierte Datenflüsse",
+            "nodesLabel": "Architekturknoten",
+            "from": "von",
+            "to": "an",
+            "fallback": "Sanity → Next.js → Browser, gehostet auf Vercel, überwacht von Sentry.",
+            "problemLabel": "Problem",
+            "problem": "Das erste Portfolio war eine clientseitig gerenderte React-App, deren Inhalte in Komponenten geschrieben waren, und es sprach nur eine Sprache.",
+            "decisionsLabel": "Entscheidungen",
+            "decisions": [
+                "Auf dem Server rendern, im Client animieren",
+                "Inhalte in Sanity verlagern, hinter typisierten Schemas",
+                "Routing nach Sprache mit next-intl: Englisch, Indonesisch, Deutsch",
+                "Fehler verfolgen und einen Container-Pfad offenhalten"
+            ],
+            "outcomeLabel": "Ergebnis",
+            "outcomes": {
+                "commits": "Commits",
+                "languages": "Sprachen",
+                "types": "Inhaltstypen im Studio bearbeitbar"
+            },
+            "nodes": {
+                "sanity": {
+                    "kind": "Inhalt",
+                    "description": "Die einzige Quelle für Inhalte. Server-Komponenten fragen sie mit GROQ ab, nach Sprache gefiltert; Draft-Modus und Content Source Maps treiben die Live-Vorschau an."
+                },
+                "spotify": {
+                    "kind": "Integration",
+                    "description": "Ein Route Handler leitet Anfragen an die Spotify-API weiter, sodass das Now-Playing-Widget nie Zugangsdaten an den Browser preisgibt."
+                },
+                "next": {
+                    "kind": "Anwendung",
+                    "description": "App Router mit serverseitigem Rendering. Sprach-Routing über next-intl (Englisch, Indonesisch, Deutsch), eine lokalisierte 404-Seite sowie dynamische Sitemap und robots-Datei."
+                },
+                "browser": {
+                    "kind": "Client",
+                    "description": "Client-Komponenten übernehmen Bewegung und Interaktion mit Framer Motion. Inhalte kommen bereits gerendert an, sodass Suchmaschinen und langsame Handys echtes HTML erhalten."
+                },
+                "vercel": {
+                    "kind": "Hosting",
+                    "description": "Auf Vercel mit Analytics bereitgestellt. Ein Dockerfile und eine Compose-Datei mit Health-Checks halten eine Self-Hosting-Option offen."
+                },
+                "sentry": {
+                    "kind": "Observability",
+                    "description": "Fehler von Server und Browser werden an Sentry gemeldet. Eingebunden im Juni 2025, zwei Monate nach dem ersten Commit."
+                }
+            }
+        },
+        "skills": {
+            "eyebrow": "Tiefe",
+            "title": "Was ich täglich nutze und was ich noch lerne.",
+            "subtitle": "Dieselben Gruppen wie auf der Seite Fähigkeiten, mit einer ehrlichen Einschätzung, wie tief jede geht.",
+            "levels": {
+                "1": "Lernend",
+                "2": "Sicher",
+                "3": "Täglich"
+            }
+        },
+        "activity": {
+            "eyebrow": "Aktivität",
+            "titleRepository": "Jeder Commit dieses Portfolios als Skyline.",
+            "titleGithub": "Ein Jahr Beiträge als Skyline.",
+            "subtitleRepository": "Jeder Balken ist ein Tag der Repository-Historie, angeordnet in einem Ring aus {weeks} Wochen. Höher bedeutet mehr Commits. Fahren Sie mit dem Cursor über einen Balken.",
+            "subtitleGithub": "Jeder Balken ist ein Tag des letzten Jahres auf GitHub, angeordnet in einem Ring aus {weeks} Wochen. Höher bedeutet mehr Beiträge. Fahren Sie mit dem Cursor über einen Balken.",
+            "sceneLabel": "Ring aus 3D-Balken, einer pro Tag, höher bei Tagen mit mehr Aktivität",
+            "start": "START",
+            "tipRepository": "{count, plural, =0 {Keine Commits} one {# Commit} other {# Commits}}",
+            "tipGithub": "{count, plural, =0 {Keine Beiträge} one {# Beitrag} other {# Beiträge}}",
+            "totalRepository": "Commits",
+            "totalGithub": "Beiträge",
+            "activeDays": "Tage mit Aktivität",
+            "busiest": "Meiste an einem Tag",
+            "shippedTitle": "Veröffentlicht, neueste zuerst",
+            "sourceRepository": "Quelle: Git-Historie des Portfolio-Repositorys.",
+            "sourceGithub": "Quelle: GitHub-Beitragskalender.",
+            "shipped": {
+                "certificateModal": "Zertifikatsvorschau als Modal und animierter Bildzoom",
+                "skillsUses": "Skills- und Uses-Seiten mit Sanity",
+                "seo": "Dynamische Sitemap und robots.txt für jede Sprache",
+                "categories": "Kategoriefilter und Kategorieseiten",
+                "docker": "Docker-Unterstützung",
+                "livePreview": "Sanity Content Source Maps für die Live-Vorschau",
+                "i18n": "i18n auf allen Seiten integriert",
+                "sentry": "Fehlerüberwachung mit Sentry"
+            }
+        },
+        "collab": {
+            "eyebrow": "Zusammenarbeit",
+            "title": "Was nach Ihrer ersten Nachricht passiert.",
+            "subtitle": "Keine Pitch-Deck-Show und keine Überraschung am Ende. Drei Schritte, in dieser Reihenfolge.",
+            "steps": {
+                "brief": {
+                    "title": "Briefing",
+                    "description": "Eine kurze Nachricht oder ein Gespräch über Ziele, Nutzer und Rahmenbedingungen. Sie erhalten Umfang und groben Zeitplan zurück."
+                },
+                "build": {
+                    "title": "Offen bauen",
+                    "description": "Kleine Releases auf einem Vorschau-Link zum Durchklicken, statt einer großen Enthüllung am Ende."
+                },
+                "ship": {
+                    "title": "Ausliefern und übergeben",
+                    "description": "Bereitgestellt, mit aktiver Fehlerüberwachung und genug Dokumentation, damit Ihr Team ohne mich weitermachen kann."
+                }
+            },
+            "fitLabel": "Gute Passung",
+            "fit": [
+                "Backend- und API-Design",
+                "Fullstack-Apps mit Next.js",
+                "Container mit Docker und Kubernetes",
+                "Authentifizierung mit Keycloak",
+                "Mehrsprachige, CMS-gesteuerte Websites"
+            ],
+            "ctaTitle": "Ein System, das skalieren muss, oder eine Oberfläche, die Sorgfalt braucht?",
+            "certifications": "Zertifikate"
+        }
     },
     "projectDetail": {
         "altImage": "Titelbild für {title}",

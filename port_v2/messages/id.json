@@ -152,7 +152,187 @@
         "skillsTitle": "Keahlian",
         "headingAction": "Aksi",
         "contact": "Hubungi Saya",
-        "viewProjects": "Lihat Semua Proyek"
+        "viewProjects": "Lihat Semua Proyek",
+        "intro": {
+            "available": "Tersedia untuk bekerja",
+            "tag": "Backend & Fullstack",
+            "headlineA": "Backend yang tahan banting.",
+            "headlineB": "Antarmuka yang tak menghalangi.",
+            "lead": "Saya <strong>{name}</strong>, developer fullstack dan backend di {location}. Saya merancang aplikasi web yang tetap kencang saat pengguna dan fitur bertambah, dan saya tetap peduli pada langkah terakhir: antarmuka yang benar-benar disentuh orang.",
+            "roleLabel": "Peran",
+            "roleDefault": "Fullstack / Backend Developer",
+            "basedLabel": "Berbasis di",
+            "locationDefault": "Bandar Lampung, Indonesia",
+            "timezoneDefault": "UTC+7",
+            "coreLabel": "Stack utama",
+            "infraLabel": "Infrastruktur",
+            "cv": "Lihat CV",
+            "contact": "Hubungi saya",
+            "hint": "Gerakkan kursor",
+            "sceneLabel": "Scene 3D interaktif: monogram AD di atas alas, dikelilingi plakat nama teknologi"
+        },
+        "work": {
+            "eyebrow": "Cara saya bekerja",
+            "title": "Empat kebiasaan yang bisa Anda periksa di kodenya.",
+            "subtitle": "Klaim itu murah. Setiap kebiasaan di bawah menunjuk ke sesuatu yang terlihat di repositori situs ini.",
+            "moreCerts": "Lihat semua sertifikasi",
+            "habits": {
+                "backend": {
+                    "title": "Backend yang tetap kencang",
+                    "description": "Sistem skalabel yang tetap cepat, aman, dan andal saat pengguna dan fitur bertambah.",
+                    "evidence": [
+                        "Build container dengan health check (Docker Compose)",
+                        "Pelacakan error produksi dengan Sentry sejak Juni 2025",
+                        "Server-side rendering, plus sitemap dan robots dinamis untuk setiap locale"
+                    ]
+                },
+                "interfaces": {
+                    "title": "Antarmuka yang tetap aksesibel",
+                    "description": "Layar yang rapi dan cepat, dibangun di atas primitif yang sudah menangani fokus, keyboard, dan screen reader.",
+                    "evidence": [
+                        "Primitif Radix UI di balik setiap komponen shadcn/ui",
+                        "Satu pohon komponen untuk bahasa Inggris, Indonesia, dan Jerman",
+                        "Token tema dengan mode terang dan gelap yang serasi"
+                    ]
+                },
+                "content": {
+                    "title": "Konten dipisah dari kode",
+                    "description": "Editor mengubah teks dan gambar di Sanity Studio; developer mengubah perilaku di kode. Tidak saling menghambat.",
+                    "evidence": [
+                        "Skema konten bertipe untuk proyek, keahlian, pengalaman, dan lainnya",
+                        "Live preview dan visual editing terhubung ke Studio",
+                        "Server component mengambil data; client component hanya menganimasikan"
+                    ]
+                },
+                "teaching": {
+                    "title": "Bisa menjelaskan yang dibangunnya",
+                    "description": "Mengajar memaksa jelas. Saya pernah menjadi asisten dosen pemrograman web, pemrograman dasar, dan PBO.",
+                    "evidence": [
+                        "Asisten dosen Pemrograman Web, Himakom, 2025",
+                        "Asisten dosen Pemrograman Dasar dan PBO, 2024",
+                        "Junior Web Developer tersertifikasi BNSP, 2024"
+                    ]
+                }
+            }
+        },
+        "architecture": {
+            "eyebrow": "Studi kasus",
+            "title": "Situs ini, dibongkar.",
+            "subtitle": "Dari aplikasi React sisi klien menjadi situs multibahasa yang dirender di server dan digerakkan CMS. Pilih sebuah node, di scene atau lewat tombol, untuk melihat fungsinya.",
+            "sceneLabel": "Diagram arsitektur 3D interaktif situs ini: Sanity, Spotify, Next.js, browser, Vercel, dan Sentry, dihubungkan aliran data beranimasi",
+            "nodesLabel": "Node arsitektur",
+            "from": "dari",
+            "to": "ke",
+            "fallback": "Sanity → Next.js → Browser, di-host di Vercel, dipantau Sentry.",
+            "problemLabel": "Masalah",
+            "problem": "Portofolio pertama adalah aplikasi React yang dirender di sisi klien, kontennya tertulis di dalam komponen, dan hanya satu bahasa.",
+            "decisionsLabel": "Keputusan",
+            "decisions": [
+                "Render di server, animasikan di klien",
+                "Pindahkan konten ke Sanity, dengan skema bertipe",
+                "Routing per locale dengan next-intl: Inggris, Indonesia, Jerman",
+                "Lacak error dan sediakan jalur container"
+            ],
+            "outcomeLabel": "Hasil",
+            "outcomes": {
+                "commits": "Commit",
+                "languages": "Bahasa",
+                "types": "Tipe konten diedit di Studio"
+            },
+            "nodes": {
+                "sanity": {
+                    "kind": "Konten",
+                    "description": "Satu-satunya sumber konten. Server component menanyakannya dengan GROQ, difilter per bahasa; draft mode dan content source maps menggerakkan live preview."
+                },
+                "spotify": {
+                    "kind": "Integrasi",
+                    "description": "Sebuah route handler memproksi API Spotify, sehingga widget now-playing tidak pernah membuka kredensial ke browser."
+                },
+                "next": {
+                    "kind": "Aplikasi",
+                    "description": "App Router dengan server-side rendering. Routing locale lewat next-intl (Inggris, Indonesia, Jerman), 404 yang dilokalkan, serta sitemap dan file robots dinamis."
+                },
+                "browser": {
+                    "kind": "Klien",
+                    "description": "Client component menangani gerak dan interaksi dengan Framer Motion. Konten tiba sudah dirender, sehingga mesin pencari dan ponsel lambat sama-sama menerima HTML asli."
+                },
+                "vercel": {
+                    "kind": "Hosting",
+                    "description": "Di-deploy di Vercel dengan Analytics. Dockerfile dan file Compose dengan health check menjaga opsi self-hosting tetap terbuka."
+                },
+                "sentry": {
+                    "kind": "Observabilitas",
+                    "description": "Error dari server dan browser dilaporkan ke Sentry. Dipasang pada Juni 2025, dua bulan setelah commit pertama."
+                }
+            }
+        },
+        "skills": {
+            "eyebrow": "Kedalaman",
+            "title": "Yang saya pakai setiap hari, dan yang masih saya pelajari.",
+            "subtitle": "Kelompok yang sama dengan halaman Keahlian, dengan gambaran jujur seberapa dalam masing-masing.",
+            "levels": {
+                "1": "Belajar",
+                "2": "Nyaman",
+                "3": "Harian"
+            }
+        },
+        "activity": {
+            "eyebrow": "Aktivitas",
+            "titleRepository": "Setiap commit di portofolio ini, sebagai cakrawala.",
+            "titleGithub": "Setahun kontribusi, sebagai cakrawala.",
+            "subtitleRepository": "Setiap batang adalah satu hari dalam riwayat repositori, disusun dalam cincin {weeks} minggu. Lebih tinggi berarti lebih banyak commit. Arahkan kursor ke sebuah batang.",
+            "subtitleGithub": "Setiap batang adalah satu hari dalam setahun terakhir di GitHub, disusun dalam cincin {weeks} minggu. Lebih tinggi berarti lebih banyak kontribusi. Arahkan kursor ke sebuah batang.",
+            "sceneLabel": "Cincin batang 3D, satu per hari, lebih tinggi untuk hari dengan lebih banyak aktivitas",
+            "start": "MULAI",
+            "tipRepository": "{count, plural, =0 {Tanpa commit} other {# commit}}",
+            "tipGithub": "{count, plural, =0 {Tanpa kontribusi} other {# kontribusi}}",
+            "totalRepository": "Commit",
+            "totalGithub": "Kontribusi",
+            "activeDays": "Hari dengan aktivitas",
+            "busiest": "Terbanyak dalam sehari",
+            "shippedTitle": "Dirilis, terbaru dulu",
+            "sourceRepository": "Sumber: riwayat git repositori portofolio.",
+            "sourceGithub": "Sumber: kalender kontribusi GitHub.",
+            "shipped": {
+                "certificateModal": "Modal pratinjau sertifikat dan zoom gambar beranimasi",
+                "skillsUses": "Halaman Skills dan Uses yang digerakkan Sanity",
+                "seo": "Sitemap dan robots.txt dinamis untuk setiap locale",
+                "categories": "Filter kategori dan halaman kategori",
+                "docker": "Dukungan Docker",
+                "livePreview": "Content source maps Sanity untuk live preview",
+                "i18n": "i18n terintegrasi di semua halaman",
+                "sentry": "Pelacakan error Sentry"
+            }
+        },
+        "collab": {
+            "eyebrow": "Bekerja sama",
+            "title": "Apa yang terjadi setelah Anda menyapa.",
+            "subtitle": "Tanpa pitch deck dan tanpa kejutan di akhir. Tiga langkah, dalam urutan ini.",
+            "steps": {
+                "brief": {
+                    "title": "Brief",
+                    "description": "Pesan singkat atau panggilan tentang tujuan, pengguna, dan batasan. Anda mendapat cakupan dan perkiraan waktu."
+                },
+                "build": {
+                    "title": "Membangun terbuka",
+                    "description": "Rilis kecil di tautan pratinjau yang bisa Anda coba, bukan satu pengungkapan besar di akhir."
+                },
+                "ship": {
+                    "title": "Rilis dan serah terima",
+                    "description": "Ter-deploy, dengan pelacakan error menyala dan dokumentasi cukup agar tim Anda bisa lanjut tanpa saya."
+                }
+            },
+            "fitLabel": "Cocok untuk",
+            "fit": [
+                "Desain backend dan API",
+                "Aplikasi fullstack dengan Next.js",
+                "Container dengan Docker dan Kubernetes",
+                "Autentikasi dengan Keycloak",
+                "Situs multibahasa berbasis CMS"
+            ],
+            "ctaTitle": "Punya sistem yang perlu diskalakan, atau antarmuka yang perlu dirawat?",
+            "certifications": "Sertifikasi"
+        }
     },
     "projectDetail": {
         "altImage": "Gambar sampul untuk {title}",
