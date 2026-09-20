@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { createStage, type SceneController } from "./core";
-import { LOGO_PATHS } from "@/constants/logo";
-import { SANS, canvasTex, dustPoints, hexCss, plateBg, rad, slab, svgShape } from "./shapes";
+import { SANS, canvasTex, dustPoints, hexCss, plateBg, rad, slab } from "./shapes";
 
 const ACCENTS = [0x00d492, 0x7c86ff];
 
@@ -45,24 +44,57 @@ export function createIdentityScene(canvas: HTMLCanvasElement, container: HTMLEl
   podRing2.position.y = 0.07;
   pod.add(podRing2);
 
-  /* badge: dark slab carrying the extruded monogram */
+  /* badge: dark slab carrying the Scara chibi 3D texture */
   const badge = new THREE.Group();
   badge.position.y = 1.55;
   badge.scale.setScalar(1.1);
   rig.add(badge);
-  const bodyMat = new THREE.MeshPhysicalMaterial({ color: 0x0b0d10, metalness: 0.3, roughness: 0.55, clearcoat: 0.12, clearcoatRoughness: 0.4, envMapIntensity: 0.16 });
-  badge.add(slab(3.3, 2.2, 0.3, 0.34, bodyMat));
-  const k = 2.35 / 148.7;
-  const logoMat = new THREE.MeshPhysicalMaterial({ color: 0xf3f4f6, metalness: 0.25, roughness: 0.34, emissive: 0x9aa0aa, emissiveIntensity: 0.22, clearcoat: 0.4, envMapIntensity: 0.8 });
-  const shapes = LOGO_PATHS.map((d) => svgShape(d, k, 88.3, 90.2));
-  const logo = new THREE.Mesh(
-    new THREE.ExtrudeGeometry(shapes, { depth: 0.14, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 3, curveSegments: 14 }),
-    logoMat,
+
+  const cardW = 2.4;
+  const cardH = 2.4;
+  const cardD = 0.22;
+  const bodyMat = new THREE.MeshPhysicalMaterial({
+    color: 0x0b0d10,
+    metalness: 0.3,
+    roughness: 0.55,
+    clearcoat: 0.12,
+    clearcoatRoughness: 0.4,
+    envMapIntensity: 0.16,
+  });
+  badge.add(slab(cardW, cardH, cardD, 0.28, bodyMat));
+
+  const texLoader = new THREE.TextureLoader();
+  const scaraTex = texLoader.load(
+    "/kabukimono.png",
+    (tex) => {
+      tex.needsUpdate = true;
+      stage.frame();
+    },
+    undefined,
+    (err) => {
+      console.error("Failed to load /kabukimono.png:", err);
+    },
   );
-  logo.position.z = 0.19;
-  badge.add(logo);
-  const glow = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 0.02), new THREE.MeshBasicMaterial({ color: 0x00d492, toneMapped: false, transparent: true, opacity: 0.9 }));
-  glow.position.set(0, -0.96, 0.19);
+  scaraTex.encoding = THREE.sRGBEncoding;
+
+  const scaraMat = new THREE.MeshBasicMaterial({
+    map: scaraTex,
+    transparent: true,
+    toneMapped: false,
+    side: THREE.DoubleSide,
+  });
+  const scaraMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(cardW - 0.2, cardH - 0.2),
+    scaraMat,
+  );
+  scaraMesh.position.z = 0.17;
+  badge.add(scaraMesh);
+
+  const glow = new THREE.Mesh(
+    new THREE.PlaneGeometry(cardW - 0.4, 0.025),
+    new THREE.MeshBasicMaterial({ color: 0x7c86ff, toneMapped: false, transparent: true, opacity: 0.9 }),
+  );
+  glow.position.set(0, -(cardH / 2) + 0.12, 0.175);
   badge.add(glow);
 
   /* orbiting name plaques */
@@ -131,5 +163,11 @@ export function createIdentityScene(canvas: HTMLCanvasElement, container: HTMLEl
   stage.resize();
   stage.start();
 
-  return { dispose: stage.dispose, setDark: stage.setDark };
+  return {
+    dispose: () => {
+      scaraTex.dispose();
+      stage.dispose();
+    },
+    setDark: stage.setDark,
+  };
 }

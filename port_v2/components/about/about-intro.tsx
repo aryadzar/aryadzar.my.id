@@ -1,11 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { ArrowRight, FileText, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { stegaClean } from "next-sanity";
 import { Button } from "@/components/ui/button";
 import { CONTACT_HREF } from "@/constants/contact";
-import { LOGO_PATHS } from "@/constants/logo";
 import type { About } from "@/types/aboutType";
 import { Reveal, RevealGroup, RevealItem } from "./reveal";
 import { CTA_FRAME, CTA_OUTLINE } from "./section";
@@ -17,12 +17,14 @@ const INFRA_FALLBACK = ["Docker", "Kubernetes", "Keycloak"];
 function LogoFallback() {
   return (
     <div className="absolute inset-0 grid place-items-center">
-      <div className="grid aspect-square w-[min(56%,240px)] place-items-center rounded-[22%] bg-foreground shadow-[0_0_0_10px_color-mix(in_oklab,var(--color-emerald-500)_10%,transparent),0_0_0_22px_color-mix(in_oklab,var(--color-indigo-500)_8%,transparent)]">
-        <svg viewBox="14 53 149 77" aria-hidden="true" className="w-[70%] fill-background">
-          {LOGO_PATHS.map((d) => (
-            <path key={d} d={d} />
-          ))}
-        </svg>
+      <div className="relative aspect-square w-[min(56%,240px)] overflow-hidden rounded-[22%] border border-border/40 bg-card/80 p-3 shadow-[0_0_0_10px_color-mix(in_oklab,var(--color-emerald-500)_10%,transparent),0_0_0_22px_color-mix(in_oklab,var(--color-indigo-500)_8%,transparent)] backdrop-blur-md">
+        <Image
+          src="/kabukimono.png"
+          alt="Scaramouche Chibi"
+          fill
+          className="object-contain p-2"
+          priority
+        />
       </div>
     </div>
   );
