@@ -3,6 +3,9 @@ import { I18N_LOCALE } from "@/constants/i18n-config";
 import { getBaseUrl } from "@/lib/getBaseUrl";
 import type { MetadataRoute } from "next";
 
+// Crawlers fetch this often; rebuild it at most once an hour.
+export const revalidate = 3600;
+
 // ─── Static page paths (locale-prefixed) ────────────────────────────────────
 const STATIC_PATHS = ["", "/about", "/blog", "/projects", "/skills", "/uses", "/photos"];
 

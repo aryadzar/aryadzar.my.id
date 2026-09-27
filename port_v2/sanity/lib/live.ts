@@ -9,4 +9,7 @@ export const { sanityFetch, SanityLive } = defineLive({
   client,
   serverToken: token,
   browserToken: token,
+  // Cached Sanity responses are refreshed on content changes (SanityLive and the
+  // /api/revalidate webhook). This is only a safety net in case an event is missed.
+  fetchOptions: { revalidate: 60 * 60 },
 });

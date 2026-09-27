@@ -1,3 +1,4 @@
+import { apiCacheHeaders } from "@/lib/cache-headers";
 import { NextResponse } from "next/server";
 import { sanityFetch } from "@/sanity/lib/live";
 
@@ -87,5 +88,5 @@ export async function GET(
     category,
     blogs,
     projects,
-  });
+  }, { headers: await apiCacheHeaders() });
 }

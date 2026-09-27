@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import SkillsPage from "./_components/skills-page";
 import { createMetadata } from "@/lib/metadata";
 import { getSkills } from "@/lib/getHome";
@@ -27,6 +27,7 @@ export default async function SkillsPageIndex({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const skillsData = await getSkills();
   return <SkillsPage skillsData={skillsData} locale={locale} />;
 }

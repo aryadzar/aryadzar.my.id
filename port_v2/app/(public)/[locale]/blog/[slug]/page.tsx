@@ -2,8 +2,14 @@ import BlogDetailView from "./_components/blogDetail";
 import { getBlog } from "@/lib/getBlogs";
 import { createMetadata } from "@/lib/metadata";
 import { getBlogSSR } from "@/lib/ssr/getBlogSSR";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+
+// Each post is rendered on its first visit and then served from cache until
+// Sanity content changes, instead of being rendered on every request.
+export function generateStaticParams() {
+  return [];
+}
 
 export async function generateMetadata({
   params,
@@ -43,6 +49,7 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string; locale: string }>;
 }) {
   const { slug: slugs, locale } = await params;
+  setRequestLocale(locale);
   const blog = await getBlogSSR(slugs, locale);
 
   if (!blog) {

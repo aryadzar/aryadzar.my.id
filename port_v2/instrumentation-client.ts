@@ -10,15 +10,19 @@ Sentry.init({
   // Add optional integrations for additional features
   integrations: [Sentry.replayIntegration()],
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  // Every event goes through the /monitoring tunnel, i.e. one Vercel function
+  // call each, so production samples 10% of page loads instead of all of them.
+  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1,
   // Enable logs to be sent to Sentry
   enableLogs: true,
 
   // Define how likely Replay events are sampled.
   // This sets the sample rate to be 10%. You may want this to be 100% while
   // in development and sample at a lower rate in production
-  replaysSessionSampleRate: 0.1,
+  // Session replays upload a chunk every few seconds for as long as the visitor
+  // stays, each one a function call through the tunnel. Keep only the replays
+  // of sessions that hit an error (below).
+  replaysSessionSampleRate: 0,
 
   // Define how likely Replay events are sampled when an error occurs.
   replaysOnErrorSampleRate: 1.0,

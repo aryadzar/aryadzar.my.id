@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import CategoryPage from "./_components/category";
 import { createMetadata } from "@/lib/metadata";
 
@@ -20,6 +20,17 @@ export async function generateMetadata({
   });
 }
 
-export default function CategoryIndexPage() {
+// Rendered on first visit, then cached (no slugs are known at build time).
+export function generateStaticParams() {
+  return [];
+}
+
+export default async function CategoryIndexPage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return <CategoryPage />;
 }

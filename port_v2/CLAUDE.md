@@ -174,6 +174,7 @@ Required for development:
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`: Sanity project ID
 - `NEXT_PUBLIC_SANITY_DATASET`: Sanity dataset (usually "production")
 - `SANITY_API_READ_TOKEN`: Required for server-side fetching
+- `SANITY_REVALIDATE_SECRET`: Signs the Sanity webhook that expires cached pages (`app/api/revalidate`)
 
 Optional:
 - Spotify credentials for "Now Playing" feature

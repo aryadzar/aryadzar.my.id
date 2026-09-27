@@ -1,0 +1,599 @@
+From e18ceed8ff8546c1598c845eefc53f2db905c437 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sun, 27 Sep 2026 18:59:14 +0700
+Subject: [PATCH] Serve public pages from cache and refresh them on Sanity
+ changes
+
+The [locale] layout forced every page to render on every request
+(force-dynamic, revalidate 0), so each visit re-ran the server render and
+the Sanity queries. Pages are now pre-rendered per locale (blog/project/
+category detail pages on first visit) and refreshed by SanityLive, a new
+signed Sanity webhook (/api/revalidate) and a one-hour fallback.
+
+Also caches the list/search JSON routes on the CDN for a minute (never in
+draft mode), rebuilds the sitemap at most hourly, and lowers Sentry trace
+and replay sampling in production, since every event goes through the
+/monitoring tunnel as a function call.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_019Au13BHPjUgRvpqWWWW3dF
+---
+ port_v2/CLAUDE.md                             |  1 +
+ port_v2/README.md                             |  4 ++
+ port_v2/app/(public)/[locale]/about/page.tsx  |  3 +-
+ .../(public)/[locale]/blog/[slug]/page.tsx    |  9 ++++-
+ port_v2/app/(public)/[locale]/blog/page.tsx   | 10 ++++-
+ .../[locale]/category/[slug]/page.tsx         | 15 ++++++-
+ port_v2/app/(public)/[locale]/layout.tsx      | 13 ++++--
+ port_v2/app/(public)/[locale]/page.tsx        |  2 +
+ port_v2/app/(public)/[locale]/photos/page.tsx | 10 ++++-
+ .../[locale]/projects/[slug]/page.tsx         |  9 ++++-
+ .../app/(public)/[locale]/projects/page.tsx   | 10 ++++-
+ port_v2/app/(public)/[locale]/skills/page.tsx |  3 +-
+ port_v2/app/(public)/[locale]/uses/page.tsx   |  3 +-
+ port_v2/app/api/[lang]/blog/[slug]/route.ts   |  3 +-
+ port_v2/app/api/[lang]/blog/route.ts          |  3 +-
+ .../app/api/[lang]/category/[slug]/route.ts   |  3 +-
+ .../app/api/[lang]/project/[slug]/route.ts    |  3 +-
+ port_v2/app/api/[lang]/project/route.ts       |  3 +-
+ port_v2/app/api/revalidate/route.ts           | 40 +++++++++++++++++++
+ port_v2/app/sitemap.ts                        |  3 ++
+ port_v2/instrumentation-client.ts             | 10 +++--
+ port_v2/lib/cache-headers.ts                  | 19 +++++++++
+ port_v2/sanity/lib/live.ts                    |  3 ++
+ port_v2/sentry.edge.config.ts                 |  5 +--
+ port_v2/sentry.server.config.ts               |  5 +--
+ 25 files changed, 162 insertions(+), 30 deletions(-)
+ create mode 100644 port_v2/app/api/revalidate/route.ts
+ create mode 100644 port_v2/lib/cache-headers.ts
+
+diff --git a/port_v2/CLAUDE.md b/port_v2/CLAUDE.md
+index 4dad749..97331e4 100644
+--- a/port_v2/CLAUDE.md
++++ b/port_v2/CLAUDE.md
+@@ -174,6 +174,7 @@ Required for development:
+ - `NEXT_PUBLIC_SANITY_PROJECT_ID`: Sanity project ID
+ - `NEXT_PUBLIC_SANITY_DATASET`: Sanity dataset (usually "production")
+ - `SANITY_API_READ_TOKEN`: Required for server-side fetching
++- `SANITY_REVALIDATE_SECRET`: Signs the Sanity webhook that expires cached pages (`app/api/revalidate`)
+ 
+ Optional:
+ - Spotify credentials for "Now Playing" feature
+diff --git a/port_v2/README.md b/port_v2/README.md
+index be415b3..d8c4cfc 100644
+--- a/port_v2/README.md
++++ b/port_v2/README.md
+@@ -230,6 +230,9 @@ NEXT_PUBLIC_SANITY_API_VERSION="2024-05-01"
+ # Required for server-side fetching
+ SANITY_API_READ_TOKEN="your_read_token_from_sanity_dashboard"
+ 
++# Secret for the Sanity webhook that refreshes cached pages (/api/revalidate)
++SANITY_REVALIDATE_SECRET="a_long_random_string"
++
+ # ================================
+ # Spotify Integration (Optional)
+ # ================================
+@@ -525,6 +528,7 @@ NEXT_PUBLIC_SANITY_PROJECT_ID
+ NEXT_PUBLIC_SANITY_DATASET
+ NEXT_PUBLIC_SANITY_API_VERSION
+ SANITY_API_READ_TOKEN
++SANITY_REVALIDATE_SECRET
+ 
+ # Spotify (Optional)
+ SPOTIFY_CLIENT_ID
+diff --git a/port_v2/app/(public)/[locale]/about/page.tsx b/port_v2/app/(public)/[locale]/about/page.tsx
+index 3d75dae..0c5e406 100644
+--- a/port_v2/app/(public)/[locale]/about/page.tsx
++++ b/port_v2/app/(public)/[locale]/about/page.tsx
+@@ -1,4 +1,4 @@
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import { stegaClean } from "next-sanity";
+ import AboutPage from "./_components/about-page";
+ import { createMetadata } from "@/lib/metadata";
+@@ -32,6 +32,7 @@ export default async function AboutPageIndex({
+   params: Promise<{ locale: string }>;
+ }) {
+   const { locale } = await params;
++  setRequestLocale(locale);
+   const [aboutData, skillsData, activity] = await Promise.all([
+     getAbout(locale),
+     getSkills(),
+diff --git a/port_v2/app/(public)/[locale]/blog/[slug]/page.tsx b/port_v2/app/(public)/[locale]/blog/[slug]/page.tsx
+index 081d1b3..25445d8 100644
+--- a/port_v2/app/(public)/[locale]/blog/[slug]/page.tsx
++++ b/port_v2/app/(public)/[locale]/blog/[slug]/page.tsx
+@@ -2,9 +2,15 @@ import BlogDetailView from "./_components/blogDetail";
+ import { getBlog } from "@/lib/getBlogs";
+ import { createMetadata } from "@/lib/metadata";
+ import { getBlogSSR } from "@/lib/ssr/getBlogSSR";
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import { notFound } from "next/navigation";
+ 
++// Each post is rendered on its first visit and then served from cache until
++// Sanity content changes, instead of being rendered on every request.
++export function generateStaticParams() {
++  return [];
++}
++
+ export async function generateMetadata({
+   params,
+ }: {
+@@ -43,6 +49,7 @@ export default async function BlogPostPage({
+   params: Promise<{ slug: string; locale: string }>;
+ }) {
+   const { slug: slugs, locale } = await params;
++  setRequestLocale(locale);
+   const blog = await getBlogSSR(slugs, locale);
+ 
+   if (!blog) {
+diff --git a/port_v2/app/(public)/[locale]/blog/page.tsx b/port_v2/app/(public)/[locale]/blog/page.tsx
+index dc7e6d5..050c3ab 100644
+--- a/port_v2/app/(public)/[locale]/blog/page.tsx
++++ b/port_v2/app/(public)/[locale]/blog/page.tsx
+@@ -1,5 +1,5 @@
+ import { Suspense } from "react";
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import BlogPage from "./_components/blog";
+ import { createMetadata } from "@/lib/metadata";
+ import { BlogSkeleton } from "@/components/skeleton";
+@@ -22,7 +22,13 @@ export async function generateMetadata({
+   });
+ }
+ 
+-export default function BlogIndexPage() {
++export default async function BlogIndexPage({
++  params,
++}: {
++  params: Promise<{ locale: string }>;
++}) {
++  const { locale } = await params;
++  setRequestLocale(locale);
+   return (
+     <Suspense fallback={<BlogSkeleton />}>
+       <BlogPage />
+diff --git a/port_v2/app/(public)/[locale]/category/[slug]/page.tsx b/port_v2/app/(public)/[locale]/category/[slug]/page.tsx
+index d30a1c8..2676fe9 100644
+--- a/port_v2/app/(public)/[locale]/category/[slug]/page.tsx
++++ b/port_v2/app/(public)/[locale]/category/[slug]/page.tsx
+@@ -1,4 +1,4 @@
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import CategoryPage from "./_components/category";
+ import { createMetadata } from "@/lib/metadata";
+ 
+@@ -20,6 +20,17 @@ export async function generateMetadata({
+   });
+ }
+ 
+-export default function CategoryIndexPage() {
++// Rendered on first visit, then cached (no slugs are known at build time).
++export function generateStaticParams() {
++  return [];
++}
++
++export default async function CategoryIndexPage({
++  params,
++}: {
++  params: Promise<{ locale: string; slug: string }>;
++}) {
++  const { locale } = await params;
++  setRequestLocale(locale);
+   return <CategoryPage />;
+ }
+diff --git a/port_v2/app/(public)/[locale]/layout.tsx b/port_v2/app/(public)/[locale]/layout.tsx
+index e9ecb44..9ab72de 100644
+--- a/port_v2/app/(public)/[locale]/layout.tsx
++++ b/port_v2/app/(public)/[locale]/layout.tsx
+@@ -8,7 +8,7 @@ import { createMetadata } from "@/lib/metadata";
+ import { NextIntlClientProvider, hasLocale } from "next-intl";
+ import { notFound } from "next/navigation";
+ import { routing } from "@/i18n/routing";
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import { Toaster } from "sonner";
+ import { SanityLive } from "@/sanity/lib/live";
+ import { handleError } from "./client-function";
+@@ -35,8 +35,12 @@ export async function generateMetadata({
+   });
+ }
+ 
+-export const dynamic = "force-dynamic";
+-export const revalidate = 0;
++// Pages are pre-rendered per locale and served from Vercel's cache. They are
++// refreshed when Sanity content changes (SanityLive + /api/revalidate) and at
++// the latest after the `revalidate` window set in sanity/lib/live.ts.
++export function generateStaticParams() {
++  return routing.locales.map((locale) => ({ locale }));
++}
+ 
+ const TALLY_FORMS: Record<string, string> = {
+   en: "yP4NB0",
+@@ -55,6 +59,9 @@ export default async function RootLayout({
+   if (!hasLocale(routing.locales, locale)) {
+     notFound();
+   }
++  // Lets next-intl read the locale from params instead of request headers,
++  // which keeps the pages static.
++  setRequestLocale(locale);
+ 
+   const formId = TALLY_FORMS[locale] ?? TALLY_FORMS.en;
+ 
+diff --git a/port_v2/app/(public)/[locale]/page.tsx b/port_v2/app/(public)/[locale]/page.tsx
+index fbc00fc..930ef81 100644
+--- a/port_v2/app/(public)/[locale]/page.tsx
++++ b/port_v2/app/(public)/[locale]/page.tsx
+@@ -1,3 +1,4 @@
++import { setRequestLocale } from "next-intl/server";
+ import { HeroVideoBackground } from "@/components/hero-video";
+ import { AboutBrief } from "@/components/about-brief";
+ import { ProjectsShowcase } from "@/components/projects-showcase";
+@@ -21,6 +22,7 @@ export default async function Page({
+   params: Promise<{ locale: string }>;
+ }) {
+   const { locale } = await params;
++  setRequestLocale(locale);
+ 
+   // Fetch all data server-side for SEO or live preview
+   const [
+diff --git a/port_v2/app/(public)/[locale]/photos/page.tsx b/port_v2/app/(public)/[locale]/photos/page.tsx
+index 4c3603c..9fe5f36 100644
+--- a/port_v2/app/(public)/[locale]/photos/page.tsx
++++ b/port_v2/app/(public)/[locale]/photos/page.tsx
+@@ -1,4 +1,4 @@
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import PhotosPage from "./_components/photos-page";
+ import { createMetadata } from "@/lib/metadata";
+ import { getPhotos } from "@/lib/getHome";
+@@ -21,7 +21,13 @@ export async function generateMetadata({
+   });
+ }
+ 
+-export default async function PhotosPageIndex() {
++export default async function PhotosPageIndex({
++  params,
++}: {
++  params: Promise<{ locale: string }>;
++}) {
++  const { locale } = await params;
++  setRequestLocale(locale);
+   const photos = await getPhotos();
+   return <PhotosPage photos={photos} />;
+ }
+diff --git a/port_v2/app/(public)/[locale]/projects/[slug]/page.tsx b/port_v2/app/(public)/[locale]/projects/[slug]/page.tsx
+index 8e0d774..6f04718 100644
+--- a/port_v2/app/(public)/[locale]/projects/[slug]/page.tsx
++++ b/port_v2/app/(public)/[locale]/projects/[slug]/page.tsx
+@@ -1,9 +1,15 @@
+ import { createMetadata } from "@/lib/metadata";
+ import ProjectDetail from "./_components/project-detail";
+ import { getProjectSSR } from "@/lib/ssr/getProjectSSR";
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import { notFound } from "next/navigation";
+ 
++// Each post is rendered on its first visit and then served from cache until
++// Sanity content changes, instead of being rendered on every request.
++export function generateStaticParams() {
++  return [];
++}
++
+ export async function generateMetadata({
+   params,
+ }: {
+@@ -42,6 +48,7 @@ export default async function ProjectDetailPage({
+   params: Promise<{ slug: string; locale: string }>;
+ }) {
+   const { slug: slugs, locale } = await params;
++  setRequestLocale(locale);
+   const project = await getProjectSSR(slugs, locale);
+ 
+   if (!project) {
+diff --git a/port_v2/app/(public)/[locale]/projects/page.tsx b/port_v2/app/(public)/[locale]/projects/page.tsx
+index 75b4380..310940d 100644
+--- a/port_v2/app/(public)/[locale]/projects/page.tsx
++++ b/port_v2/app/(public)/[locale]/projects/page.tsx
+@@ -1,5 +1,5 @@
+ import { Suspense } from "react";
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import ProjectsPage from "./_components/project";
+ import { createMetadata } from "@/lib/metadata";
+ import { BlogSkeleton } from "@/components/skeleton";
+@@ -22,7 +22,13 @@ export async function generateMetadata({
+   });
+ }
+ 
+-export default function ProjectsIndexPage() {
++export default async function ProjectsIndexPage({
++  params,
++}: {
++  params: Promise<{ locale: string }>;
++}) {
++  const { locale } = await params;
++  setRequestLocale(locale);
+   return (
+     <Suspense fallback={<BlogSkeleton />}>
+       <ProjectsPage />
+diff --git a/port_v2/app/(public)/[locale]/skills/page.tsx b/port_v2/app/(public)/[locale]/skills/page.tsx
+index 0bc712a..31d3840 100644
+--- a/port_v2/app/(public)/[locale]/skills/page.tsx
++++ b/port_v2/app/(public)/[locale]/skills/page.tsx
+@@ -1,4 +1,4 @@
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import SkillsPage from "./_components/skills-page";
+ import { createMetadata } from "@/lib/metadata";
+ import { getSkills } from "@/lib/getHome";
+@@ -27,6 +27,7 @@ export default async function SkillsPageIndex({
+   params: Promise<{ locale: string }>;
+ }) {
+   const { locale } = await params;
++  setRequestLocale(locale);
+   const skillsData = await getSkills();
+   return <SkillsPage skillsData={skillsData} locale={locale} />;
+ }
+diff --git a/port_v2/app/(public)/[locale]/uses/page.tsx b/port_v2/app/(public)/[locale]/uses/page.tsx
+index a18e749..73e48c8 100644
+--- a/port_v2/app/(public)/[locale]/uses/page.tsx
++++ b/port_v2/app/(public)/[locale]/uses/page.tsx
+@@ -1,4 +1,4 @@
+-import { getTranslations } from "next-intl/server";
++import { getTranslations, setRequestLocale } from "next-intl/server";
+ import UsesPage from "./_components/uses-page";
+ import { createMetadata } from "@/lib/metadata";
+ import { getUses, getWorkspace } from "@/lib/getHome";
+@@ -27,6 +27,7 @@ export default async function UsesPageIndex({
+   params: Promise<{ locale: string }>;
+ }) {
+   const { locale } = await params;
++  setRequestLocale(locale);
+   const [usesData, workspace] = await Promise.all([getUses(locale), getWorkspace(locale)]);
+   return <UsesPage usesData={usesData} workspace={workspace} locale={locale} />;
+ }
+diff --git a/port_v2/app/api/[lang]/blog/[slug]/route.ts b/port_v2/app/api/[lang]/blog/[slug]/route.ts
+index 48ff7e5..660b276 100644
+--- a/port_v2/app/api/[lang]/blog/[slug]/route.ts
++++ b/port_v2/app/api/[lang]/blog/[slug]/route.ts
+@@ -1,3 +1,4 @@
++import { apiCacheHeaders } from "@/lib/cache-headers";
+ import { client } from "@/sanity/lib/client";
+ import { NextResponse } from "next/server";
+ 
+@@ -43,7 +44,7 @@ export async function GET(
+       success: true,
+       blog,
+       slug,
+-    });
++    }, { headers: await apiCacheHeaders() });
+   } catch (error) {
+     console.error(error);
+ 
+diff --git a/port_v2/app/api/[lang]/blog/route.ts b/port_v2/app/api/[lang]/blog/route.ts
+index 7f38727..216d1b6 100644
+--- a/port_v2/app/api/[lang]/blog/route.ts
++++ b/port_v2/app/api/[lang]/blog/route.ts
+@@ -1,3 +1,4 @@
++import { apiCacheHeaders } from "@/lib/cache-headers";
+ import { NextResponse } from "next/server";
+ import { client } from "@/sanity/lib/client";
+ import { sanityFetch } from "@/sanity/lib/live";
+@@ -72,5 +73,5 @@ export async function GET(
+     total,
+     totalPages,
+     blogs,
+-  });
++  }, { headers: await apiCacheHeaders() });
+ }
+diff --git a/port_v2/app/api/[lang]/category/[slug]/route.ts b/port_v2/app/api/[lang]/category/[slug]/route.ts
+index 9c7e076..d1a381e 100644
+--- a/port_v2/app/api/[lang]/category/[slug]/route.ts
++++ b/port_v2/app/api/[lang]/category/[slug]/route.ts
+@@ -1,3 +1,4 @@
++import { apiCacheHeaders } from "@/lib/cache-headers";
+ import { NextResponse } from "next/server";
+ import { sanityFetch } from "@/sanity/lib/live";
+ 
+@@ -87,5 +88,5 @@ export async function GET(
+     category,
+     blogs,
+     projects,
+-  });
++  }, { headers: await apiCacheHeaders() });
+ }
+diff --git a/port_v2/app/api/[lang]/project/[slug]/route.ts b/port_v2/app/api/[lang]/project/[slug]/route.ts
+index 3581003..be61260 100644
+--- a/port_v2/app/api/[lang]/project/[slug]/route.ts
++++ b/port_v2/app/api/[lang]/project/[slug]/route.ts
+@@ -1,3 +1,4 @@
++import { apiCacheHeaders } from "@/lib/cache-headers";
+ import { client } from "@/sanity/lib/client";
+ import { NextResponse } from "next/server";
+ 
+@@ -45,7 +46,7 @@ export async function GET(
+       success: true,
+       project,
+       slug,
+-    });
++    }, { headers: await apiCacheHeaders() });
+   } catch (error) {
+     console.error(error);
+ 
+diff --git a/port_v2/app/api/[lang]/project/route.ts b/port_v2/app/api/[lang]/project/route.ts
+index 0638f76..59515ea 100644
+--- a/port_v2/app/api/[lang]/project/route.ts
++++ b/port_v2/app/api/[lang]/project/route.ts
+@@ -1,3 +1,4 @@
++import { apiCacheHeaders } from "@/lib/cache-headers";
+ import { NextResponse } from "next/server";
+ import { client } from "@/sanity/lib/client";
+ import { sanityFetch } from "@/sanity/lib/live";
+@@ -72,5 +73,5 @@ export async function GET(
+     total,
+     totalPages,
+     projects,
+-  });
++  }, { headers: await apiCacheHeaders() });
+ }
+diff --git a/port_v2/app/api/revalidate/route.ts b/port_v2/app/api/revalidate/route.ts
+new file mode 100644
+index 0000000..c437f68
+--- /dev/null
++++ b/port_v2/app/api/revalidate/route.ts
+@@ -0,0 +1,40 @@
++import { revalidateTag } from "next/cache";
++import { type NextRequest, NextResponse } from "next/server";
++import { parseBody } from "next-sanity/webhook";
++
++/**
++ * Sanity webhook: expires every cached Sanity query as soon as a document is
++ * published, updated or deleted, so the next visitor gets a freshly rendered
++ * page. SanityLive already does this while someone has the site open; this
++ * covers changes made while nobody is on it.
++ *
++ * Set up in sanity.io/manage → API → Webhooks:
++ *   URL:        https://www.aryadzar.my.id/api/revalidate
++ *   Trigger on: Create, Update, Delete
++ *   Filter:     leave empty (or e.g. !(_id in path("drafts.**")))
++ *   Projection: {_type}
++ *   Secret:     the same value as SANITY_REVALIDATE_SECRET
++ */
++export async function POST(req: NextRequest) {
++  const secret = process.env.SANITY_REVALIDATE_SECRET;
++  if (!secret) {
++    return NextResponse.json({ message: "SANITY_REVALIDATE_SECRET is not set" }, { status: 500 });
++  }
++
++  try {
++    // `true` waits a moment so the Content Lake has the change before pages re-fetch.
++    const { isValidSignature, body } = await parseBody<{ _type?: string }>(req, secret, true);
++
++    if (!isValidSignature) {
++      return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
++    }
++
++    // Every sanityFetch call is tagged "sanity" (next-sanity's default).
++    revalidateTag("sanity", { expire: 0 });
++
++    return NextResponse.json({ revalidated: true, type: body?._type ?? null });
++  } catch (error) {
++    console.error(error);
++    return NextResponse.json({ message: "Could not revalidate" }, { status: 500 });
++  }
++}
+diff --git a/port_v2/app/sitemap.ts b/port_v2/app/sitemap.ts
+index 0d6a19c..14bd55f 100644
+--- a/port_v2/app/sitemap.ts
++++ b/port_v2/app/sitemap.ts
+@@ -3,6 +3,9 @@ import { I18N_LOCALE } from "@/constants/i18n-config";
+ import { getBaseUrl } from "@/lib/getBaseUrl";
+ import type { MetadataRoute } from "next";
+ 
++// Crawlers fetch this often; rebuild it at most once an hour.
++export const revalidate = 3600;
++
+ // ─── Static page paths (locale-prefixed) ────────────────────────────────────
+ const STATIC_PATHS = ["", "/about", "/blog", "/projects", "/skills", "/uses", "/photos"];
+ 
+diff --git a/port_v2/instrumentation-client.ts b/port_v2/instrumentation-client.ts
+index e0126e2..5c96f80 100644
+--- a/port_v2/instrumentation-client.ts
++++ b/port_v2/instrumentation-client.ts
+@@ -10,15 +10,19 @@ Sentry.init({
+   // Add optional integrations for additional features
+   integrations: [Sentry.replayIntegration()],
+ 
+-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
+-  tracesSampleRate: 1,
++  // Every event goes through the /monitoring tunnel, i.e. one Vercel function
++  // call each, so production samples 10% of page loads instead of all of them.
++  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1,
+   // Enable logs to be sent to Sentry
+   enableLogs: true,
+ 
+   // Define how likely Replay events are sampled.
+   // This sets the sample rate to be 10%. You may want this to be 100% while
+   // in development and sample at a lower rate in production
+-  replaysSessionSampleRate: 0.1,
++  // Session replays upload a chunk every few seconds for as long as the visitor
++  // stays, each one a function call through the tunnel. Keep only the replays
++  // of sessions that hit an error (below).
++  replaysSessionSampleRate: 0,
+ 
+   // Define how likely Replay events are sampled when an error occurs.
+   replaysOnErrorSampleRate: 1.0,
+diff --git a/port_v2/lib/cache-headers.ts b/port_v2/lib/cache-headers.ts
+new file mode 100644
+index 0000000..03e2617
+--- /dev/null
++++ b/port_v2/lib/cache-headers.ts
+@@ -0,0 +1,19 @@
++import { draftMode } from "next/headers";
++
++/**
++ * Cache-Control for the public JSON routes used by the blog/project lists and
++ * search. Vercel's CDN then answers repeated requests for the same URL without
++ * invoking the function: fresh for a minute, then served stale for up to ten
++ * minutes while one request refreshes it in the background.
++ *
++ * In draft mode (Presentation / preview) the response may contain drafts, so it
++ * must never be stored by a shared cache.
++ */
++export async function apiCacheHeaders(): Promise<HeadersInit> {
++  const { isEnabled } = await draftMode();
++  return {
++    "Cache-Control": isEnabled
++      ? "private, no-store"
++      : "public, s-maxage=60, stale-while-revalidate=600",
++  };
++}
+diff --git a/port_v2/sanity/lib/live.ts b/port_v2/sanity/lib/live.ts
+index 8e684a3..7567812 100644
+--- a/port_v2/sanity/lib/live.ts
++++ b/port_v2/sanity/lib/live.ts
+@@ -9,4 +9,7 @@ export const { sanityFetch, SanityLive } = defineLive({
+   client,
+   serverToken: token,
+   browserToken: token,
++  // Cached Sanity responses are refreshed on content changes (SanityLive and the
++  // /api/revalidate webhook). This is only a safety net in case an event is missed.
++  fetchOptions: { revalidate: 60 * 60 },
+ });
+diff --git a/port_v2/sentry.edge.config.ts b/port_v2/sentry.edge.config.ts
+index be1838b..c77bf9c 100644
+--- a/port_v2/sentry.edge.config.ts
++++ b/port_v2/sentry.edge.config.ts
+@@ -7,9 +7,8 @@ import * as Sentry from "@sentry/nextjs";
+ 
+ Sentry.init({
+   dsn: "https://087fabf3d367c93b9c5aeb14fa2ec9c5@o4508874774151168.ingest.us.sentry.io/4510639596371968",
+-
+-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
+-  tracesSampleRate: 1,
++  // Tracing adds work to every server render; sample 10% in production.
++  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1,
+ 
+   // Enable logs to be sent to Sentry
+   enableLogs: true,
+diff --git a/port_v2/sentry.server.config.ts b/port_v2/sentry.server.config.ts
+index 3622721..6ca345c 100644
+--- a/port_v2/sentry.server.config.ts
++++ b/port_v2/sentry.server.config.ts
+@@ -6,9 +6,8 @@ import * as Sentry from "@sentry/nextjs";
+ 
+ Sentry.init({
+   dsn: "https://087fabf3d367c93b9c5aeb14fa2ec9c5@o4508874774151168.ingest.us.sentry.io/4510639596371968",
+-
+-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
+-  tracesSampleRate: 1,
++  // Tracing adds work to every server render; sample 10% in production.
++  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1,
+ 
+   // Enable logs to be sent to Sentry
+   enableLogs: true,
+-- 
+2.43.0
+

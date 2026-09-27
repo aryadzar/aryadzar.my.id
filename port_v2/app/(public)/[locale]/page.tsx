@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import { HeroVideoBackground } from "@/components/hero-video";
 import { AboutBrief } from "@/components/about-brief";
 import { ProjectsShowcase } from "@/components/projects-showcase";
@@ -21,6 +22,7 @@ export default async function Page({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
 
   // Fetch all data server-side for SEO or live preview
   const [

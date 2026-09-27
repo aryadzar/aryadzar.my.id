@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import ProjectsPage from "./_components/project";
 import { createMetadata } from "@/lib/metadata";
 import { BlogSkeleton } from "@/components/skeleton";
@@ -22,7 +22,13 @@ export async function generateMetadata({
   });
 }
 
-export default function ProjectsIndexPage() {
+export default async function ProjectsIndexPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <Suspense fallback={<BlogSkeleton />}>
       <ProjectsPage />

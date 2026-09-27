@@ -230,6 +230,9 @@ NEXT_PUBLIC_SANITY_API_VERSION="2024-05-01"
 # Required for server-side fetching
 SANITY_API_READ_TOKEN="your_read_token_from_sanity_dashboard"
 
+# Secret for the Sanity webhook that refreshes cached pages (/api/revalidate)
+SANITY_REVALIDATE_SECRET="a_long_random_string"
+
 # ================================
 # Spotify Integration (Optional)
 # ================================
@@ -525,6 +528,7 @@ NEXT_PUBLIC_SANITY_PROJECT_ID
 NEXT_PUBLIC_SANITY_DATASET
 NEXT_PUBLIC_SANITY_API_VERSION
 SANITY_API_READ_TOKEN
+SANITY_REVALIDATE_SECRET
 
 # Spotify (Optional)
 SPOTIFY_CLIENT_ID

@@ -8,7 +8,7 @@ import { createMetadata } from "@/lib/metadata";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Toaster } from "sonner";
 import { SanityLive } from "@/sanity/lib/live";
 import { handleError } from "./client-function";
@@ -35,8 +35,12 @@ export async function generateMetadata({
   });
 }
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// Pages are pre-rendered per locale and served from Vercel's cache. They are
+// refreshed when Sanity content changes (SanityLive + /api/revalidate) and at
+// the latest after the `revalidate` window set in sanity/lib/live.ts.
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 const TALLY_FORMS: Record<string, string> = {
   en: "yP4NB0",
@@ -55,6 +59,9 @@ export default async function RootLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+  // Lets next-intl read the locale from params instead of request headers,
+  // which keeps the pages static.
+  setRequestLocale(locale);
 
   const formId = TALLY_FORMS[locale] ?? TALLY_FORMS.en;
 

@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { stegaClean } from "next-sanity";
 import AboutPage from "./_components/about-page";
 import { createMetadata } from "@/lib/metadata";
@@ -32,6 +32,7 @@ export default async function AboutPageIndex({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const [aboutData, skillsData, activity] = await Promise.all([
     getAbout(locale),
     getSkills(),

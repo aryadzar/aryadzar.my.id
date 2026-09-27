@@ -1,8 +1,14 @@
 import { createMetadata } from "@/lib/metadata";
 import ProjectDetail from "./_components/project-detail";
 import { getProjectSSR } from "@/lib/ssr/getProjectSSR";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+
+// Each post is rendered on its first visit and then served from cache until
+// Sanity content changes, instead of being rendered on every request.
+export function generateStaticParams() {
+  return [];
+}
 
 export async function generateMetadata({
   params,
@@ -42,6 +48,7 @@ export default async function ProjectDetailPage({
   params: Promise<{ slug: string; locale: string }>;
 }) {
   const { slug: slugs, locale } = await params;
+  setRequestLocale(locale);
   const project = await getProjectSSR(slugs, locale);
 
   if (!project) {

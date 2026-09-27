@@ -1,3 +1,4 @@
+import { apiCacheHeaders } from "@/lib/cache-headers";
 import { client } from "@/sanity/lib/client";
 import { NextResponse } from "next/server";
 
@@ -43,7 +44,7 @@ export async function GET(
       success: true,
       blog,
       slug,
-    });
+    }, { headers: await apiCacheHeaders() });
   } catch (error) {
     console.error(error);
 
